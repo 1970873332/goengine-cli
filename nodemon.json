@@ -1,0 +1,4 @@
+{
+    "restartable": "r",
+    "ignore": ["dist/**/*", "build/**/*", "node_modules/**/*"]
+}

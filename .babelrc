@@ -1,0 +1,23 @@
+{
+    "presets": [
+        "@babel/preset-env",
+        [
+            "@babel/preset-react",
+            {
+                "runtime": "automatic"
+            }
+        ]
+    ],
+    "plugins": [
+        [
+            "@babel/plugin-transform-runtime",
+            {
+                //"regenerator"是.babelrc中的一个配置项，它指定了是否将async/await语法转换为ES5代码。
+                // async/await是ES7中的新语法，它使异步编程变得更加容易和直观。
+                // 然而，这种语法在旧版的浏览器和Node.js中并不支持，因此需要使用Babel将代码转换为向后兼容的代码。
+                "regenerator": true
+            }
+        ],
+        "@babel/plugin-transform-optional-chaining"
+    ]
+}

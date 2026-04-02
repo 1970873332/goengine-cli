@@ -1,0 +1,34 @@
+{
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
+    "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+    "files.associations": {
+        "*.wk": "typescript",
+        "*_packed.tsx": "xml"
+    },
+    "files.exclude": {
+        // "lib": true,
+        // "preset": true,
+        // "config": true,
+        // "package": true,
+        // "declares": true,
+        // "index.html": true,
+        // "node_modules": true
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "vite.config.*": "*.env, .env.*, tsconfig.*",
+        "package.json": ".babelrc, .prettierrc, .gitignore, .gitattributes, index.html, *.json, *.yaml, *.md"
+    },
+    "liveServer.settings.port": 5500,
+    "tailwindCSS.classFunctions": [
+        "clsx"
+    ],
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className"
+    ],
+}

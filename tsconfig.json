@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "incremental": true,
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "allowJs": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "jsx": "preserve",
+        "baseUrl": ".",
+        "outDir": "dist",
+        "declarationDir": "dist/types",
+        "paths": {
+            "@core/*": ["package/core/src/*"],
+            "@web/*": ["package/web/src/*"],
+            "@service/*": ["package/service/src/*"],
+            "@electron/*": ["package/electron/src/*"],
+            "@/*": ["./*"],
+            "static/*": ["public/static/*"]
+        },
+        "plugins": [
+            {
+                "name": "typescript-plugin-css-modules"
+            }
+        ],
+        "types": ["node"],
+        "typeRoots": ["node_modules/@types"]
+    },
+    "include": ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx", "**/*.vue"],
+    "exclude": ["dist", "build", "public", "node_modules"]
+}
