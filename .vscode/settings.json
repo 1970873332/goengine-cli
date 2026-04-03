@@ -6,12 +6,13 @@
         "*_packed.tsx": "xml"
     },
     "files.exclude": {
-        "lib": true,
-        "preset": true,
-        "config": true,
-        "declares": true,
-        "index.html": true,
-        "node_modules": true
+        // "lib": true,
+        // "preset": true,
+        // "config": true,
+        // "package": true,
+        // "declares": true,
+        // "index.html": true,
+        // "node_modules": true
     },
     "editor.quickSuggestions": {
         "strings": true
@@ -20,14 +21,9 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "vite.config.*": "*.env, .env.*, tsconfig.*",
-        "package.json": ".babelrc, .prettierrc, .gitignore, .gitattributes, index.html, *.json, *.yaml, *.md"
+        "package.json": ".babelrc, .prettierrc, .gitignore, index.html, bun*, .gitattributes, *.json, *.yaml"
     },
     "liveServer.settings.port": 5500,
-    "tailwindCSS.classFunctions": [
-        "clsx"
-    ],
-    "tailwindCSS.classAttributes": [
-        "class",
-        "className"
-    ],
+    "tailwindCSS.classFunctions": ["clsx"],
+    "tailwindCSS.classAttributes": ["class", "className"]
 }

@@ -11,9 +11,9 @@ process.on(
 );
 
 const agreement: ModConfig["agreement"] = await select({
-    message: "选择服务协议",
-    choices: ["http", "https"],
-}),
+        message: "选择服务协议",
+        choices: ["http", "https"],
+    }),
     iss: boolean = isHTTPS(agreement),
     {
         ssl: { name },

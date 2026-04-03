@@ -3,7 +3,7 @@ import { normalPath } from "@/lib/utils/obtain/Dir";
 import { scripts } from "@/package.json";
 import { compilerOptions } from "@/tsconfig.json";
 
-const { "serve:chii": serveChii } = scripts;
+const { "serve:chii": serveChii, brun } = scripts;
 
 export const defaultAgreement: ModConfig["agreement"] = "http";
 
@@ -30,7 +30,9 @@ export function extensions(): string[] {
     return [".ts", ".js", ".tsx", ".jsx", ".vue", ".wk"];
 }
 
-export function chii(agreement: ModConfig["agreement"]): Record<string, unknown> {
+export function chii(
+    agreement: ModConfig["agreement"],
+): Record<string, unknown> {
     return {
         enable: true,
         server: `${agreement}://${IPUtils.host()}:${serveChii.match(/-p\s+(\d+)/)?.[1]}`,
@@ -55,4 +57,10 @@ export function useHOST(value: ModConfig["host"]): string {
 
 export function usePORT(value: ModConfig["port"]): string {
     return `USE_PORT=${value}`;
+}
+
+export function useBun(): string {
+    return process.argv.some(arg =>
+        arg.toLowerCase().includes("bun.exe") || arg.toLowerCase().includes("bun")
+    ) ? brun : ""
 }

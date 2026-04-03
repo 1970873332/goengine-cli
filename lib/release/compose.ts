@@ -9,8 +9,7 @@ process.on(
     (event: unknown) => (console.log(event), process.exit(1)),
 );
 
-const
-    {
+const {
         app: { web, service },
         release: { compose },
     } = userData,
@@ -26,7 +25,7 @@ const
         ".vscode",
         "public",
         web,
-        service
+        service,
     ]),
     dirs: string[] = readdirSync(process.cwd());
 

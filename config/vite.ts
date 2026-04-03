@@ -11,12 +11,15 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import { alias, chii, defaultAgreement, define, extensions } from "./module";
 
 const {
-    title,
-    web: { build },
-} = userData,
+        title,
+        web: { build },
+    } = userData,
     outDir: string = normalPath(`${build} ${Date.now()}`);
 
-export function createConfig(entry: string, { debug, agreement = defaultAgreement }: ModConfig): UserConfig {
+export function createConfig(
+    entry: string,
+    { debug, agreement = defaultAgreement }: ModConfig,
+): UserConfig {
     return defineConfig({
         logLevel: "error",
         base: "",
@@ -46,18 +49,15 @@ export function createConfig(entry: string, { debug, agreement = defaultAgreemen
                 inject: {
                     data: {
                         title,
-                        chii: debug ? chii(agreement) : void 0
-                    }
-                }
+                        chii: debug ? chii(agreement) : void 0,
+                    },
+                },
             }),
             {
                 name: "create-static-folder",
                 apply: "build",
                 closeBundle() {
-                    const staticFolderPath: string = resolve(
-                        outDir,
-                        "static",
-                    );
+                    const staticFolderPath: string = resolve(outDir, "static");
                     !existsSync(staticFolderPath) &&
                         mkdirSync(staticFolderPath, { recursive: true });
                 },

@@ -10,18 +10,17 @@ process.on(
     (event: unknown) => (console.log(event), process.exit(1)),
 );
 
-const
-    {
+const {
         app: { web },
     } = userData,
     targetDir: string = normalPath(web);
 let name: string = "";
 
 do {
-
     const resultName: string = await input({
-        message: "项目名：", required: true, validate: (value: string) => {
-
+        message: "项目名：",
+        required: true,
+        validate: (value: string) => {
             if (!value.trim()) {
                 return "项目名称不能为空";
             }
@@ -31,31 +30,33 @@ do {
             }
 
             return true;
-        }
+        },
     });
 
     try {
         await access(join(targetDir, resultName));
 
         console.log("项目已存在");
-    } catch { name = resultName }
-
+    } catch {
+        name = resultName;
+    }
 } while (!name);
 
-const
-    project: string = await select({
-        message: "项目类型：",
-        choices: [{
+const project: string = await select({
+    message: "项目类型：",
+    choices: [
+        {
             name: "React",
-            value: "HelloReact"
-        }, {
+            value: "HelloReact",
+        },
+        {
             name: "Vue",
-            value: "HelloVue"
-        }]
-    });
+            value: "HelloVue",
+        },
+    ],
+});
 
-const
-    source: string = normalPath(`preset/${project}`),
+const source: string = normalPath(`preset/${project}`),
     paths: string[] = await readdir(source),
     target: string = normalPath(join(web, name));
 

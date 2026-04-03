@@ -10,8 +10,8 @@ process.on(
 );
 
 const {
-    app: { service },
-} = userData,
+        app: { service },
+    } = userData,
     [filePath, path]: string[] = await selectTarget(service, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     { agreement = defaultAgreement } = projectConfig.mod ?? {},

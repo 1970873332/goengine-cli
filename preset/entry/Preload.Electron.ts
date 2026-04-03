@@ -7,4 +7,3 @@ if (!process.contextIsolated) Object.assign(window, { GoEngine: preload });
 else contextBridge.exposeInMainWorld("GoEngine", preload);
 
 export { BaseExpose as PreloadClass };
-

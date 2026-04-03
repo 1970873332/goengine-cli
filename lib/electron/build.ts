@@ -10,12 +10,12 @@ process.on(
 );
 
 const {
-    electron: {
-        build,
-        input: { main: main_input, preload: preload_input },
-        out: { main: main_out, preload: preload_out },
-    },
-} = userData,
+        electron: {
+            build,
+            input: { main: main_input, preload: preload_input },
+            out: { main: main_out, preload: preload_out },
+        },
+    } = userData,
     buildOptions = (
         entry: string,
         output: string,
@@ -31,10 +31,4 @@ buildSync(buildOptions(normalPath(main_input), main_out));
 
 console.log("🚀 开始构建 Electron 预加载脚本...");
 /* 构建预加载脚本 */
-buildSync(
-    buildOptions(
-        normalPath(preload_input),
-        preload_out,
-        true,
-    ),
-);
+buildSync(buildOptions(normalPath(preload_input), preload_out, true));
