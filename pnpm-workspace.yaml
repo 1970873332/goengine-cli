@@ -1,8 +1,15 @@
 packages:
-  - "package/*"
+  - package/*
+
 allowBuilds:
-  "@parcel/watcher": true
-  "@swc/core": true
+  '@parcel/watcher': true
+  '@swc/core': true
   electron: true
   electron-winstaller: true
   esbuild: true
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - electron-winstaller
+  - esbuild
