@@ -12,16 +12,13 @@ process.on(
 
 const {
         app: { service },
-        service: {
-            build,
-            out: { main },
-        },
+        service: { build, out },
     } = userData,
     [filePath]: string[] = await selectTarget(service, "Main"),
     config: BuildOptions = {
         ...createConfig(
             [filePath],
-            normalPath(join(`${build} ${Date.now()}`, main)),
+            normalPath(join(`${build} ${Date.now()}`, out)),
         ),
         packages: "external",
     };

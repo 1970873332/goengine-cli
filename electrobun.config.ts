@@ -1,4 +1,9 @@
+import { userData } from "@/package.json";
 import type { ElectrobunConfig } from "electrobun";
+
+const {
+    electrobun: { input },
+} = userData;
 
 export default {
     app: {
@@ -7,15 +12,8 @@ export default {
         version: "0.1.0",
     },
     build: {
-        useAsar: true,
         bun: {
-            entrypoint: "preset/entry/Electrobun.ts",
+            entrypoint: input,
         },
-        views: {
-            index: {
-                entrypoint: "webs/hello-react/Main.tsx",
-                minify: true,
-            },
-        }
     },
 } satisfies ElectrobunConfig;

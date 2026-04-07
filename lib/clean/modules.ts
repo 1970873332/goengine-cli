@@ -11,8 +11,8 @@ process.on(
 
 const modules: string = "node_modules",
     command: string = workspaces
-        .flatMap(pattern => sync(pattern, { onlyDirectories: true }))
-        .map(dir => join(dir, modules))
+        .flatMap((pattern) => sync(pattern, { onlyDirectories: true }))
+        .map((dir) => join(dir, modules))
         .join(" ");
 
 execSync(`${useBun()} "rimraf ${command} ${modules}"`, {

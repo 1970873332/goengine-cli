@@ -15,7 +15,7 @@ const {
         dev: {
             index: { agreement, host, port },
         },
-    }
+    },
 } = userData;
 
 if (!/^https?$/.test(agreement)) throw new Error("请求协议格式不正确");

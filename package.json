@@ -38,16 +38,14 @@
         },
         "service": {
             "build": "build/service",
-            "out": {
-                "main": "index.js"
-            }
+            "out": "index.js"
         },
         "electron": {
             "dist": "dist/electron",
             "build": "build/electron",
             "input": {
-                "main": "preset/entry/Electron.ts",
-                "preload": "preset/entry/Preload.Electron.ts"
+                "main": "preset/entry/electron/Index.ts",
+                "preload": "preset/entry/electron/Preload.ts"
             },
             "out": {
                 "main": "index.js",
@@ -61,6 +59,9 @@
                 }
             },
             "mirror": "https://npmmirror.com/mirrors/electron/"
+        },
+        "electrobun": {
+            "input": "preset/entry/electrobun/Index.ts"
         }
     },
     "scripts": {
