@@ -1,5 +1,5 @@
-import { userData } from "@/package.json";
 import type { ElectrobunConfig } from "electrobun";
+import { userData } from "./package.json";
 
 const {
     electrobun: { input },
