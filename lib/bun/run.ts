@@ -32,7 +32,7 @@ function runScript(name: string, env: Record<string, string> = {}) {
         .replace(/\bnpm run\b/g, "bun brun")
         .replace(/\bnpx\b/g, "bun x")
         .replace(/\s+&\s+/g, " && ")
-        .replace(/rimraf\b/g, "bun lib/bun/clean.ts")
+        .replace(/rimraf\b/g, scripts.bclean)
         .trim();
 
     execSync(script, {

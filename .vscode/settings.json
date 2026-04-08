@@ -8,9 +8,9 @@
     "files.exclude": {
         // "lib": true,
         // "preset": true,
-        // "config": true,
+        "config": true,
         // "package": true,
-        // "declares": true,
+        "declares": true,
         // "node_modules": true
     },
     "editor.quickSuggestions": {
@@ -20,7 +20,7 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "vite.config.*": "*.env, .env.*, tsconfig.*",
-        "package.json": ".babelrc, .prettierrc, .gitignore, index.html, bun*, .gitattributes, *.json, *.yaml"
+        "package.json": "index.html, .babelrc, .prettierrc, .gitignore, .gitattributes, *.toml, *.json, *.yaml, *.lock"
     },
     "liveServer.settings.port": 5500,
     "tailwindCSS.classFunctions": ["clsx"],

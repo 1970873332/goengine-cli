@@ -77,6 +77,7 @@
         "clean:modules": "tsx lib/clean/modules.ts",
         "clean:depend": "npm run clean:lock && npm run clean:modules",
         "brun": "bun lib/bun/run.ts",
+        "bclean": "bun lib/bun/clean.ts",
         "create:web": "tsx lib/create/web.ts",
         "compose": "tsx lib/release/compose.ts",
         "install:all": "npx tsx lib/install.ts",
@@ -92,7 +93,7 @@
         "electron:build": "tsx lib/electron/build.ts",
         "electron:start": "npm run electron:build && npm run electron:dev",
         "electron:mon": "nodemon --exec npm run electron:start",
-        "electrobun:dev": "electrobun dev",
+        "electrobun:dev": "electrobun dev --watch",
         "electrobun:build": "electrobun build",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}\" \"!**/*_packed.tsx\""
     },
