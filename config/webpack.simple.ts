@@ -2,10 +2,10 @@ import { normalPath } from "@/lib/utils/obtain/Dir";
 import { userData } from "@/package.json";
 import { resolve } from "path";
 import { Configuration } from "webpack";
-import { alias } from "./module";
+import { alias, extensions } from "./module";
+import { useBabelLoader, useTSLoader } from "./webpack";
 
 const {
-    tsconfig,
     web: { build },
 } = userData;
 
@@ -18,7 +18,7 @@ export const Config: Configuration = {
     },
     /* 解析 */
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: extensions(),
         alias: alias(),
         fallback: {
             fs: false,
@@ -31,17 +31,7 @@ export const Config: Configuration = {
             /* 脚本 */
             {
                 test: /\.(j|t)s$/i,
-                use: [
-                    "babel-loader",
-                    {
-                        loader: "ts-loader",
-                        options: {
-                            transpileOnly: true,
-                            happyPackMode: false,
-                            configFile: tsconfig,
-                        },
-                    },
-                ],
+                use: useTSLoader(useBabelLoader()),
                 exclude: /node_modules/,
             },
         ],

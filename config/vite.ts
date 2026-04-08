@@ -1,4 +1,3 @@
-import { IPUtils } from "@/lib/utils/IP";
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import { userData } from "@/package.json";
 import tailwindcss from "@tailwindcss/vite";

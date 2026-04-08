@@ -1,4 +1,3 @@
-import { IPUtils } from "@/lib/utils/IP";
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import { userData } from "@/package.json";
 import TailwindPostCSS from "@tailwindcss/postcss";
@@ -47,12 +46,12 @@ export function createConfig({
         output: dev
             ? void 0
             : {
-                  libraryTarget: module ? "module" : void 0,
-                  path: normalPath(`${build} ${Date.now()}`),
-                  filename: mergePackage
-                      ? "js/[hash].js"
-                      : "js/[name]/[hash].js",
-              },
+                libraryTarget: module ? "module" : void 0,
+                path: normalPath(`${build} ${Date.now()}`),
+                filename: mergePackage
+                    ? "js/[hash].js"
+                    : "js/[name]/[hash].js",
+            },
         /* 解析 */
         resolve: {
             extensions: extensions(),
@@ -68,25 +67,26 @@ export function createConfig({
                 /* 脚本 */
                 {
                     test: /\.(j|t)sx?$/i,
-                    use: usetsLoader(babelLoader()),
+                    use: useTSLoader(useBabelLoader()),
                     exclude: /node_modules/,
                 },
                 /* Worker脚本 */
                 {
                     test: /\.wk$/i,
-                    use: usetsLoader("worker-loader"),
+                    use: useTSLoader("worker-loader"),
                     exclude: /node_modules/,
                 },
                 /*  模块样式表 */
                 {
                     test: /\.module\.(s?)[ac]ss$/i,
-                    use: usecssLoader(true),
+                    use: useCSSLoader(true),
+                    exclude: /node_modules/,
                 },
                 /* 样式表 */
                 {
                     test: /\.(s?)[ac]ss$/i,
-                    use: usecssLoader(false),
-                    exclude: /\.module\.(s?)[ac]ss$/i,
+                    use: useCSSLoader(false),
+                    exclude: /node_modules|\.module\.(s?)[ac]ss$/i,
                 },
                 /* vue */
                 {
@@ -189,58 +189,58 @@ export function createConfig({
         optimization: dev
             ? void 0
             : {
-                  minimize: true,
-                  usedExports: true,
-                  sideEffects: true,
-                  minimizer: [
-                      `...`,
-                      new TerserPlugin({
-                          terserOptions: {
-                              compress: {
-                                  drop_console: true,
-                              },
-                          },
-                      }),
-                      new CssMinimizerPlugin({
-                          minimizerOptions: {
-                              preset: [
-                                  "default",
-                                  {
-                                      discardComments: { removeAll: true },
-                                  },
-                              ],
-                          },
-                      }),
-                  ],
-                  splitChunks: mergePackage
-                      ? void 0
-                      : {
-                            chunks: "all",
-                            maxSize: 244000,
-                            maxInitialRequests: 5,
-                            maxAsyncRequests: 30,
-                            cacheGroups: {
-                                libs: {
-                                    name: "libs",
-                                    test: /[\\/]node_modules[\\/]/,
-                                    priority: 20,
-                                    reuseExistingChunk: true,
-                                },
-                                other: {
-                                    name: "other",
-                                    minChunks: 2,
-                                    priority: 5,
-                                    reuseExistingChunk: true,
-                                },
-                                styles: {
-                                    name: "styles",
-                                    test: /\.(c|le|sa|sc)ss$/i,
-                                    enforce: true,
-                                    priority: 50,
-                                },
+                minimize: true,
+                usedExports: true,
+                sideEffects: true,
+                minimizer: [
+                    `...`,
+                    new TerserPlugin({
+                        terserOptions: {
+                            compress: {
+                                drop_console: true,
                             },
                         },
-              },
+                    }),
+                    new CssMinimizerPlugin({
+                        minimizerOptions: {
+                            preset: [
+                                "default",
+                                {
+                                    discardComments: { removeAll: true },
+                                },
+                            ],
+                        },
+                    }),
+                ],
+                splitChunks: mergePackage
+                    ? void 0
+                    : {
+                        chunks: "all",
+                        maxSize: 244000,
+                        maxInitialRequests: 5,
+                        maxAsyncRequests: 30,
+                        cacheGroups: {
+                            libs: {
+                                name: "libs",
+                                test: /[\\/]node_modules[\\/]/,
+                                priority: 20,
+                                reuseExistingChunk: true,
+                            },
+                            other: {
+                                name: "other",
+                                minChunks: 2,
+                                priority: 5,
+                                reuseExistingChunk: true,
+                            },
+                            styles: {
+                                name: "styles",
+                                test: /\.(c|le|sa|sc)ss$/i,
+                                enforce: true,
+                                priority: 50,
+                            },
+                        },
+                    },
+            },
     };
 }
 
@@ -249,19 +249,19 @@ export function createConfig({
  * @param module
  * @returns
  */
-function usecssLoader(module: boolean): RuleSetUse {
-    const use = module
+export function useCSSLoader(module: boolean): RuleSetUse {
+    const use: RuleSetUse = module
         ? [
-              {
-                  loader: "css-loader",
-                  options: {
-                      modules: {
-                          namedExport: false,
-                          exportLocalsConvention: "as-is",
-                      },
-                  },
-              },
-          ]
+            {
+                loader: "css-loader",
+                options: {
+                    modules: {
+                        namedExport: false,
+                        exportLocalsConvention: "as-is",
+                    },
+                },
+            },
+        ]
         : ["css-loader"];
 
     return [
@@ -282,7 +282,7 @@ function usecssLoader(module: boolean): RuleSetUse {
  * 使用TS加载器
  * @param worker
  */
-function usetsLoader(loader?: RuleSetUseItem): RuleSetUse {
+export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
     return [
         loader,
         {
@@ -297,10 +297,10 @@ function usetsLoader(loader?: RuleSetUseItem): RuleSetUse {
     ].filter(Boolean);
 }
 /**
- * babel加载器
+ * 使用babel加载器
  * @returns
  */
-function babelLoader(): RuleSetUseItem {
+export function useBabelLoader(): RuleSetUseItem {
     return {
         loader: "babel-loader",
         options: {
