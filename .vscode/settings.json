@@ -20,7 +20,7 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "vite.config.*": "*.env, .env.*, tsconfig.*",
-        "package.json": "index.html, .babelrc, .prettierrc, .gitignore, .gitattributes, *.toml, *.json, *.yaml, *.lock"
+        "package.json": "index.html, .babelrc, .prettierrc, .gitignore, .gitattributes, *.toml, *.json, *.yaml, *.lock, *.config.ts"
     },
     "liveServer.settings.port": 5500,
     "tailwindCSS.classFunctions": ["clsx"],

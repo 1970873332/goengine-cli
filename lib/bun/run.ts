@@ -29,10 +29,10 @@ function runScript(name: string, env: Record<string, string> = {}) {
     // 替换命令
     script = script
         .replace(/\btsx\b/g, "bun")
-        .replace(/\bnpm run\b/g, "bun brun")
+        .replace(/\bnpm run\b/g, "bun :run")
         .replace(/\bnpx\b/g, "bun x")
         .replace(/\s+&\s+/g, " && ")
-        .replace(/rimraf\b/g, scripts.bclean)
+        .replace(/rimraf\b/g, scripts[":clean"])
         .trim();
 
     execSync(script, {

@@ -32,7 +32,7 @@ export default defineConfig([
                 name: "config-copy-plugin",
                 setup(build) {
                     build.onEnd(async () => {
-                        await copy("package/web/src/csss", join(out, "web"));
+                        await copy("package/web/src/css", join(out, "web"));
                     });
                 },
             },

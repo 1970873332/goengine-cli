@@ -2,14 +2,13 @@ import type { ElectrobunConfig } from "electrobun";
 import { userData } from "./package.json";
 
 const {
+    lication: { name, version, id: identifier },
     electrobun: { input },
 } = userData;
 
 export default {
     app: {
-        name: "GoEngine",
-        identifier: "com.goengine",
-        version: "0.1.0",
+        name, version, identifier
     },
     build: {
         bun: {

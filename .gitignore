@@ -1,7 +1,12 @@
 **/node_modules
-**/build
-**/dist
+
+dist
+build
 
 package
+
 webs
 services
+
+.angular
+angular.json

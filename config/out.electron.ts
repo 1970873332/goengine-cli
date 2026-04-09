@@ -3,17 +3,18 @@ import { Configuration } from "electron-builder";
 import { join } from "path";
 
 const {
+    lication: { name: appName, version: appVersion, id: appID },
     web: { build: webBuild },
     electron: { dist, mirror, build: electronBuild },
 } = userData;
 
 export function createConfig({
-    name = "GoEngine",
-    version = "0.1.0",
-    packageID = "com.goengine",
+    name = appName,
+    version = appVersion,
+    id = appID,
 }: Partial<PackageConfig>): Configuration {
     return {
-        appId: packageID,
+        appId: id,
         productName: name,
         buildVersion: version,
         artifactName: name + ".${ext}",

@@ -1,8 +1,8 @@
 import { createConfig } from "@/config/vite";
 import { userData } from "@/package.json";
 import { build, UserConfig } from "vite";
-import { selectTarget } from "../utils/Select";
-import { obtainProjectConfig } from "../utils/obtain/File";
+import { selectTarget } from "../../utils/Select";
+import { obtainProjectConfig } from "../../utils/obtain/File";
 
 process.on(
     "uncaughtException",

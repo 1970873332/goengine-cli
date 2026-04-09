@@ -3,7 +3,7 @@ import { normalPath } from "@/lib/utils/obtain/Dir";
 import { scripts } from "@/package.json";
 import { compilerOptions } from "@/tsconfig.json";
 
-const { "chii:serve": serveChii, brun } = scripts;
+const { "chii:serve": serveChii, ":run": run } = scripts;
 
 export const defaultAgreement: ModConfig["agreement"] = "http";
 
@@ -65,6 +65,6 @@ export function useBun(): string {
             arg.toLowerCase().includes("bun.exe") ||
             arg.toLowerCase().includes("bun"),
     )
-        ? brun
+        ? run
         : "";
 }

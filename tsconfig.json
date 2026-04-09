@@ -19,12 +19,16 @@
         "outDir": "dist",
         "declarationDir": "dist/types",
         "paths": {
+            "@vuee/*":["package/vue/src/*"],
+            "@react/*":["package/react/src/*"],
+            "@angular/*":["package/angular/src/*"],
             "@core/*": ["package/core/src/*"],
             "@web/*": ["package/web/src/*"],
             "@service/*": ["package/service/src/*"],
             "@electron/*": ["package/electron/src/*"],
-            "@/*": ["./*"],
-            "static/*": ["public/static/*"]
+            "@electrobun":["package/electrobun/src/*"],
+            "static/*": ["public/static/*"],
+            "@/*": ["./*"]
         },
         "plugins": [
             {

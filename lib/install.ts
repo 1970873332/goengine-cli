@@ -35,4 +35,5 @@ try {
 }
 
 console.log("⬇️ 安装项目依赖...");
+process.env.NODE_USE_SYSTEM_CA = "1";
 execSync("pnpm install --shamefully-hoist", execConfig);

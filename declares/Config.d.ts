@@ -28,9 +28,9 @@ declare global {
          */
         version?: string;
         /**
-         * 包ID
+         * ID
          */
-        packageID?: string;
+        id?: string;
     }
 
     /**
