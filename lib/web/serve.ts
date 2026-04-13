@@ -1,6 +1,6 @@
 import { defaultAgreement } from "@/config/module";
 import { createConfig } from "@/config/webpack";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import webpack, { Configuration as WebPackConfiguration } from "webpack";
 import WebpackDevServer, { Configuration } from "webpack-dev-server";
 import { selectTarget } from "../utils/Select";

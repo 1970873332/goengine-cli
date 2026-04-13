@@ -24,5 +24,8 @@
     },
     "liveServer.settings.port": 5500,
     "tailwindCSS.classFunctions": ["clsx"],
-    "tailwindCSS.classAttributes": ["class", "className"]
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className"
+    ]
 }

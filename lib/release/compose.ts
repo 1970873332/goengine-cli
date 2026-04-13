@@ -1,4 +1,4 @@
-import { userData, version } from "@/package.json";
+import { userData, version } from "package.json";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "fs";
 import { join } from "path";
 import { copy } from "../utils/FS";

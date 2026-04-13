@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/out.electron";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { devDependencies } from "@electron/../package.json";
 import { Configuration, build as electronBuild } from "electron-builder";
 import { join } from "path";

@@ -1,5 +1,5 @@
 import { defaultAgreement, useAGREEMENT, useNODE_ENV } from "@/config/module";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { execSync } from "child_process";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";

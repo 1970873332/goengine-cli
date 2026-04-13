@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/esbuild";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { BuildOptions, buildSync } from "esbuild";
 import { join } from "path";
 import { normalPath } from "../utils/obtain/Dir";

@@ -1,8 +1,8 @@
 import { createConfig } from "@/config/vite";
-import { userData } from "@/package.json";
+import { obtainProjectConfig } from "@/lib/utils/obtain/File";
+import { selectTarget } from "@/lib/utils/Select";
+import { userData } from "package.json";
 import { build, UserConfig } from "vite";
-import { selectTarget } from "../../utils/Select";
-import { obtainProjectConfig } from "../../utils/obtain/File";
 
 process.on(
     "uncaughtException",
@@ -10,8 +10,8 @@ process.on(
 );
 
 const {
-        app: { web },
-    } = userData,
+    app: { web },
+} = userData,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     config: UserConfig = {

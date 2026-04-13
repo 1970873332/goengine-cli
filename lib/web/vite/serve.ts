@@ -1,12 +1,12 @@
 import { defaultAgreement, isHTTPS } from "@/config/module";
 import { createConfig } from "@/config/vite";
-import { userData } from "@/package.json";
+import { obtainProjectConfig } from "@/lib/utils/obtain/File";
+import { selectTarget } from "@/lib/utils/Select";
+import { SSLUtils } from "@/lib/utils/SSL";
+import { userData } from "package.json";
 import HTTPSServerManager from "@service/managers/server/common/HTTPS";
 import { readFileSync } from "fs";
 import { createServer, UserConfig, ViteDevServer } from "vite";
-import { SSLUtils } from "../../utils/SSL";
-import { selectTarget } from "../../utils/Select";
-import { obtainProjectConfig } from "../../utils/obtain/File";
 
 process.on(
     "uncaughtException",
@@ -14,9 +14,9 @@ process.on(
 );
 
 const {
-        app: { web },
-        ssl: { name },
-    } = userData,
+    app: { web },
+    ssl: { name },
+} = userData,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     mod: ModConfig = projectConfig.mod ?? {},
@@ -32,9 +32,9 @@ const {
             port,
             https: iss
                 ? HTTPSServerManager.rebirth({
-                      key: readFileSync(keyPath),
-                      cert: readFileSync(certPath),
-                  })
+                    key: readFileSync(keyPath),
+                    cert: readFileSync(certPath),
+                })
                 : void 0,
         },
         mode: "development",

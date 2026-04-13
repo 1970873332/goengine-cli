@@ -1,6 +1,6 @@
 import { IPUtils } from "@/lib/utils/IP";
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { scripts } from "@/package.json";
+import { scripts } from "package.json";
 import { compilerOptions } from "@/tsconfig.json";
 
 const { "chii:serve": serveChii, ":run": run } = scripts;

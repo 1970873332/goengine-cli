@@ -1,6 +1,6 @@
 import { isHTTPS } from "@/config/module";
 import { SSLUtils } from "@/lib/utils/SSL";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { select } from "@inquirer/prompts";
 import { execSync } from "child_process";
 import { Command } from "commander";

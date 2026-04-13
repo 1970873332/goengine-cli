@@ -1,5 +1,5 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";

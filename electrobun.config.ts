@@ -1,5 +1,5 @@
 import type { ElectrobunConfig } from "electrobun";
-import { userData } from "./package.json";
+import { userData } from "package.json";
 
 const {
     lication: { name, version, id: identifier },

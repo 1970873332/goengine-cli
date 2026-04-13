@@ -1,5 +1,5 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { resolve } from "path";
 import { Configuration } from "webpack";
 import { alias, extensions } from "./module";

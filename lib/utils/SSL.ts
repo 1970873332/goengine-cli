@@ -1,4 +1,4 @@
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";

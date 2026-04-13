@@ -1,5 +1,5 @@
 import { useBun } from "@/config/module";
-import { workspaces } from "@/package.json";
+import { workspaces } from "package.json";
 import { execSync } from "child_process";
 import { join } from "path";
 import { sync } from "fast-glob";

@@ -1,5 +1,5 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import TailwindPostCSS from "@tailwindcss/postcss";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import { existsSync, mkdirSync } from "fs";
@@ -20,7 +20,7 @@ import { alias, chii, defaultAgreement, define, extensions } from "./module";
 const dev: boolean = process.env.NODE_ENV === "development",
     {
         title,
-        tsconfig,
+        tsconfig: { index },
         html: { webpack: html_webpack },
         web: { build },
     } = userData;
@@ -290,7 +290,7 @@ export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
             options: {
                 transpileOnly: true,
                 happyPackMode: false,
-                configFile: tsconfig,
+                configFile: index,
                 appendTsSuffixTo: [/\.vue$/],
             },
         },

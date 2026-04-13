@@ -1,4 +1,4 @@
-import { DocumentUtils } from "@core/utils/Document";
+import { DocumentUtils } from "@core/util/Document";
 import { router } from "@vuee/router/Router";
 import "@web/css/index.css";
 import { App as AppComponent, createApp } from "vue";

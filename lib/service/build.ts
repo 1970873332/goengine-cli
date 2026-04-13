@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/esbuild";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
 import { selectTarget } from "../utils/Select";

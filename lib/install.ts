@@ -1,4 +1,4 @@
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 
 process.on(

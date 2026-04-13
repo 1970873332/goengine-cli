@@ -1,4 +1,4 @@
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { input, select } from "@inquirer/prompts";
 import { access, readdir } from "fs/promises";
 import { join } from "path";
@@ -11,8 +11,8 @@ process.on(
 );
 
 const {
-        app: { web },
-    } = userData,
+    app: { web },
+} = userData,
     targetDir: string = normalPath(web);
 let name: string = "";
 
@@ -53,6 +53,10 @@ const project: string = await select({
             name: "Vue",
             value: "HelloVue",
         },
+        {
+            name: "Angular",
+            value: "HelloAngular",
+        }
     ],
 });
 

@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/webpack";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import webpack, { Configuration } from "webpack";
 import { webpackBuildCallback } from "../utils/Callback";
 import { selectTarget } from "../utils/Select";

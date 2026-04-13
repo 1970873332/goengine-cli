@@ -18,7 +18,10 @@
     },
     "userData": {
         "title": "Welcome to GoEngine",
-        "tsconfig": "tsconfig.json",
+        "tsconfig": {
+            "index": "tsconfig.json",
+            "angular": "tsconfig.angular.json"
+        },
         "out": "dist/out",
         "lication": {
             "name": "GoEngine",
@@ -37,7 +40,8 @@
             "compose": "dist/compose"
         },
         "html": {
-            "webpack": "preset/entry/webpack.html"
+            "webpack": "preset/entry/webpack.html",
+            "angular": "preset/entry/angular.html"
         },
         "web": {
             "build": "build/web"
@@ -78,7 +82,7 @@
         "@compose": "tsx lib/release/compose.ts",
         "clean:dist": "rimraf dist",
         "clean:build": "rimraf build",
-        "clean:cache": "rimraf angular.json .angular",
+        "clean:cache": "rimraf angular.json tsconfig.angular.json .angular",
         "clean:lock": "rimraf package-lock.json pnpm-lock.yaml bun.lock",
         "clean:out": "npm run clean:dist & npm run clean:build & npm run clean:cache",
         "clean:modules": "tsx lib/clean/modules.ts",
@@ -86,6 +90,10 @@
         "create:web": "tsx lib/create/web.ts",
         "install:all": "npx tsx lib/install.ts",
         "chii:serve": "tsx lib/debug/chii/serve.ts -p 3000",
+        "preng:serve": "tsx lib/create/angular/config.ts",
+        "preng:build": "tsx lib/create/angular/config.ts",
+        "ng:serve": "ng serve",
+        "ng:build": "ng build",
         "web:build": "cross-env NODE_ENV=production tsx lib/web/build.ts",
         "web:serve": "cross-env NODE_ENV=development tsx lib/web/serve.ts",
         "vite:build": "cross-env NODE_ENV=production tsx lib/web/vite/build.ts",

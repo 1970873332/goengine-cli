@@ -1,4 +1,4 @@
-import { scripts } from "@/package.json";
+import { scripts } from "package.json";
 import { execSync } from "child_process";
 
 process.on(

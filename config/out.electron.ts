@@ -1,4 +1,4 @@
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { Configuration } from "electron-builder";
 import { join } from "path";
 
@@ -39,12 +39,6 @@ export function createConfig({
                     arch: "x64",
                 },
             ],
-            fileAssociations: [
-                {
-                    ext: "exe",
-                    name: name,
-                },
-            ],
             icon: join(webBuild, "favicon.ico"),
         },
         nsis: {
@@ -52,7 +46,7 @@ export function createConfig({
             allowToChangeInstallationDirectory: true,
             createDesktopShortcut: true,
             createStartMenuShortcut: false,
-            perMachine: true,
+            perMachine: false,
         },
     };
 }

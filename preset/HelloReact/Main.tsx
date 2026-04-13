@@ -1,4 +1,4 @@
-import { DocumentUtils } from "@core/utils/Document";
+import { DocumentUtils } from "@core/util/Document";
 import RouterComponent from "@react/router/Router";
 import "@web/css/index.css";
 import { createElement, ReactElement } from "react";

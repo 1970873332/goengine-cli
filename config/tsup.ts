@@ -1,5 +1,5 @@
 import { copy } from "@/lib/utils/FS";
-import { userData } from "@/package.json";
+import { userData } from "package.json";
 import { join } from "path";
 import { defineConfig } from "tsup";
 
