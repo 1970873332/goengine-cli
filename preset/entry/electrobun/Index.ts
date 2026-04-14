@@ -6,13 +6,13 @@ console.error("自定义config路径 ❌");
 console.error("热更新进程占用 ❌");
 
 const {
-    title,
-    electron: {
-        dev: {
-            index: { agreement, host, port },
+        title,
+        electron: {
+            dev: {
+                index: { agreement, host, port },
+            },
         },
-    },
-} = userData,
+    } = userData,
     win = new BrowserWindow({
         title,
         url: `${agreement}://${host}:${port}`,

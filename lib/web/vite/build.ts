@@ -10,8 +10,8 @@ process.on(
 );
 
 const {
-    app: { web },
-} = userData,
+        app: { web },
+    } = userData,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     config: UserConfig = {

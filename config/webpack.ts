@@ -46,12 +46,12 @@ export function createConfig({
         output: dev
             ? void 0
             : {
-                libraryTarget: module ? "module" : void 0,
-                path: normalPath(`${build} ${Date.now()}`),
-                filename: mergePackage
-                    ? "js/[hash].js"
-                    : "js/[name]/[hash].js",
-            },
+                  libraryTarget: module ? "module" : void 0,
+                  path: normalPath(`${build} ${Date.now()}`),
+                  filename: mergePackage
+                      ? "js/[hash].js"
+                      : "js/[name]/[hash].js",
+              },
         /* 解析 */
         resolve: {
             extensions: extensions(),
@@ -189,58 +189,58 @@ export function createConfig({
         optimization: dev
             ? void 0
             : {
-                minimize: true,
-                usedExports: true,
-                sideEffects: true,
-                minimizer: [
-                    `...`,
-                    new TerserPlugin({
-                        terserOptions: {
-                            compress: {
-                                drop_console: true,
-                            },
-                        },
-                    }),
-                    new CssMinimizerPlugin({
-                        minimizerOptions: {
-                            preset: [
-                                "default",
-                                {
-                                    discardComments: { removeAll: true },
+                  minimize: true,
+                  usedExports: true,
+                  sideEffects: true,
+                  minimizer: [
+                      `...`,
+                      new TerserPlugin({
+                          terserOptions: {
+                              compress: {
+                                  drop_console: true,
+                              },
+                          },
+                      }),
+                      new CssMinimizerPlugin({
+                          minimizerOptions: {
+                              preset: [
+                                  "default",
+                                  {
+                                      discardComments: { removeAll: true },
+                                  },
+                              ],
+                          },
+                      }),
+                  ],
+                  splitChunks: mergePackage
+                      ? void 0
+                      : {
+                            chunks: "all",
+                            maxSize: 244000,
+                            maxInitialRequests: 5,
+                            maxAsyncRequests: 30,
+                            cacheGroups: {
+                                libs: {
+                                    name: "libs",
+                                    test: /[\\/]node_modules[\\/]/,
+                                    priority: 20,
+                                    reuseExistingChunk: true,
                                 },
-                            ],
-                        },
-                    }),
-                ],
-                splitChunks: mergePackage
-                    ? void 0
-                    : {
-                        chunks: "all",
-                        maxSize: 244000,
-                        maxInitialRequests: 5,
-                        maxAsyncRequests: 30,
-                        cacheGroups: {
-                            libs: {
-                                name: "libs",
-                                test: /[\\/]node_modules[\\/]/,
-                                priority: 20,
-                                reuseExistingChunk: true,
-                            },
-                            other: {
-                                name: "other",
-                                minChunks: 2,
-                                priority: 5,
-                                reuseExistingChunk: true,
-                            },
-                            styles: {
-                                name: "styles",
-                                test: /\.(c|le|sa|sc)ss$/i,
-                                enforce: true,
-                                priority: 50,
+                                other: {
+                                    name: "other",
+                                    minChunks: 2,
+                                    priority: 5,
+                                    reuseExistingChunk: true,
+                                },
+                                styles: {
+                                    name: "styles",
+                                    test: /\.(c|le|sa|sc)ss$/i,
+                                    enforce: true,
+                                    priority: 50,
+                                },
                             },
                         },
-                    },
-            },
+              },
     };
 }
 
@@ -252,16 +252,16 @@ export function createConfig({
 export function useCSSLoader(module: boolean): RuleSetUse {
     const use: RuleSetUse = module
         ? [
-            {
-                loader: "css-loader",
-                options: {
-                    modules: {
-                        namedExport: false,
-                        exportLocalsConvention: "as-is",
-                    },
-                },
-            },
-        ]
+              {
+                  loader: "css-loader",
+                  options: {
+                      modules: {
+                          namedExport: false,
+                          exportLocalsConvention: "as-is",
+                      },
+                  },
+              },
+          ]
         : ["css-loader"];
 
     return [

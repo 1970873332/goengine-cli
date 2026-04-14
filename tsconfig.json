@@ -20,48 +20,25 @@
         "declaration": true,
         "declarationDir": "dist/types",
         "paths": {
-            "@vuee/*": [
-                "package/vue/src/*"
-            ],
-            "@react/*": [
-                "package/react/src/*"
-            ],
-            "@angularr/*": [
-                "package/angular/src/*"
-            ],
-            "@core/*": [
-                "package/core/src/*"
-            ],
-            "@web/*": [
-                "package/web/src/*"
-            ],
-            "@service/*": [
-                "package/service/src/*"
-            ],
-            "@electron/*": [
-                "package/electron/src/*"
-            ],
-            "@electrobun": [
-                "package/electrobun/src/*"
-            ],
-            "static/*": [
-                "public/static/*"
-            ],
-            "@/*": [
-                "./*"
-            ]
+            "@vuee/*": ["package/vue/src/*"],
+            "@react/*": ["package/react/src/*"],
+            "@angularr/*": ["package/angular/src/*"],
+            "@core/*": ["package/core/src/*"],
+            "@web/*": ["package/web/src/*"],
+            "@webgl/*": ["package/webgl/src/*"],
+            "@service/*": ["package/service/src/*"],
+            "@electron/*": ["package/electron/src/*"],
+            "@electrobun": ["package/electrobun/src/*"],
+            "static/*": ["public/static/*"],
+            "@/*": ["./*"]
         },
         "plugins": [
             {
                 "name": "typescript-plugin-css-modules"
             }
         ],
-        "types": [
-            "node"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ]
+        "types": ["node"],
+        "typeRoots": ["node_modules/@types"]
     },
     "include": [
         "**/*.js",
@@ -69,12 +46,7 @@
         "**/*.jsx",
         "**/*.tsx",
         "**/*.vue",
-        "**/*.json",
+        "**/*.json"
     ],
-    "exclude": [
-        "dist",
-        "build",
-        "public",
-        "node_modules"
-    ]
+    "exclude": ["dist", "build", "public", "node_modules"]
 }

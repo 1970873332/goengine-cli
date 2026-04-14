@@ -8,7 +8,9 @@ const {
 
 export default {
     app: {
-        name, version, identifier
+        name,
+        version,
+        identifier,
     },
     build: {
         bun: {

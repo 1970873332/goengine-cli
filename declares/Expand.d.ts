@@ -66,7 +66,10 @@ global {
         /**
          * 记录回调
          */
-        type RecordCallBack<T, B extends any = void> = (prev: T | undefined, next: T) => B;
+        type RecordCallBack<T, B extends any = void> = (
+            prev: T | undefined,
+            next: T,
+        ) => B;
     }
 
     /**
@@ -80,9 +83,9 @@ global {
             T extends Record<any, unknown>,
             P extends keyof T[keyof T],
         > = {
-                [K in keyof T]?: T[K] extends Record<P, infer U> ? U : never;
-            };
+            [K in keyof T]?: T[K] extends Record<P, infer U> ? U : never;
+        };
     }
 }
 
-export { };
+export {};

@@ -11,8 +11,8 @@ process.on(
 );
 
 const {
-    app: { web },
-} = userData,
+        app: { web },
+    } = userData,
     targetDir: string = normalPath(web);
 let name: string = "";
 
@@ -56,7 +56,7 @@ const project: string = await select({
         {
             name: "Angular",
             value: "HelloAngular",
-        }
+        },
     ],
 });
 

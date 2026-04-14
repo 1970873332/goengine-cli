@@ -14,9 +14,9 @@ process.on(
 );
 
 const {
-    app: { web },
-    ssl: { name },
-} = userData,
+        app: { web },
+        ssl: { name },
+    } = userData,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     mod: ModConfig = projectConfig.mod ?? {},
@@ -32,9 +32,9 @@ const {
             port,
             https: iss
                 ? HTTPSServerManager.rebirth({
-                    key: readFileSync(keyPath),
-                    cert: readFileSync(certPath),
-                })
+                      key: readFileSync(keyPath),
+                      cert: readFileSync(certPath),
+                  })
                 : void 0,
         },
         mode: "development",

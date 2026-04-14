@@ -9,8 +9,7 @@ process.on(
     (event: unknown) => (console.log(event), process.exit(1)),
 );
 
-const
-    dev: boolean = process.env.NODE_ENV === "development",
+const dev: boolean = process.env.NODE_ENV === "development",
     {
         app: { web },
         web: { build },
@@ -21,21 +20,19 @@ const
     projectPath: string = relative(process.cwd(), path),
     project: string = relative(web, projectPath);
 
-const
-    angularTSConfig = {
+const angularTSConfig = {
         extends: normalPath(index),
         compilerOptions: {
             declaration: false,
-            declarationDir: null
+            declarationDir: null,
         },
-        include: [
-            join(projectPath, "**/*.ts")
-        ]
-    }, angularConfig = {
+        include: [join(projectPath, "**/*.ts")],
+    },
+    angularConfig = {
         version: 1,
         cli: {
             analytics: false,
-            schematicCollections: ["@angular-devkit/build-angular"]
+            schematicCollections: ["@angular-devkit/build-angular"],
         },
         projects: {
             [project]: {
@@ -48,23 +45,23 @@ const
                             outputPath: build,
                             index: {
                                 input: angular_html,
-                                output: process.env.OUTPUT_HTML || "index.html"
+                                output: process.env.OUTPUT_HTML || "index.html",
                             },
                             main: relative(process.cwd(), filePath),
                             tsConfig: angular,
                             optimization: dev,
                             buildOptimizer: dev,
-                        }
+                        },
                     },
                     serve: {
                         builder: "@angular-devkit/build-angular:dev-server",
                         options: {
-                            buildTarget: `${project}:build`
-                        }
-                    }
-                }
-            }
-        }
+                            buildTarget: `${project}:build`,
+                        },
+                    },
+                },
+            },
+        },
     };
 
 const configPath: string = normalPath("angular.json"),
