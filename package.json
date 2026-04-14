@@ -20,7 +20,7 @@
         "title": "Welcome to GoEngine",
         "tsconfig": {
             "index": "tsconfig.json",
-            "angular": "tsconfig.angular.json"
+            "angular": ".angular/tsconfig.angular.json"
         },
         "out": "dist/out",
         "lication": {
@@ -126,6 +126,7 @@
         "@babel/preset-env": "^7.28.5",
         "@babel/preset-react": "^7.28.5",
         "@babel/runtime": "^7.28.4",
+        "@dotenv-run/webpack": "~1.5.2",
         "@swc/core": "^1.15.3",
         "@tailwindcss/postcss": "^4.1.17",
         "@tailwindcss/vite": "^4.1.17",

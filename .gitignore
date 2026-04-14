@@ -10,3 +10,4 @@ services
 
 .angular
 angular.json
+tsconfig.angular.json
