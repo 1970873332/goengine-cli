@@ -14,6 +14,10 @@ declare global {
          */
         type Shader<T> = {
             /**
+             * 着色器ID
+             */
+            id: string;
+            /**
              * 顶点着色器
              */
             vertex: T;
@@ -73,4 +77,4 @@ declare global {
     }
 }
 
-export {};
+export { };
