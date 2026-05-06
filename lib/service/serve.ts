@@ -1,6 +1,6 @@
 import { defaultAgreement, useAGREEMENT, useNODE_ENV } from "@/config/module";
-import { userData } from "package.json";
 import { execSync } from "child_process";
+import EngineConfig from "engine.config.json";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";
 
@@ -11,7 +11,7 @@ process.on(
 
 const {
         app: { service },
-    } = userData,
+    } = EngineConfig,
     [filePath, path]: string[] = await selectTarget(service, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     { agreement = defaultAgreement } = projectConfig.mod ?? {},

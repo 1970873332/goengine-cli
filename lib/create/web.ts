@@ -1,5 +1,5 @@
-import { userData } from "package.json";
 import { input, select } from "@inquirer/prompts";
+import EngineConfig from "engine.config.json";
 import { access, readdir } from "fs/promises";
 import { join } from "path";
 import { copy } from "../utils/FS";
@@ -12,7 +12,7 @@ process.on(
 
 const {
         app: { web },
-    } = userData,
+    } = EngineConfig,
     targetDir: string = normalPath(web);
 let name: string = "";
 

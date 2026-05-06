@@ -66,10 +66,7 @@ global {
         /**
          * 记录回调
          */
-        type RecordCallBack<T, B extends any = void> = (
-            prev: T | undefined,
-            next: T,
-        ) => B;
+        type RecordCallBack<T, B = void> = (nv: T, ov: T | undefined) => B;
     }
 
     /**
@@ -86,6 +83,24 @@ global {
             [K in keyof T]?: T[K] extends Record<P, infer U> ? U : never;
         };
     }
+
+    /**
+     * 重构
+     */
+    namespace Refactor {
+        /**
+         * 合并部分覆盖
+         */
+        type MergePartialOverride<T, U extends Partial<T>> = Omit<T, keyof U> &
+            U;
+    }
+
+    /**
+     * 实例
+     */
+    type Instance<T> = T extends abstract new (...args: any) => infer R
+        ? R
+        : never;
 }
 
 export {};

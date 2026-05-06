@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/esbuild";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
 import { selectTarget } from "../utils/Select";
@@ -13,7 +13,7 @@ process.on(
 const {
         app: { service },
         service: { build, out },
-    } = userData,
+    } = EngineConfig,
     [filePath]: string[] = await selectTarget(service, "Main"),
     config: BuildOptions = {
         ...createConfig(

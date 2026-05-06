@@ -1,7 +1,7 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import { selectTarget } from "@/lib/utils/Select";
+import EngineConfig from "engine.config.json";
 import { mkdirSync, writeFileSync } from "fs";
-import { userData } from "package.json";
 import { dirname, join, relative } from "path";
 
 process.on(
@@ -16,7 +16,7 @@ const json: string = "angular.json",
         web: { build },
         tsconfig: { index, angular },
         html: { angular: angular_html },
-    } = userData,
+    } = EngineConfig,
     [filePath, path]: string[] = await selectTarget(web, "main"),
     projectPath: string = relative(process.cwd(), path),
     project: string = relative(web, projectPath),

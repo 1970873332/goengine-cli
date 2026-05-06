@@ -1,6 +1,6 @@
 import { defaultAgreement } from "@/config/module";
 import { createConfig } from "@/config/webpack";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import webpack, { Configuration as WebPackConfiguration } from "webpack";
 import WebpackDevServer, { Configuration } from "webpack-dev-server";
 import { selectTarget } from "../utils/Select";
@@ -13,7 +13,7 @@ process.on(
 
 const {
         app: { web },
-    } = userData,
+    } = EngineConfig,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     mod: ModConfig = projectConfig.mod ?? {},

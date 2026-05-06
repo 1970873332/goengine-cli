@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/esbuild";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { BuildOptions, buildSync } from "esbuild";
 import { join } from "path";
 import { normalPath } from "../utils/obtain/Dir";
@@ -15,7 +15,7 @@ const {
             input: { main: main_input, preload: preload_input },
             out: { main: main_out, preload: preload_out },
         },
-    } = userData,
+    } = EngineConfig,
     buildOptions = (
         entry: string,
         output: string,

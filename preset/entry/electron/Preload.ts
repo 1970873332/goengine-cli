@@ -1,8 +1,7 @@
 import { BaseExpose } from "@electron/preload/expose/Base";
 import { contextBridge } from "electron";
 
-const
-    name: string = "GoEngine",
+const name: string = "GoEngine",
     preload = BaseExpose.obtainInstance();
 
 if (!process.contextIsolated) Object.assign(window, { [name]: preload });

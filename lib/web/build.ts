@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/webpack";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import webpack, { Configuration } from "webpack";
 import { webpackBuildCallback } from "../utils/Callback";
 import { selectTarget } from "../utils/Select";
@@ -12,7 +12,7 @@ process.on(
 
 const {
         app: { web },
-    } = userData,
+    } = EngineConfig,
     [filePath]: string[] = await selectTarget(web, "Main"),
     projectConfig = await obtainProjectConfig(filePath),
     config: Configuration = {

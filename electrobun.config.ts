@@ -1,10 +1,10 @@
 import type { ElectrobunConfig } from "electrobun";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 
 const {
     lication: { name, version, id: identifier },
     electrobun: { input },
-} = userData;
+} = EngineConfig;
 
 export default {
     app: {

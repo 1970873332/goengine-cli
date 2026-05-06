@@ -1,9 +1,11 @@
 import { copy } from "@/lib/utils/FS";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { join } from "path";
 import { defineConfig } from "tsup";
 
-const { out } = userData;
+const {
+    tsup: { out },
+} = EngineConfig;
 
 export default defineConfig([
     {

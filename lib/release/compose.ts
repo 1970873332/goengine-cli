@@ -1,5 +1,6 @@
-import { userData, version } from "package.json";
+import EngineConfig from "engine.config.json";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "fs";
+import { version } from "package.json";
 import { join } from "path";
 import { copy } from "../utils/FS";
 import { normalPath } from "../utils/obtain/Dir";
@@ -12,7 +13,7 @@ process.on(
 const {
         app: { web, service },
         release: { compose },
-    } = userData,
+    } = EngineConfig,
     outPath: string = normalPath(join(compose, `v${version}`)),
     gitignore = readFileSync(normalPath(".gitignore"), "utf-8"),
     exclude: Set<string> = new Set([
@@ -24,6 +25,7 @@ const {
         ".git",
         ".vscode",
         "public",
+        "angular",
         web,
         service,
     ]),
@@ -37,7 +39,7 @@ existsSync(outPath) && rmSync(outPath, { recursive: true, force: true });
 
 /* 拷贝文件 */
 for (const dir of dirs) {
-    if (exclude.has(dir)) continue;
+    if (exclude.values().find((item) => dir.includes(item))) continue;
 
     const sourcePath: string = normalPath(dir),
         targetPath: string = normalPath(outPath);

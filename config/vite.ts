@@ -1,8 +1,8 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { userData } from "package.json";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
+import EngineConfig from "engine.config.json";
 import { existsSync, mkdirSync } from "fs";
 import { relative, resolve } from "path";
 import { defineConfig, UserConfig } from "vite";
@@ -12,7 +12,7 @@ import { alias, chii, defaultAgreement, define, extensions } from "./module";
 const {
         title,
         web: { build },
-    } = userData,
+    } = EngineConfig,
     outDir: string = normalPath(`${build} ${Date.now()}`);
 
 export function createConfig(

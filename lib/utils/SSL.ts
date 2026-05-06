@@ -1,4 +1,4 @@
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";
@@ -11,7 +11,7 @@ export class SSLUtils {
     /**
      * 证书存放目录
      */
-    private static readonly dir: string = userData.ssl.static;
+    private static readonly dir: string = EngineConfig.ssl.static;
     /**
      * 证书存放路径
      */

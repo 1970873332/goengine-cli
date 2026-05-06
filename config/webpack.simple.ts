@@ -1,5 +1,5 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { resolve } from "path";
 import { Configuration } from "webpack";
 import { alias, extensions } from "./module";
@@ -7,7 +7,7 @@ import { useBabelLoader, useTSLoader } from "./webpack";
 
 const {
     web: { build },
-} = userData;
+} = EngineConfig;
 
 export const Config: Configuration = {
     stats: "errors-only",

@@ -1,5 +1,5 @@
-import { userData } from "package.json";
 import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
+import EngineConfig from "engine.config.json";
 
 process.on(
     "uncaughtException",
@@ -22,7 +22,7 @@ try {
     try {
         const {
             electron: { mirror },
-        } = userData;
+        } = EngineConfig;
 
         console.log("⬇️ 安装 pnpm...");
         execSync(

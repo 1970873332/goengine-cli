@@ -1,7 +1,7 @@
 import { createConfig } from "@/config/out.electron";
-import { userData } from "package.json";
 import { devDependencies } from "@electron/../package.json";
 import { Configuration, build as electronBuild } from "electron-builder";
+import EngineConfig from "engine.config.json";
 import { join } from "path";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";
@@ -17,7 +17,7 @@ const {
             build,
             out: { main },
         },
-    } = userData,
+    } = EngineConfig,
     [_, path] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     { electron: electronVersion } = devDependencies,

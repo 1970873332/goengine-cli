@@ -16,64 +16,6 @@
         "npm": ">=11.0.0",
         "bun": ">=1.3.0"
     },
-    "userData": {
-        "title": "Welcome to GoEngine",
-        "tsconfig": {
-            "index": "tsconfig.json",
-            "angular": ".angular/tsconfig.angular.json"
-        },
-        "out": "dist/out",
-        "lication": {
-            "name": "GoEngine",
-            "version": "0.1.0",
-            "id": "com.goengine.app"
-        },
-        "app": {
-            "web": "webs",
-            "service": "services"
-        },
-        "ssl": {
-            "name": "local",
-            "static": ".cache/ssl"
-        },
-        "release": {
-            "compose": "dist/compose"
-        },
-        "html": {
-            "webpack": "preset/entry/webpack.html",
-            "angular": "preset/entry/angular.html"
-        },
-        "web": {
-            "build": "build/web"
-        },
-        "service": {
-            "build": "build/service",
-            "out": "index.js"
-        },
-        "electron": {
-            "dist": "dist/electron",
-            "build": "build/electron",
-            "input": {
-                "main": "preset/entry/electron/Index.ts",
-                "preload": "preset/entry/electron/Preload.ts"
-            },
-            "out": {
-                "main": "index.js",
-                "preload": "preload.cjs"
-            },
-            "dev": {
-                "index": {
-                    "agreement": "http",
-                    "host": "localhost",
-                    "port": 5173
-                }
-            },
-            "mirror": "https://npmmirror.com/mirrors/electron/"
-        },
-        "electrobun": {
-            "input": "preset/entry/electrobun/Index.ts"
-        }
-    },
     "scripts": {
         "ncu": "ncu -u",
         "test": "vue-tsc --noEmit",

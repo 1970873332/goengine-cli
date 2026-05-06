@@ -1,7 +1,7 @@
 import { createConfig } from "@/config/vite";
 import { obtainProjectConfig } from "@/lib/utils/obtain/File";
 import { selectTarget } from "@/lib/utils/Select";
-import { userData } from "package.json";
+import EngineConfig from "engine.config.json";
 import { build, UserConfig } from "vite";
 
 process.on(
@@ -11,7 +11,7 @@ process.on(
 
 const {
         app: { web },
-    } = userData,
+    } = EngineConfig,
     [filePath, path]: string[] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     config: UserConfig = {

@@ -1,12 +1,16 @@
-import { userData } from "package.json";
 import { Configuration } from "electron-builder";
+import EngineConfig from "engine.config.json";
 import { join } from "path";
 
 const {
     lication: { name: appName, version: appVersion, id: appID },
     web: { build: webBuild },
-    electron: { dist, mirror, build: electronBuild },
-} = userData;
+    electron: {
+        out: { dir },
+        mirror,
+        build: electronBuild,
+    },
+} = EngineConfig;
 
 export function createConfig({
     name = appName,
@@ -24,7 +28,7 @@ export function createConfig({
             mirror,
         },
         directories: {
-            output: `${dist} ${Date.now()}`,
+            output: `${dir} ${Date.now()}`,
         },
         files: [
             "!node_modules",
@@ -42,11 +46,18 @@ export function createConfig({
             icon: join(webBuild, "favicon.ico"),
         },
         nsis: {
+            // 一键安装
             oneClick: false,
+            // 修改安装目录
             allowToChangeInstallationDirectory: true,
+            // 创建到桌面
             createDesktopShortcut: true,
+            // 创建到开始菜单
             createStartMenuShortcut: false,
-            perMachine: false,
+            // 为每台机器安装
+            perMachine: true,
+            // 提升权限
+            allowElevation: true
         },
     };
 }
