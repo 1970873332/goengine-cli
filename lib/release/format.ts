@@ -13,7 +13,14 @@ process.on(
 /**
  * 需要排除的目录列表
  */
-const EXCLUDED_DIRS = ["node_modules", ".git", "public", "build", "dist", "out"];
+const EXCLUDED_DIRS = [
+    "node_modules",
+    ".git",
+    "public",
+    "build",
+    "dist",
+    "out",
+];
 
 /**
  * 获取指定目录下的所有子目录（排除指定目录）
@@ -41,13 +48,19 @@ function getSubDirectories(dir: string): string[] {
 /**
  * 格式化单个目录
  */
-function formatDirectory(dirPath: string, index: number, total: number): Promise<void> {
+function formatDirectory(
+    dirPath: string,
+    index: number,
+    total: number,
+): Promise<void> {
     return new Promise((resolve, reject) => {
         const dirName = dirPath.split("/").pop() || dirPath;
         console.log(`\n📦 [${index + 1}/${total}] 格式化: ${dirName}`);
 
         // 排除 node_modules、public、build、dist 等目录，以及 _packed.tsx 文件
-        const excludePatterns = EXCLUDED_DIRS.map(dir => `"!**/${dir}/**"`).join(" ");
+        const excludePatterns = EXCLUDED_DIRS.map(
+            (dir) => `"!**/${dir}/**"`,
+        ).join(" ");
         const pattern = `"**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}" ${excludePatterns} "!**/*_packed.tsx"`;
 
         const prettier = spawn("npx", ["prettier", "--write", pattern], {
@@ -61,13 +74,17 @@ function formatDirectory(dirPath: string, index: number, total: number): Promise
                 console.log(`✅ [${index + 1}/${total}] ${dirName} 完成`);
                 resolve();
             } else {
-                console.log(`❌ [${index + 1}/${total}] ${dirName} 失败 (退出码: ${code})`);
+                console.log(
+                    `❌ [${index + 1}/${total}] ${dirName} 失败 (退出码: ${code})`,
+                );
                 reject(new Error(`格式化 ${dirName} 失败`));
             }
         });
 
         prettier.on("error", (err) => {
-            console.log(`❌ [${index + 1}/${total}] ${dirName} 启动失败: ${err.message}`);
+            console.log(
+                `❌ [${index + 1}/${total}] ${dirName} 启动失败: ${err.message}`,
+            );
             reject(err);
         });
     });
@@ -113,7 +130,9 @@ const program = new Command();
 
 program
     .name("format:dir")
-    .description("格式化指定目录下所有子目录的源代码（自动排除 node_modules、public、build、dist 等）")
+    .description(
+        "格式化指定目录下所有子目录的源代码（自动排除 node_modules、public、build、dist 等）",
+    )
     .argument("<directory>", "要扫描的目录路径")
     .option("--dry-run", "仅显示将要格式化的目录，不实际执行")
     .parse(process.argv);
@@ -139,7 +158,9 @@ async function main(): Promise<void> {
     }
 
     if (options.dryRun) {
-        console.log(`\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`);
+        console.log(
+            `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`,
+        );
         return;
     }
 

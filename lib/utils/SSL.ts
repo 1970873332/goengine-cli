@@ -1,4 +1,4 @@
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";

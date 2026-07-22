@@ -3,7 +3,7 @@ import { SSLUtils } from "@/lib/utils/SSL";
 import { select } from "@inquirer/prompts";
 import { execSync } from "child_process";
 import { Command } from "commander";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 
 process.on(
     "uncaughtException",

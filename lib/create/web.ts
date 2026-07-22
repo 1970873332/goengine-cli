@@ -1,5 +1,5 @@
 import { input, select } from "@inquirer/prompts";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { access, readdir } from "fs/promises";
 import { join } from "path";
 import { copy } from "../utils/FS";

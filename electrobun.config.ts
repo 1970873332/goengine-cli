@@ -1,5 +1,5 @@
 import type { ElectrobunConfig } from "electrobun";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 
 const {
     lication: { name, version, id: identifier },

@@ -1,5 +1,5 @@
 import { copy } from "@/lib/utils/FS";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { join } from "path";
 import { defineConfig } from "tsup";
 

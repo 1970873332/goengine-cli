@@ -1,6 +1,6 @@
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
-import { version } from "package.json";
+import { version } from "@/package.json";
 import { copy } from "../utils/FS";
 import { normalPath } from "../utils/obtain/Dir";
 

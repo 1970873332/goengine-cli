@@ -1,7 +1,7 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import TailwindPostCSS from "@tailwindcss/postcss";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync } from "fs";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";

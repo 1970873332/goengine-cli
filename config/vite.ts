@@ -2,7 +2,7 @@ import { normalPath } from "@/lib/utils/obtain/Dir";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync } from "fs";
 import { relative, resolve } from "path";
 import { defineConfig, UserConfig } from "vite";

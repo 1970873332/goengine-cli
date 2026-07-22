@@ -1,5 +1,5 @@
 import { Configuration } from "electron-builder";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { join } from "path";
 
 const {

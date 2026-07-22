@@ -1,6 +1,6 @@
 import { useAGREEMENT, useBun, useHOST, usePORT } from "@/config/module";
 import { execSync } from "child_process";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { resolve } from "path";
 
 process.on(

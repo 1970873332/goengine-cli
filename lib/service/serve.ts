@@ -1,6 +1,6 @@
 import { defaultAgreement, useAGREEMENT, useNODE_ENV } from "@/config/module";
 import { execSync } from "child_process";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";
 

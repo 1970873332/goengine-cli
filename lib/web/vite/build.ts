@@ -1,7 +1,7 @@
 import { createConfig } from "@/config/vite";
 import { obtainProjectConfig } from "@/lib/utils/obtain/File";
 import { selectTarget } from "@/lib/utils/Select";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { build, UserConfig } from "vite";
 
 process.on(

@@ -1,5 +1,5 @@
 import { createConfig } from "@/config/esbuild";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { BuildOptions, buildSync } from "esbuild";
 import { join } from "path";
 import { normalPath } from "../utils/obtain/Dir";

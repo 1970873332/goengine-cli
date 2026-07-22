@@ -1,5 +1,5 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { resolve } from "path";
 import { Configuration } from "webpack";
 import { alias, extensions } from "./module";

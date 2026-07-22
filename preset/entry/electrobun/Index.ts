@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electrobun/bun";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 
 console.error("Electrobun遗留问题：");
 console.error("热更新进程占用 ❌");

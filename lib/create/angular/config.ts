@@ -1,6 +1,6 @@
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import { selectTarget } from "@/lib/utils/Select";
-import EngineConfig from "engine.config.json";
+import EngineConfig from "@/engine.config.json";
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname, join, relative } from "path";
 
