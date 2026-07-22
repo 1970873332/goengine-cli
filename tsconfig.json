@@ -15,31 +15,60 @@
         "forceConsistentCasingInFileNames": true,
         "jsx": "preserve",
         "baseUrl": ".",
+        "ignoreDeprecations": "6.0",
         "outDir": "dist",
         "composite": true,
         "declaration": true,
         "declarationDir": "dist/types",
         "paths": {
-            "@r/vue/*": ["package/vue/src/*"],
-            "@r/react/*": ["package/react/src/*"],
-            "@r/angular/*": ["package/angular/src/*"],
-            "@r/core/*": ["package/core/src/*"],
-            "@r/web/*": ["package/web/src/*"],
-            "@r/webgl/*": ["package/webgl/src/*"],
-            "@r/canvas/*": ["package/canvas/src/*"],
-            "@r/service/*": ["package/service/src/*"],
-            "@r/electron/*": ["package/electron/src/*"],
-            "@r/electrobun/*": ["package/electrobun/src/*"],
-            "@/*": ["./*"],
-            "static/*": ["public/static/*"]
+            "@/*": [
+                "/*"
+            ],
+            "static/*": [
+                "public/static/*"
+            ],
+            "@r/core/*": [
+                "package/core/src/*"
+            ],
+            "@r/web/*": [
+                "package/web/src/*"
+            ],
+            "@r/service/*": [
+                "package/service/src/*"
+            ],
+            "@r/vue/*": [
+                "package/vue/src/*"
+            ],
+            "@r/react/*": [
+                "package/react/src/*"
+            ],
+            "@r/angular/*": [
+                "package/angular/src/*"
+            ],
+            "@r/webgl/*": [
+                "package/webgl/src/*"
+            ],
+            "@r/canvas/*": [
+                "package/canvas/src/*"
+            ],
+            "@r/electron/*": [
+                "package/electron/src/*"
+            ],
+            "@r/electrobun/*": [
+                "package/electrobun/src/*"
+            ],
         },
         "plugins": [
             {
                 "name": "typescript-plugin-css-modules"
             }
         ],
-        "types": ["node"],
-        "typeRoots": ["node_modules/@types"]
+        "types": [
+            "node"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ]
     },
     "include": [
         "**/*.js",
@@ -49,5 +78,10 @@
         "**/*.vue",
         "**/*.json"
     ],
-    "exclude": ["dist", "build", "public", "node_modules"]
+    "exclude": [
+        "dist",
+        "build",
+        "public",
+        "node_modules"
+    ]
 }

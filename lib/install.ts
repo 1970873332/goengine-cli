@@ -20,13 +20,9 @@ try {
     });
 } catch (event: unknown) {
     try {
-        const {
-            electron: { mirror },
-        } = EngineConfig;
-
         console.log("⬇️ 安装 pnpm...");
         execSync(
-            `npm install -g pnpm && pnpm config set ELECTRON_MIRROR ${mirror}`,
+            "npm install -g pnpm",
             execConfig,
         );
     } catch (event: unknown) {
@@ -36,4 +32,5 @@ try {
 
 console.log("⬇️ 安装项目依赖...");
 process.env.NODE_USE_SYSTEM_CA = "1";
+process.env.ELECTRON_MIRROR = EngineConfig.electron.mirror;
 execSync("pnpm install --shamefully-hoist", execConfig);
