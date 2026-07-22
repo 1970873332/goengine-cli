@@ -1,4 +1,4 @@
-import RouteConfig, { RouteObject } from "@vuee/router/Config";
+import RouteConfig, { RouteObject } from "@r/vue/router/Config";
 import Hello from "../views/Hello.vue";
 
 export default abstract class Route extends RouteConfig {

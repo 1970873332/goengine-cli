@@ -11,11 +11,11 @@ export class SSLUtils {
     /**
      * 证书存放目录
      */
-    private static readonly dir: string = EngineConfig.ssl.static;
+    protected static readonly dir: string = EngineConfig.ssl.static;
     /**
      * 证书存放路径
      */
-    private static readonly url: string = normalPath(this.dir);
+    protected static readonly url: string = normalPath(this.dir);
 
     /**
      * 获取证书文件路径

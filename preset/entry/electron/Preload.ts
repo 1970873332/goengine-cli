@@ -1,4 +1,4 @@
-import { BaseExpose } from "@electron/preload/expose/Base";
+import { BaseExpose } from "@r/electron/preload/expose/Base";
 import { contextBridge } from "electron";
 
 const name: string = "GoEngine",

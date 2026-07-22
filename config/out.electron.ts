@@ -57,7 +57,7 @@ export function createConfig({
             // 为每台机器安装
             perMachine: true,
             // 提升权限
-            allowElevation: true
+            allowElevation: true,
         },
     };
 }

@@ -21,9 +21,9 @@ global {
         | Set<StructuredCloneable>;
 
     /**
-     * 可变
+     * 迭代
      */
-    type Mutable<T> = { -readonly [P in keyof T]: T[P] };
+    type Iteration = string | number | symbol;
 
     /**
      * 推断
@@ -42,7 +42,9 @@ global {
         /**
          * 函数返回值
          */
-        type resolveFunc<T> = T | ((...args: unknown[]) => T);
+        type resolveFunc<T, A extends unknown[] = unknown[]> =
+            | T
+            | ((...args: A) => T);
     }
 
     /**
@@ -66,7 +68,7 @@ global {
         /**
          * 记录回调
          */
-        type RecordCallBack<T, B = void> = (nv: T, ov: T | undefined) => B;
+        type RecordCallBack<T, B = void> = (nv: T, ov?: T) => B;
     }
 
     /**
@@ -74,13 +76,19 @@ global {
      */
     namespace Extract {
         /**
-         * 提取属性
+         * 属性
          */
-        type ExtractProperty<
+        type Property<
             T extends Record<any, unknown>,
             P extends keyof T[keyof T],
         > = {
             [K in keyof T]?: T[K] extends Record<P, infer U> ? U : never;
+        };
+        /**
+         * 所有属性
+         */
+        type Properties<T> = {
+            [K in keyof T as T[K] extends Function ? never : K]: T[K];
         };
     }
 
@@ -98,9 +106,7 @@ global {
     /**
      * 实例
      */
-    type Instance<T> = T extends abstract new (...args: any) => infer R
-        ? R
-        : never;
+    type Instance<T> = new (...args: any[]) => T;
 }
 
 export {};

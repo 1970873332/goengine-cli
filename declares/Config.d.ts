@@ -1,6 +1,6 @@
 import { Configuration } from "webpack-dev-server";
 
-declare global {
+global {
     /**
      * 项目
      */
@@ -8,7 +8,7 @@ declare global {
         /**
          * 包
          */
-        package?: Partial<Record<Modules, PackageConfig>>;
+        package?: Partial<Record<Packages, PackageConfig>>;
         /**
          * 模块
          */
@@ -82,7 +82,10 @@ declare global {
         proxy?: Configuration["proxy"];
     }
 
-    type Modules = "electron";
+    /**
+     * 包
+     */
+    type Packages = "electron";
 }
 
 export {};

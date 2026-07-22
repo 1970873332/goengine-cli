@@ -1,7 +1,6 @@
 import EngineConfig from "engine.config.json";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "fs";
 import { version } from "package.json";
-import { join } from "path";
 import { copy } from "../utils/FS";
 import { normalPath } from "../utils/obtain/Dir";
 
@@ -11,21 +10,20 @@ process.on(
 );
 
 const {
-        app: { web, service },
-        release: { compose },
-    } = EngineConfig,
-    outPath: string = normalPath(join(compose, `v${version}`)),
+    app: { web, service },
+    release: { compose },
+} = EngineConfig,
+    outPath: string = `${compose}_v${version}`,
     gitignore = readFileSync(normalPath(".gitignore"), "utf-8"),
-    exclude: Set<string> = new Set([
+    exclude = new Set<string>([
         ...gitignore
             .split("\n")
             .filter((item) => item && !item.startsWith("#"))
             .map((item) => item.trim().replace("**/", ""))
-            .filter((item) => item),
+            .filter(Boolean),
         ".git",
-        ".vscode",
-        "public",
         "angular",
+        "public",
         web,
         service,
     ]),
@@ -39,7 +37,7 @@ existsSync(outPath) && rmSync(outPath, { recursive: true, force: true });
 
 /* 拷贝文件 */
 for (const dir of dirs) {
-    if (exclude.values().find((item) => dir.includes(item))) continue;
+    if (exclude.has(dir)) continue;
 
     const sourcePath: string = normalPath(dir),
         targetPath: string = normalPath(outPath);
@@ -48,4 +46,8 @@ for (const dir of dirs) {
         /* 跳过 */
         if (path.includes("node_modules")) throw void 0;
     });
+
+    console.log(`✅ 已拷贝: ${dir}`);
 }
+
+console.log(`🎉 已拷贝到: ${outPath}`);

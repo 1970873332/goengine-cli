@@ -1,23 +1,23 @@
-import { AppUtils } from "@electron/ipc/utils/App";
-import { BrowserUtils } from "@electron/ipc/utils/Browser";
-import { FileUtils } from "@electron/ipc/utils/File";
-import { FileDialogUtils } from "@electron/ipc/utils/FileDialog";
-import { SessionUtils } from "@electron/ipc/utils/Session";
-import { ShellUtils } from "@electron/ipc/utils/Shell";
-import { WebViewUtils } from "@electron/ipc/utils/WebView";
-import { WindowUtils } from "@electron/ipc/utils/Window";
-import Register from "@electron/scripts/Register";
-import Global from "@electron/stores/Global";
+import { AppIPC } from "@r/electron/ipc/util/App";
+import { BrowserIPC } from "@r/electron/ipc/util/Browser";
+import { FileIPC } from "@r/electron/ipc/util/File";
+import { FileDialogIPC } from "@r/electron/ipc/util/FileDialog";
+import { SessionIPC } from "@r/electron/ipc/util/Session";
+import { ShellIPC } from "@r/electron/ipc/util/Shell";
+import { WebViewIPC } from "@r/electron/ipc/util/WebView";
+import { WindowIPC } from "@r/electron/ipc/util/Window";
+import Register from "@r/electron/script/Register";
+import Global from "@r/electron/store/Global";
 
 Register.initial([
-    AppUtils,
-    FileDialogUtils,
-    FileUtils,
-    WebViewUtils,
-    WindowUtils,
-    BrowserUtils,
-    SessionUtils,
-    ShellUtils,
+    AppIPC,
+    FileDialogIPC,
+    FileIPC,
+    WebViewIPC,
+    WindowIPC,
+    BrowserIPC,
+    SessionIPC,
+    ShellIPC,
 ]);
 
 Register.register(Global.uri).then((id) => {

@@ -1,4 +1,4 @@
-import type { PreloadClass } from "@electron/preload/Index";
+import type { PreloadClass } from "@r/electron/preload/Index";
 
 declare global {
     /**
@@ -8,7 +8,7 @@ declare global {
     /**
      * 设备状态
      */
-    var DeviceState: Record<any, boolean> | undefined;
+    var DeviceState: Partial<Record<keyof Device, boolean>> | undefined;
     /**
      * 环境
      */
@@ -39,6 +39,61 @@ declare global {
             targetOrigin?: string,
             transfer?: Transferable[],
         ): void;
+    }
+
+    /**
+     * 文档
+     */
+    interface Document {
+        readonly webkitFullscreenElement?: Element;
+        readonly mozFullScreenElement?: Element;
+        readonly msFullscreenElement?: Element;
+        webkitExitFullscreen?(): Promise<void>;
+        mozCancelFullScreen?(): Promise<void>;
+        msExitFullscreen?(): Promise<void>;
+    }
+
+    /**
+     * HTML文档
+     */
+    interface HTMLElement {
+        webkitRequestFullscreen?(): Promise<void>;
+        mozRequestFullScreen?(): Promise<void>;
+        msRequestFullscreen?(): Promise<void>;
+    }
+
+    /**
+     * 设备状态
+     */
+    interface Device {
+        /**
+         * 是否桌面端
+         */
+        desktop: boolean;
+        /**
+         * 是否移动端
+         */
+        mobile: boolean;
+        /**
+         * 是否Pad端
+         */
+        pad: boolean;
+        /**
+         * 是否IOS设备
+         */
+        ios: boolean;
+        /**
+         * 是否安卓设备
+         */
+        android: boolean;
+        /**
+         * 是否微信环境
+         */
+        wechat: boolean;
+        /**
+         * 是否横屏
+         */
+        landscape: boolean;
     }
 }
 

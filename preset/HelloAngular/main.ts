@@ -1,5 +1,5 @@
 import { bootstrapApplication } from "@angular/platform-browser";
-import { router } from "@angularr/router/Router";
+import { router } from "@r/angular/router/Router";
 import AppComponent from "./app.component";
 import Route from "./router/Index";
 

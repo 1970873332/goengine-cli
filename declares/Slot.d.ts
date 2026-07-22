@@ -1,4 +1,4 @@
-declare global {
+global {
     /**
      * 插槽
      */

@@ -1,6 +1,6 @@
-import { DocumentUtils } from "@core/util/Document";
-import RouterComponent from "@react/router/Router";
-import "@web/css/index.css";
+import { DocumentUtils } from "@/package/core/temporary/util/Document";
+import RouterComponent from "@r/react/router/Router";
+import "@r/web/css/index.css";
 import { createElement, ReactElement } from "react";
 import { createRoot, Root } from "react-dom/client";
 import Config from "./router/Index";

@@ -20,18 +20,18 @@
         "declaration": true,
         "declarationDir": "dist/types",
         "paths": {
-            "@vuee/*": ["package/vue/src/*"],
-            "@react/*": ["package/react/src/*"],
-            "@angularr/*": ["package/angular/src/*"],
-            "@core/*": ["package/core/src/*"],
-            "@web/*": ["package/web/src/*"],
-            "@webgl/*": ["package/webgl/src/*"],
-            "@canvas/*": ["package/canvas/src/*"],
-            "@service/*": ["package/service/src/*"],
-            "@electron/*": ["package/electron/src/*"],
-            "@electrobun": ["package/electrobun/src/*"],
-            "static/*": ["public/static/*"],
-            "@/*": ["./*"]
+            "@r/vue/*": ["package/vue/src/*"],
+            "@r/react/*": ["package/react/src/*"],
+            "@r/angular/*": ["package/angular/src/*"],
+            "@r/core/*": ["package/core/src/*"],
+            "@r/web/*": ["package/web/src/*"],
+            "@r/webgl/*": ["package/webgl/src/*"],
+            "@r/canvas/*": ["package/canvas/src/*"],
+            "@r/service/*": ["package/service/src/*"],
+            "@r/electron/*": ["package/electron/src/*"],
+            "@r/electrobun/*": ["package/electrobun/src/*"],
+            "@/*": ["./*"],
+            "static/*": ["public/static/*"]
         },
         "plugins": [
             {
