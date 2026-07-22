@@ -32,6 +32,7 @@
         "clean:modules": "tsx lib/clean/modules.ts",
         "create:web": "tsx lib/create/web.ts",
         "install:all": "npx tsx lib/install.ts",
+        "clone:package": "npx tsx lib/git/clone/package.ts",
         "chii:serve": "tsx lib/debug/chii/serve.ts -p 3000",
         "preng:serve": "tsx lib/create/angular/config.ts",
         "preng:build": "tsx lib/create/angular/config.ts",
