@@ -1,6 +1,6 @@
 import { useAGREEMENT, useBun, useHOST, usePORT } from "@/config/module";
-import { execSync } from "child_process";
 import EngineConfig from "@/engine.config.json";
+import { spawnSync } from "child_process";
 import { resolve } from "path";
 
 process.on(
@@ -24,11 +24,12 @@ const USE_AGREEMENT: string = useAGREEMENT(agreement as ModConfig["agreement"]),
     USE_HOST: string = useHOST(host),
     USE_PORT: string = usePORT(port),
     common: string = `cross-env ${USE_AGREEMENT} ${USE_HOST} ${USE_PORT} electron ${resolve(build, main)}`,
-    ub: string = useBun();
+    bunCmd: string = useBun();
 
 console.log("🚀 正在启动 Electron...", common);
-execSync((ub ? `${useBun()} "${common}"` : common).trim(), {
+spawnSync(bunCmd || "npx", [common], {
     stdio: "inherit",
     encoding: "utf-8",
     cwd: process.cwd(),
+    shell: true,
 });
