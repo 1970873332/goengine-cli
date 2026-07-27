@@ -1,7 +1,7 @@
 import { createConfig } from "@/config/out.electron";
-import { devDependencies } from "@r/electron/../package.json";
-import { Configuration, build as electronBuild } from "electron-builder";
 import EngineConfig from "@/engine.config.json";
+import { devDependencies } from "@/package/goengine-electron/package.json";
+import { Configuration, build as electronBuild } from "electron-builder";
 import { join } from "path";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";
@@ -12,12 +12,12 @@ process.on(
 );
 
 const {
-        app: { web },
-        electron: {
-            build,
-            out: { main },
-        },
-    } = EngineConfig,
+    app: { web },
+    electron: {
+        build,
+        out: { main },
+    },
+} = EngineConfig,
     [_, path] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     { electron: electronVersion } = devDependencies,
