@@ -8,6 +8,36 @@ importers:
 
   .:
     dependencies:
+      '@goengine/angular':
+        specifier: workspace:*
+        version: link:package/goengine-angular
+      '@goengine/canvas':
+        specifier: workspace:*
+        version: link:package/goengine-canvas
+      '@goengine/core':
+        specifier: workspace:*
+        version: link:package/goengine-core
+      '@goengine/electrobun':
+        specifier: workspace:*
+        version: link:package/goengine-electrobun
+      '@goengine/electron':
+        specifier: workspace:*
+        version: link:package/goengine-electron
+      '@goengine/react':
+        specifier: workspace:*
+        version: link:package/goengine-react
+      '@goengine/service':
+        specifier: workspace:*
+        version: link:package/goengine-service
+      '@goengine/vue':
+        specifier: workspace:*
+        version: link:package/goengine-vue
+      '@goengine/web':
+        specifier: workspace:*
+        version: link:package/goengine-web
+      '@goengine/webgl':
+        specifier: workspace:*
+        version: link:package/goengine-webgl
       '@inquirer/prompts':
         specifier: ^8.3.0
         version: 8.5.2(@types/node@24.13.3)

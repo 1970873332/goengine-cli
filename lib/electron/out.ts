@@ -1,6 +1,6 @@
 import { createConfig } from "@/config/out.electron";
 import EngineConfig from "@/engine.config.json";
-import { devDependencies } from "@/package/goengine-electron/package.json";
+import { devDependencies } from "@goengine/electron/package.json";
 import { Configuration, build as electronBuild } from "electron-builder";
 import { join } from "path";
 import { selectTarget } from "../utils/Select";

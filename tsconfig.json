@@ -24,36 +24,6 @@
             "static/*": [
                 "./public/static/*"
             ],
-            "@r/core/*": [
-                "./package/goengine-core/src/*"
-            ],
-            "@r/web/*": [
-                "./package/goengine-web/src/*"
-            ],
-            "@r/service/*": [
-                "./package/goengine-service/src/*"
-            ],
-            "@r/vue/*": [
-                "./package/goengine-vue/src/*"
-            ],
-            "@r/react/*": [
-                "./package/goengine-react/src/*"
-            ],
-            "@r/angular/*": [
-                "./package/goengine-angular/src/*"
-            ],
-            "@r/webgl/*": [
-                "./package/goengine-webgl/src/*"
-            ],
-            "@r/canvas/*": [
-                "./package/goengine-canvas/src/*"
-            ],
-            "@r/electron/*": [
-                "./package/goengine-electron/src/*"
-            ],
-            "@r/electrobun/*": [
-                "./package/goengine-electrobun/src/*"
-            ],
             "@/*": [
                 "./*"
             ]

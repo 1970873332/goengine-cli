@@ -1,4 +1,4 @@
-import RouteConfig, { RouteObject } from "@r/angular/router/Config";
+import RouteConfig, { RouteObject } from "@goengine/angular/src/router/Config";
 import HelloComponent from "../views/hello/index.component";
 
 export default abstract class Route extends RouteConfig {

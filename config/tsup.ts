@@ -9,7 +9,7 @@ const {
 
 export default defineConfig([
     {
-        entry: ["package/service/src/**/*.ts"],
+        entry: ["package/goengine-service/src/**/*.ts"],
         outDir: join(out, "service"),
         dts: false,
         clean: true,
@@ -20,7 +20,7 @@ export default defineConfig([
         target: "node16",
     },
     {
-        entry: ["package/web/src/**/*.{ts,tsx}"],
+        entry: ["package/goengine-web/src/**/*.{ts,tsx}"],
         outDir: join(out, "web"),
         dts: false,
         clean: true,
@@ -34,7 +34,7 @@ export default defineConfig([
                 name: "config-copy-plugin",
                 setup(build) {
                     build.onEnd(async () => {
-                        await copy("package/web/src/css", join(out, "web"));
+                        await copy("package/goengine-web/src/css", join(out, "web"));
                     });
                 },
             },
@@ -42,8 +42,8 @@ export default defineConfig([
     },
     {
         entry: [
-            "package/electron/src/**/*.ts",
-            "!package/electron/src/preload/**/*",
+            "package/goengine-electron/src/**/*.ts",
+            "!package/goengine-electron/src/preload/**/*",
         ],
         outDir: join(out, "electron"),
         dts: false,
@@ -55,7 +55,7 @@ export default defineConfig([
         target: "node16",
     },
     {
-        entry: ["package/electron/src/preload/**/*.ts"],
+        entry: ["package/goengine-electron/src/preload/**/*.ts"],
         outDir: join(out, "electron/preload"),
         dts: false,
         clean: true,

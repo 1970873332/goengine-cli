@@ -62,7 +62,7 @@ const angularTSConfig = {
                                     output: "/",
                                 },
                             ],
-                            styles: ["package/web/src/css/index.css"],
+                            styles: ["package/goengine-web/src/css/index.css"],
                         },
                     },
                     serve: {

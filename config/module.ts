@@ -1,22 +1,15 @@
 import { IPUtils } from "@/lib/utils/IP";
 import { normalPath } from "@/lib/utils/obtain/Dir";
 import { scripts } from "@/package.json";
-import { compilerOptions } from "@/tsconfig.json";
 
 const { "chii:serve": serveChii, ":run": run } = scripts;
 
 export const defaultAgreement: ModConfig["agreement"] = "http";
 
 export function alias(): Record<string, string> {
-    return Object.fromEntries(
-        Object.entries(compilerOptions.paths).map(([key, value]) => {
-            const reg: RegExp = /\/\*/;
-            return [
-                key.replace(reg, ""),
-                value.map((item) => normalPath(item.replace(reg, "")))[0],
-            ];
-        }),
-    );
+    return {
+        "@": normalPath(process.cwd()),
+    };
 }
 
 export function define(debug: boolean): Record<string, string> {

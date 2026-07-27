@@ -1,4 +1,4 @@
-import type { PreloadClass } from "@r/electron/preload/Index";
+import type { PreloadClass } from "@goengine/electron/preload/Index";
 
 declare global {
     /**

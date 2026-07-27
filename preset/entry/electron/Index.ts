@@ -1,13 +1,13 @@
-import { AppIPC } from "@r/electron/ipc/util/App";
-import { BrowserIPC } from "@r/electron/ipc/util/Browser";
-import { FileIPC } from "@r/electron/ipc/util/File";
-import { FileDialogIPC } from "@r/electron/ipc/util/FileDialog";
-import { SessionIPC } from "@r/electron/ipc/util/Session";
-import { ShellIPC } from "@r/electron/ipc/util/Shell";
-import { WebViewIPC } from "@r/electron/ipc/util/WebView";
-import { WindowIPC } from "@r/electron/ipc/util/Window";
-import Register from "@r/electron/script/Register";
-import Global from "@r/electron/store/Global";
+import { AppIPC } from "@goengine/electron/src/ipc/util/App";
+import { BrowserIPC } from "@goengine/electron/src/ipc/util/Browser";
+import { FileIPC } from "@goengine/electron/src/ipc/util/File";
+import { FileDialogIPC } from "@goengine/electron/src/ipc/util/FileDialog";
+import { SessionIPC } from "@goengine/electron/src/ipc/util/Session";
+import { ShellIPC } from "@goengine/electron/src/ipc/util/Shell";
+import { WebViewIPC } from "@goengine/electron/src/ipc/util/WebView";
+import { WindowIPC } from "@goengine/electron/src/ipc/util/Window";
+import Register from "@goengine/electron/src/script/Register";
+import Global from "@goengine/electron/src/store/Global";
 
 Register.initial([
     AppIPC,

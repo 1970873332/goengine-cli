@@ -1,6 +1,6 @@
-import { DocumentUtils } from "@/package/goengine-core/temporary/util/Document";
-import RouterComponent from "@r/react/router/Router";
-import "@r/web/css/index.css";
+import { DocumentUtils } from "@goengine/core/temporary/util/Document";
+import RouterComponent from "@goengine/react/src/router/Router";
+import "@goengine/web/src/css/index.css";
 import { createElement, ReactElement } from "react";
 import { createRoot, Root } from "react-dom/client";
 import Config from "./router/Index";

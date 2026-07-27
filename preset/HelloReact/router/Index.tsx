@@ -1,4 +1,4 @@
-import { RouteConfig, RouteObject } from "@r/react/router/Config";
+import { RouteConfig, RouteObject } from "@goengine/react/src/router/Config";
 import Hello from "../views/Hello";
 
 export default abstract class Route extends RouteConfig {

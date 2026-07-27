@@ -59,6 +59,16 @@
         ":clean": "bun lib/bun/clean.ts"
     },
     "dependencies": {
+        "@goengine/angular": "workspace:*",
+        "@goengine/canvas": "workspace:*",
+        "@goengine/core": "workspace:*",
+        "@goengine/electron": "workspace:*",
+        "@goengine/electrobun": "workspace:*",
+        "@goengine/react": "workspace:*",
+        "@goengine/service": "workspace:*",
+        "@goengine/vue": "workspace:*",
+        "@goengine/web": "workspace:*",
+        "@goengine/webgl": "workspace:*",
         "@inquirer/prompts": "^8.3.0",
         "chii": "^1.15.5",
         "commander": "^14.0.2",
