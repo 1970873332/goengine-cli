@@ -3,7 +3,7 @@ import type { Config } from "./type";
 export const config: Config = {
     targetDir: "package",
     goal: "https://github.com/1970873332/",
-    parallel: 3,
+    parallel: 1,
     repositories: [
         { url: "goengine-core.git" },
         { url: "goengine-web.git" },
