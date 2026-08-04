@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
 import { spawn } from "child_process";
+import { Command } from "commander";
 import { existsSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 
@@ -9,18 +9,6 @@ process.on(
     "uncaughtException",
     (event: unknown) => (console.log(event), process.exit(1)),
 );
-
-/**
- * 需要排除的目录列表
- */
-const EXCLUDED_DIRS = [
-    "node_modules",
-    ".git",
-    "public",
-    "build",
-    "dist",
-    "out",
-];
 
 /**
  * 获取指定目录下的所有子目录（排除指定目录）
@@ -120,10 +108,21 @@ async function runPrettier(paths: string[]): Promise<void> {
     }
     console.log(`${"=".repeat(50)}`);
 
-    if (failCount > 0) {
-        process.exit(1);
-    }
+    if (failCount > 0) throw void 0;
 }
+
+/**
+ * 需要排除的目录列表
+ */
+const EXCLUDED_DIRS = [
+    "node_modules",
+    ".angular",
+    ".git",
+    "public",
+    "build",
+    "dist",
+    "out",
+];
 
 // 命令行配置
 const program = new Command();
@@ -140,35 +139,25 @@ program
 const options = program.opts();
 const directory = program.args[0];
 
-// 主流程
-async function main(): Promise<void> {
-    console.log(`📂 扫描目录: ${directory}`);
+console.log(`📂 扫描目录: ${directory}`);
 
-    const subDirs = getSubDirectories(directory);
+const subDirs = getSubDirectories(directory);
 
-    if (subDirs.length === 0) {
-        console.log("⚠️  没有找到任何子目录");
-        return;
-    }
-
-    console.log(`📦 发现 ${subDirs.length} 个子目录:`);
-    for (const dirPath of subDirs) {
-        const dirName = dirPath.split("/").pop() || dirPath;
-        console.log(`  - ${dirName}`);
-    }
-
-    if (options.dryRun) {
-        console.log(
-            `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`,
-        );
-        return;
-    }
-
-    await runPrettier(subDirs);
-    console.log(`\n🎉 格式化完成！`);
+if (subDirs.length === 0) {
+    throw new Error("⚠️  没有找到任何子目录");
 }
 
-main().catch((error) => {
-    console.error("❌ 程序执行失败:", error);
-    process.exit(1);
-});
+console.log(`📦 发现 ${subDirs.length} 个子目录:`);
+for (const dirPath of subDirs) {
+    const dirName = dirPath.split("/").pop() || dirPath;
+    console.log(`  - ${dirName}`);
+}
+
+if (options.dryRun) {
+    throw new Error(
+        `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`,
+    );
+}
+
+await runPrettier(subDirs);
+console.log(`\n🎉 格式化完成！`);
