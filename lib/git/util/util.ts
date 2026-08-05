@@ -24,7 +24,9 @@ export function getRepoPath(repo: Repository): string {
 
 export function checkRepoExists(repo: Repository): boolean {
     const repoPath = getRepoPath(repo);
-    return fs.existsSync(repoPath) && fs.existsSync(path.join(repoPath, ".git"));
+    return (
+        fs.existsSync(repoPath) && fs.existsSync(path.join(repoPath, ".git"))
+    );
 }
 
 export function ensureTargetDir(): void {
@@ -58,7 +60,10 @@ export function buildGitUrl(url: string, goal?: string): string {
 export function execGitCommand(
     args: string[],
     cwd: string,
-    options: { stdio?: "inherit" | "pipe" | "ignore"; showProgress?: boolean } = {}
+    options: {
+        stdio?: "inherit" | "pipe" | "ignore";
+        showProgress?: boolean;
+    } = {},
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         const { stdio = "pipe", showProgress = false } = options;
@@ -73,20 +78,27 @@ export function execGitCommand(
         if (showProgress && stdio === "pipe") {
             gitProcess.stdout?.on("data", (data: Buffer) => {
                 const output = data.toString("utf-8"); // 明确指定编码
-                if (output.includes("Receiving objects") ||
+                if (
+                    output.includes("Receiving objects") ||
                     output.includes("Resolving deltas") ||
-                    output.includes("Checking connectivity")) {
+                    output.includes("Checking connectivity")
+                ) {
                     console.log(`   ${output.trim()}`);
                 }
             });
 
             gitProcess.stderr?.on("data", (data: Buffer) => {
                 const output = data.toString("utf-8");
-                if (output.includes("Receiving objects") ||
+                if (
+                    output.includes("Receiving objects") ||
                     output.includes("Resolving deltas") ||
-                    output.includes("Checking connectivity")) {
+                    output.includes("Checking connectivity")
+                ) {
                     console.log(`   ${output.trim()}`);
-                } else if (!output.includes("Cloning into") && !output.includes("Already up to date")) {
+                } else if (
+                    !output.includes("Cloning into") &&
+                    !output.includes("Already up to date")
+                ) {
                     console.error(`   ${output.trim()}`);
                 }
             });

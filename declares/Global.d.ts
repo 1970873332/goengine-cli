@@ -124,8 +124,7 @@ declare global {
          * 2D上下文
          */
         type Context2D =
-            | CanvasRenderingContext2D
-            | OffscreenCanvasRenderingContext2D;
+            CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
         /**
          * WebGL上下文
          */

@@ -22,7 +22,7 @@ function parseArgs(args: string[]): {
 
     const forcePush = options.includes("--force");
     const help = options.includes("--help");
-    const specificRepos = options.filter(opt => !opt.startsWith("-"));
+    const specificRepos = options.filter((opt) => !opt.startsWith("-"));
 
     return { command, forcePush, specificRepos, help };
 }
@@ -33,11 +33,12 @@ function getReposToProcess(specificNames: string[]): Repository[] {
     }
 
     return specificNames
-        .map(name => {
-            return config.repositories.find(r =>
-                r.url === name ||
-                r.url === `${name}.git` ||
-                r.url.replace(/\.git$/, "") === name
+        .map((name) => {
+            return config.repositories.find(
+                (r) =>
+                    r.url === name ||
+                    r.url === `${name}.git` ||
+                    r.url.replace(/\.git$/, "") === name,
             );
         })
         .filter((r): r is Repository => r !== void 0);
@@ -116,5 +117,7 @@ try {
             throw new Error(`❌ Unknown command: ${command}`);
     }
 } catch (error) {
-    throw new Error(`❌ Error: ${error instanceof Error ? error.message : error}`);
+    throw new Error(
+        `❌ Error: ${error instanceof Error ? error.message : error}`,
+    );
 }

@@ -23,10 +23,11 @@ if (existsSync(modules)) {
     directories.push(modules);
 }
 
-if (directories.length === 0) throw new Error("✅ 没有找到需要删除的 node_modules 目录");
+if (directories.length === 0)
+    throw new Error("✅ 没有找到需要删除的 node_modules 目录");
 
 console.log(`🗑️ 准备删除 ${directories.length} 个 node_modules 目录`);
-directories.forEach(dir => console.log(`  ${dir}`));
+directories.forEach((dir) => console.log(`  ${dir}`));
 
 const bunCmd: string = useBun();
 

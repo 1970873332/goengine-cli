@@ -5,10 +5,13 @@ import {
     execGitCommand,
     getCurrentBranch,
     getRepoName,
-    getRepoPath
+    getRepoPath,
 } from "../util/util";
 
-export async function pushRepo(repo: Repository, force: boolean = false): Promise<void> {
+export async function pushRepo(
+    repo: Repository,
+    force: boolean = false,
+): Promise<void> {
     const repoPath = getRepoPath(repo);
 
     if (!checkRepoExists(repo)) {
@@ -29,17 +32,19 @@ export async function pushRepo(repo: Repository, force: boolean = false): Promis
 export async function pushAll(
     repos: Repository[],
     concurrency: number,
-    force: boolean = false
+    force: boolean = false,
 ): Promise<void> {
     const { results, items } = await runWithConcurrency(
         repos,
         (repo) => pushRepo(repo, force),
-        concurrency
+        concurrency,
     );
 
     const stats = formatResults(results, items, (r) => getRepoName(r.url));
 
     console.log(`\n📊 Push Summary:`);
-    stats.details.forEach(line => console.log(line));
-    console.log(`\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`);
+    stats.details.forEach((line) => console.log(line));
+    console.log(
+        `\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`,
+    );
 }

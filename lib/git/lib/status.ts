@@ -3,7 +3,7 @@ import {
     checkRepoExists,
     execGitCommand,
     getRepoName,
-    getRepoPath
+    getRepoPath,
 } from "../util/util";
 import { formatResults, runWithConcurrency } from "../util/concurrency";
 
@@ -22,13 +22,19 @@ export async function statusRepo(repo: Repository): Promise<void> {
 
 export async function statusAll(
     repos: Repository[],
-    concurrency: number
+    concurrency: number,
 ): Promise<void> {
-    const { results, items } = await runWithConcurrency(repos, statusRepo, concurrency);
+    const { results, items } = await runWithConcurrency(
+        repos,
+        statusRepo,
+        concurrency,
+    );
 
     const stats = formatResults(results, items, (r) => getRepoName(r.url));
 
     console.log(`\n📊 Status Summary:`);
-    stats.details.forEach(line => console.log(line));
-    console.log(`\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`);
+    stats.details.forEach((line) => console.log(line));
+    console.log(
+        `\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`,
+    );
 }

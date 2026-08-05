@@ -4,7 +4,7 @@ import {
     checkRepoExists,
     execGitCommand,
     getRepoName,
-    getRepoPath
+    getRepoPath,
 } from "../util/util";
 
 export async function pullRepo(repo: Repository): Promise<void> {
@@ -26,13 +26,19 @@ export async function pullRepo(repo: Repository): Promise<void> {
 
 export async function pullAll(
     repos: Repository[],
-    concurrency: number
+    concurrency: number,
 ): Promise<void> {
-    const { results, items } = await runWithConcurrency(repos, pullRepo, concurrency);
+    const { results, items } = await runWithConcurrency(
+        repos,
+        pullRepo,
+        concurrency,
+    );
 
     const stats = formatResults(results, items, (r) => getRepoName(r.url));
 
     console.log(`\n📊 Pull Summary:`);
-    stats.details.forEach(line => console.log(line));
-    console.log(`\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`);
+    stats.details.forEach((line) => console.log(line));
+    console.log(
+        `\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`,
+    );
 }

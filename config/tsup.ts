@@ -34,7 +34,10 @@ export default defineConfig([
                 name: "config-copy-plugin",
                 setup(build) {
                     build.onEnd(async () => {
-                        await copy("package/goengine-web/src/css", join(out, "web"));
+                        await copy(
+                            "package/goengine-web/src/css",
+                            join(out, "web"),
+                        );
                     });
                 },
             },

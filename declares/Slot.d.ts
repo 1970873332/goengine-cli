@@ -21,9 +21,9 @@ global {
      * 提取插槽对象
      */
     type ExtractSlotTarget<T extends Record<any, Slot | SlotOnlyProps>> = {
-        [K in keyof T as "target" extends keyof T[K]
-            ? K
-            : never]?: T[K]["target"];
+        [
+            K in keyof T as "target" extends keyof T[K] ? K : never
+        ]?: T[K]["target"];
     };
 }
 

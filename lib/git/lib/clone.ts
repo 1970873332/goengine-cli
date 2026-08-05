@@ -5,7 +5,7 @@ import {
     buildGitUrl,
     ensureTargetDir,
     execGitCommand,
-    getRepoName
+    getRepoName,
 } from "../util/util";
 
 export async function cloneRepo(repo: Repository): Promise<void> {
@@ -23,19 +23,25 @@ export async function cloneRepo(repo: Repository): Promise<void> {
 
     await execGitCommand(args, targetDir, {
         stdio: "pipe",
-        showProgress: true
+        showProgress: true,
     });
 }
 
 export async function cloneAll(
     repos: Repository[],
-    concurrency: number
+    concurrency: number,
 ): Promise<void> {
-    const { results, items } = await runWithConcurrency(repos, cloneRepo, concurrency);
+    const { results, items } = await runWithConcurrency(
+        repos,
+        cloneRepo,
+        concurrency,
+    );
 
     const stats = formatResults(results, items, (r) => getRepoName(r.url));
 
     console.log(`\n📊 Clone Summary:`);
-    stats.details.forEach(line => console.log(line));
-    console.log(`\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`);
+    stats.details.forEach((line) => console.log(line));
+    console.log(
+        `\n📈 Total: ${stats.success} succeeded, ${stats.failed} failed`,
+    );
 }

@@ -12,12 +12,12 @@ process.on(
 );
 
 const {
-    app: { web },
-    electron: {
-        build,
-        out: { main },
-    },
-} = EngineConfig,
+        app: { web },
+        electron: {
+            build,
+            out: { main },
+        },
+    } = EngineConfig,
     [_, path] = await selectTarget(web, "Main"),
     projectConfig: Project = await obtainProjectConfig(path),
     { electron: electronVersion } = devDependencies,

@@ -1,7 +1,7 @@
 export async function runWithConcurrency<T>(
     items: T[],
     handler: (item: T) => Promise<void>,
-    concurrency: number
+    concurrency: number,
 ): Promise<{ results: PromiseSettledResult<void>[]; items: T[] }> {
     const results: PromiseSettledResult<void>[] = [];
     const executing: Promise<void>[] = [];
@@ -14,7 +14,7 @@ export async function runWithConcurrency<T>(
         const wrappedPromise = promise
             .then(
                 () => ({ status: "fulfilled" as const, value: undefined }),
-                (reason) => ({ status: "rejected" as const, reason })
+                (reason) => ({ status: "rejected" as const, reason }),
             )
             .then((result) => {
                 // 当这个 promise 完成时，从 executing 数组中移除
@@ -41,7 +41,7 @@ export async function runWithConcurrency<T>(
 export function formatResults<T>(
     results: PromiseSettledResult<void>[],
     items: T[],
-    getItemName: (item: T) => string
+    getItemName: (item: T) => string,
 ): { success: number; failed: number; details: string[] } {
     const details: string[] = [];
     let success = 0;

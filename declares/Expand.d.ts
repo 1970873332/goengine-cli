@@ -43,8 +43,7 @@ global {
          * 函数返回值
          */
         type resolveFunc<T, A extends unknown[] = unknown[]> =
-            | T
-            | ((...args: A) => T);
+            T | ((...args: A) => T);
     }
 
     /**
