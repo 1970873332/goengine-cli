@@ -42,6 +42,18 @@ export function createConfig(
             vue(),
             react(),
             tailwindcss(),
+            {
+                /*
+                 * 着色器文件以原始字符串导出（与 webpack 的 ts-shader-loader 行为一致），
+                 * 否则 Vite 会把 GLSL 当作 JS 模块解析（#version 会被识别为私有字段语法）。
+                 */
+                name: "goengine-shader-loader",
+                transform(code: string, id: string): string | void {
+                    if (/\.((gl|wg)sl|frag|vert)$/i.test(id.split("?")[0])) {
+                        return `export default ${JSON.stringify(code)};`;
+                    }
+                },
+            },
             createHtmlPlugin({
                 minify: true,
                 entry: relative(process.cwd(), entry),

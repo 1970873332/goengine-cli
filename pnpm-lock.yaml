@@ -411,6 +411,16 @@ importers:
         specifier: ^0.1.66
         version: 0.1.71
 
+  webs/webgl-example:
+    dependencies:
+      three:
+        specifier: ^0.181.2
+        version: 0.181.2
+    devDependencies:
+      '@types/three':
+        specifier: ^0.181.0
+        version: 0.181.0
+
 packages:
 
   '@adobe/css-tools@4.3.3':
