@@ -1,26 +1,26 @@
-import { defaultAgreement } from "@/config/module";
+import { defaultProtocol } from "@/config/module";
 import { createConfig } from "@/config/webpack";
 import EngineConfig from "@/engine.config.json";
 import webpack, { Configuration as WebPackConfiguration } from "webpack";
 import WebpackDevServer, { Configuration } from "webpack-dev-server";
-import { selectTarget } from "../utils/Select";
-import { obtainProjectConfig } from "../utils/obtain/File";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { selectEntryFile } from "../utils/select";
+import { obtainProjectConfig } from "../utils/obtain/file";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
 const {
         app: { web },
     } = EngineConfig,
-    [filePath, path]: string[] = await selectTarget(web, "Main"),
-    projectConfig: Project = await obtainProjectConfig(path),
+    { filePath, projectPath } = await selectEntryFile(web, "Main"),
+    projectConfig: Project = await obtainProjectConfig(projectPath),
     mod: ModConfig = projectConfig.mod ?? {},
-    { remarks, proxy, host, port, agreement = defaultAgreement } = mod,
+    { remarks, proxy, host, port, protocol = defaultProtocol } = mod,
     devServerOptions: Configuration = {
         host,
         port,
         proxy,
-        server: agreement,
+        server: protocol,
     },
     config: WebPackConfiguration = {
         ...createConfig(mod),

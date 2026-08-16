@@ -1,6 +1,6 @@
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
-import { normalPath } from "../obtain/Dir";
+import { resolvePath } from "../obtain/dir";
 
 /**
  * 验证文件
@@ -13,11 +13,15 @@ export async function validateFile(
     pattern: string,
 ): Promise<boolean> {
     try {
-        const resultPath: string = normalPath(path),
+        const resultPath: string = resolvePath(path),
             files: Dirent[] = await readdir(resultPath, {
                 withFileTypes: true,
             });
-        return files.some((item) => item.isFile() && item.name.match(pattern));
+        return files.some(
+            (item) =>
+                item.isFile() &&
+                item.name.match(new RegExp(pattern, "i")),
+        );
     } catch {
         return false;
     }

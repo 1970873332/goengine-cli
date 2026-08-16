@@ -1,29 +1,41 @@
-import { normalPath } from "@/lib/utils/obtain/Dir";
-import { selectTarget } from "@/lib/utils/Select";
+import { resolvePath } from "@/lib/utils/obtain/dir";
+import { selectEntryFile } from "@/lib/utils/select";
 import EngineConfig from "@/engine.config.json";
 import { mkdirSync, writeFileSync } from "fs";
+import { readdir } from "fs/promises";
 import { dirname, join, relative } from "path";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
-const json: string = "angular.json",
+const configFilename: string = "angular.json",
     dev: boolean = process.env.NODE_ENV === "development",
     {
         app: { web },
-        web: { build },
-        tsconfig: { index, angular },
+        web: { out },
+        tsconfig: { root, angular },
         html: { angular: angular_html },
     } = EngineConfig,
-    [filePath, path]: string[] = await selectTarget(web, "main"),
-    projectPath: string = relative(process.cwd(), path),
+    { filePath, projectPath: projectDir } = await selectEntryFile(
+        web,
+        "main",
+    );
+
+if (
+    !(await readdir(projectDir, { withFileTypes: true })).some(
+        (item) => item.isFile() && /^app\.component\./.test(item.name),
+    )
+)
+    throw new Error("❌ 所选项目不是 Angular 项目（根目录缺少 app.component 文件）");
+
+const projectPath: string = relative(process.cwd(), projectDir),
     project: string = relative(web, projectPath),
-    configPath: string = normalPath(json),
-    tsConfigPath: string = normalPath(angular),
+    configPath: string = resolvePath(configFilename),
+    tsConfigPath: string = resolvePath(angular),
     tsconfigDir: string = dirname(tsConfigPath);
 
 const angularTSConfig = {
-        extends: normalPath(index),
+        extends: resolvePath(root),
         compilerOptions: {
             declaration: false,
             declarationDir: null,
@@ -44,7 +56,7 @@ const angularTSConfig = {
                     build: {
                         builder: "@angular-devkit/build-angular:browser",
                         options: {
-                            outputPath: build,
+                            outputPath: out,
                             index: {
                                 input: angular_html,
                                 output: process.env.OUTPUT_HTML || "index.html",

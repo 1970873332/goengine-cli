@@ -18,7 +18,7 @@ export async function copy(
         targetPath: string = join(targetDir, name);
 
     try {
-        await intercept?.(path, targetDir);
+        await intercept?.(path, targetPath);
     } catch {
         return;
     }

@@ -15,5 +15,8 @@ allowBuilds:
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'
+  - electron
   - electron-winstaller
   - esbuild
+  - lmdb
+  - msgpackr-extract

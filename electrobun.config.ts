@@ -2,7 +2,7 @@ import type { ElectrobunConfig } from "electrobun";
 import EngineConfig from "@/engine.config.json";
 
 const {
-    lication: { name, version, id: identifier },
+    application: { name, version, id: identifier },
     electrobun: { input },
 } = EngineConfig;
 

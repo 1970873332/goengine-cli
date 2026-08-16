@@ -1,18 +1,18 @@
 import { createConfig } from "@/config/webpack";
 import EngineConfig from "@/engine.config.json";
 import webpack, { Configuration } from "webpack";
-import { webpackBuildCallback } from "../utils/Callback";
-import { selectTarget } from "../utils/Select";
-import { obtainProjectConfig } from "../utils/obtain/File";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { webpackBuildCallback } from "../utils/callback";
+import { selectEntryFile } from "../utils/select";
+import { obtainProjectConfig } from "../utils/obtain/file";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
 const {
         app: { web },
     } = EngineConfig,
-    [filePath]: string[] = await selectTarget(web, "Main"),
-    projectConfig = await obtainProjectConfig(filePath),
+    { filePath, projectPath } = await selectEntryFile(web, "Main"),
+    projectConfig = await obtainProjectConfig(projectPath),
     config: Configuration = {
         ...createConfig(projectConfig.mod ?? {}),
         entry: filePath,

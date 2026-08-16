@@ -47,14 +47,14 @@ export function getCurrentBranch(repoPath: string): string {
     }
 }
 
-export function buildGitUrl(url: string, goal?: string): string {
+export function buildGitUrl(url: string, baseUrl?: string): string {
     const pattern: RegExp = /^(https?:\/\/|git@|ssh:\/\/|git:\/\/)/i;
 
-    if (pattern.test(url) || !goal) {
+    if (pattern.test(url) || !baseUrl) {
         return url;
     }
 
-    return new URL(url, goal).toString();
+    return new URL(url, baseUrl).toString();
 }
 
 export function execGitCommand(

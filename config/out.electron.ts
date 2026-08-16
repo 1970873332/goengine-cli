@@ -3,8 +3,8 @@ import EngineConfig from "@/engine.config.json";
 import { join } from "path";
 
 const {
-    lication: { name: appName, version: appVersion, id: appID },
-    web: { build: webBuild },
+    application: { name: appName, version: appVersion, id: appID },
+    web: { out: webOut },
     electron: {
         out: { dir },
         mirror,
@@ -33,7 +33,7 @@ export function createConfig({
         files: [
             "!node_modules",
             "!package.json",
-            `${webBuild}/**/*`,
+            `${webOut}/**/*`,
             `${electronBuild}/**/*`,
         ],
         win: {
@@ -43,7 +43,7 @@ export function createConfig({
                     arch: "x64",
                 },
             ],
-            icon: join(webBuild, "favicon.ico"),
+            icon: join(webOut, "favicon.ico"),
         },
         nsis: {
             // 一键安装

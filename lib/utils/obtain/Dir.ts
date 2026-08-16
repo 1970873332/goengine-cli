@@ -1,14 +1,14 @@
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { isAbsolute, join, resolve } from "path";
-import { validateFile } from "../validate/Path";
+import { validateFile } from "../validate/path";
 
 /**
- * 归一化路径
+ * 解析为绝对路径
  * @param path - 路径
  * @returns 绝对路径
  */
-export function normalPath(path: string): string {
+export function resolvePath(path: string): string {
     const result: string = isAbsolute(path)
         ? path
         : resolve(process.cwd(), path);
@@ -17,16 +17,16 @@ export function normalPath(path: string): string {
 }
 
 /**
- * 获取有效目录列表
+ * 获取包含指定入口文件的有效目录名列表
  * @param path - 路径
  * @param pattern - 匹配模式
  * @returns
  */
-export async function obtainValidFolders(
+export async function obtainValidFolderNames(
     path: string,
     pattern: string,
 ): Promise<string[]> {
-    const resultPath: string = normalPath(path),
+    const resultPath: string = resolvePath(path),
         items: Dirent[] = await readdir(resultPath, { withFileTypes: true }),
         folders: string[] = items
             .filter((item) => item.isDirectory())

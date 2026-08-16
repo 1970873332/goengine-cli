@@ -1,7 +1,7 @@
 import { chmodSync, existsSync, rmSync } from "fs";
 import { resolve } from "path";
 import { rimraf } from "rimraf";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 

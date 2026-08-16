@@ -1,23 +1,22 @@
-import { normalPath } from "@/lib/utils/obtain/Dir";
+import { resolvePath } from "@/lib/utils/obtain/dir";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
 import EngineConfig from "@/engine.config.json";
-import { existsSync, mkdirSync } from "fs";
-import { relative, resolve } from "path";
+import { relative } from "path";
 import { defineConfig, UserConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
-import { alias, chii, defaultAgreement, define, extensions } from "./module";
+import { alias, chii, defaultProtocol, define, extensions } from "./module";
 
 const {
         title,
-        web: { build },
+        web: { out },
     } = EngineConfig,
-    outDir: string = normalPath(`${build} ${Date.now()}`);
+    outDir: string = resolvePath(`${out} ${Date.now()}`);
 
 export function createConfig(
     entry: string,
-    { debug, agreement = defaultAgreement }: ModConfig,
+    { debug, protocol = defaultProtocol }: ModConfig,
 ): UserConfig {
     return defineConfig({
         logLevel: "error",
@@ -60,19 +59,10 @@ export function createConfig(
                 inject: {
                     data: {
                         title,
-                        chii: debug ? chii(agreement) : void 0,
+                        chii: debug ? chii(protocol) : void 0,
                     },
                 },
             }),
-            {
-                name: "create-static-folder",
-                apply: "build",
-                closeBundle() {
-                    const staticFolderPath: string = resolve(outDir, "static");
-                    !existsSync(staticFolderPath) &&
-                        mkdirSync(staticFolderPath, { recursive: true });
-                },
-            },
         ],
         define: define(!!debug),
     });

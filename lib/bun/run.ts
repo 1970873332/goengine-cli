@@ -1,6 +1,6 @@
 import { scripts } from "@/package.json";
 import { execSync } from "child_process";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 

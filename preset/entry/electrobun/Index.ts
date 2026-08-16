@@ -8,11 +8,11 @@ const {
     title,
     electron: {
         dev: {
-            index: { agreement, host, port },
+            server: { protocol, host, port },
         },
     },
 } = EngineConfig;
 new BrowserWindow({
     title,
-    url: `${agreement}://${host}:${port}`,
+    url: `${protocol}://${host}:${port}`,
 });

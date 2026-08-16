@@ -5,7 +5,7 @@ import { config } from "./repositories";
 import { statusAll } from "./lib/status";
 import type { Repository } from "./type";
 import { checkGit } from "./util/util";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 

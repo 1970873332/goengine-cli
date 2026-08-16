@@ -1,54 +1,52 @@
-import { normalPath } from "@/lib/utils/obtain/Dir";
+import { resolvePath } from "@/lib/utils/obtain/dir";
 import TailwindPostCSS from "@tailwindcss/postcss";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import EngineConfig from "@/engine.config.json";
-import { existsSync, mkdirSync } from "fs";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { resolve } from "path";
 import TerserPlugin from "terser-webpack-plugin";
 import { VueLoaderPlugin } from "vue-loader";
 import webpack, {
-    Compiler,
     Configuration,
     RuleSetUse,
     RuleSetUseItem,
 } from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-import { alias, chii, defaultAgreement, define, extensions } from "./module";
+import { alias, chii, defaultProtocol, define, extensions } from "./module";
 
 const dev: boolean = process.env.NODE_ENV === "development",
     {
         title,
-        tsconfig: { index },
+        tsconfig: { root },
         html: { webpack: html_webpack },
-        web: { build },
+        web: { out },
     } = EngineConfig;
 
 export function createConfig({
     debug,
-    module,
-    inspector,
-    mergePackage,
-    agreement = defaultAgreement,
+    esm,
+    analyzer,
+    bundle,
+    protocol = defaultProtocol,
 }: Partial<ModConfig>): Configuration {
     dev && console.log("开发模式✔️");
     debug && console.log("调试模式✔️");
-    module && console.log("模块模式✔️");
-    mergePackage && console.log("合并包✔️");
+    esm && console.log("模块模式✔️");
+    bundle && console.log("合并包✔️");
     return {
         stats: "errors-only",
         /* 实验功能 */
         experiments: {
-            outputModule: !dev && module,
+            outputModule: !dev && esm,
         },
         /* 输出 */
         output: dev
             ? void 0
             : {
-                  libraryTarget: module ? "module" : void 0,
-                  path: normalPath(`${build} ${Date.now()}`),
-                  filename: mergePackage
+                  libraryTarget: esm ? "module" : void 0,
+                  path: resolvePath(`${out} ${Date.now()}`),
+                  filename: bundle
                       ? "js/[hash].js"
                       : "js/[name]/[hash].js",
               },
@@ -152,38 +150,22 @@ export function createConfig({
         },
         /* 插件 */
         plugins: [
-            inspector && new BundleAnalyzerPlugin(),
+            analyzer && new BundleAnalyzerPlugin(),
             new webpack.DefinePlugin(define(!!debug)),
             new HtmlWebpackPlugin({
                 title,
-                template: normalPath(html_webpack),
+                template: resolvePath(html_webpack),
                 templateParameters: {
                     /* devtool远程调试 */
-                    chii: debug ? chii(agreement) : void 0,
+                    chii: debug ? chii(protocol) : void 0,
                 },
             }),
             new MiniCssExtractPlugin({
-                filename: mergePackage
+                filename: bundle
                     ? "css/[hash].css"
                     : "css/[name]/[hash].css",
             }),
             new VueLoaderPlugin(),
-            {
-                apply: (compiler: Compiler) => {
-                    /* 打包完成后创建静态文件夹 */
-                    !dev &&
-                        compiler.hooks.done.tap("create-static-folder", () => {
-                            if (compiler.options.output.path) {
-                                const staticFolderPath: string = resolve(
-                                    compiler.options.output.path,
-                                    "static",
-                                );
-                                !existsSync(staticFolderPath) &&
-                                    mkdirSync(staticFolderPath);
-                            }
-                        });
-                },
-            },
         ].filter(Boolean),
         /* 优化 */
         optimization: dev
@@ -212,7 +194,7 @@ export function createConfig({
                           },
                       }),
                   ],
-                  splitChunks: mergePackage
+                  splitChunks: bundle
                       ? void 0
                       : {
                             chunks: "all",
@@ -290,7 +272,7 @@ export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
             options: {
                 transpileOnly: true,
                 happyPackMode: false,
-                configFile: index,
+                configFile: root,
                 appendTsSuffixTo: [/\.vue$/],
             },
         },
@@ -304,7 +286,7 @@ export function useBabelLoader(): RuleSetUseItem {
     return {
         loader: "babel-loader",
         options: {
-            extends: normalPath(".babelrc"),
+            extends: resolvePath(".babelrc"),
         },
     };
 }

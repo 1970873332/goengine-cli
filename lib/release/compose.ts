@@ -1,18 +1,18 @@
 import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "fs";
 import { version } from "@/package.json";
-import { copy } from "../utils/FS";
-import { normalPath } from "../utils/obtain/Dir";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { copy } from "../utils/fs";
+import { resolvePath } from "../utils/obtain/dir";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
-const {
+    const {
         app: { web, service },
-        release: { compose },
+        release: { bundle },
     } = EngineConfig,
-    outPath: string = `${compose}_v${version}`,
-    gitignore = readFileSync(normalPath(".gitignore"), "utf-8"),
+    outPath: string = `${bundle}_v${version}`,
+    gitignore = readFileSync(resolvePath(".gitignore"), "utf-8"),
     exclude = new Set<string>([
         ...gitignore
             .split("\n")
@@ -37,8 +37,8 @@ existsSync(outPath) && rmSync(outPath, { recursive: true, force: true });
 for (const dir of dirs) {
     if (exclude.has(dir)) continue;
 
-    const sourcePath: string = normalPath(dir),
-        targetPath: string = normalPath(outPath);
+    const sourcePath: string = resolvePath(dir),
+        targetPath: string = resolvePath(outPath);
 
     await copy(sourcePath, targetPath, async (path: string) => {
         /* 跳过 */

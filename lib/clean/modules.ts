@@ -3,7 +3,7 @@ import fg from "fast-glob";
 import { existsSync } from "fs";
 import { join } from "path";
 import { rimraf } from "rimraf";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 

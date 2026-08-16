@@ -2,21 +2,23 @@ import { createConfig } from "@/config/esbuild";
 import EngineConfig from "@/engine.config.json";
 import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
-import { selectTarget } from "../utils/Select";
-import { normalPath } from "../utils/obtain/Dir";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { selectEntryFile } from "../utils/select";
+import { resolvePath } from "../utils/obtain/dir";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
 const {
         app: { service },
-        service: { build, out },
+        service: {
+            out: { dir, main },
+        },
     } = EngineConfig,
-    [filePath]: string[] = await selectTarget(service, "Main"),
+    { filePath } = await selectEntryFile(service, "Main"),
     config: BuildOptions = {
         ...createConfig(
             [filePath],
-            normalPath(join(`${build} ${Date.now()}`, out)),
+            resolvePath(join(`${dir} ${Date.now()}`, main)),
         ),
         packages: "external",
     };

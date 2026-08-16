@@ -1,8 +1,8 @@
-import { useAGREEMENT, useBun, useHOST, usePORT } from "@/config/module";
+import { bunRunCommand, envHOST, envPORT, envPROTOCOL } from "@/config/module";
 import EngineConfig from "@/engine.config.json";
 import { spawnSync } from "child_process";
 import { resolve } from "path";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
@@ -11,19 +11,19 @@ const {
         build,
         out: { main },
         dev: {
-            index: { agreement, host, port },
+            server: { protocol, host, port },
         },
     },
 } = EngineConfig;
 
-if (!/^https?$/.test(agreement)) throw new Error("请求协议格式不正确");
+if (!/^https?$/.test(protocol)) throw new Error("请求协议格式不正确");
 
-const USE_AGREEMENT: string = useAGREEMENT(agreement as ModConfig["agreement"]),
-    USE_HOST: string = useHOST(host),
-    USE_PORT: string = usePORT(port),
+const ENV_PROTOCOL: string = envPROTOCOL(protocol as ModConfig["protocol"]),
+    ENV_HOST: string = envHOST(host),
+    ENV_PORT: string = envPORT(port),
     electronPath: string = resolve(build, main),
-    common: string = `cross-env ${USE_AGREEMENT} ${USE_HOST} ${USE_PORT} electron "${electronPath}"`,
-    bunCmd: string = useBun();
+    common: string = `cross-env ${ENV_PROTOCOL} ${ENV_HOST} ${ENV_PORT} electron "${electronPath}"`,
+    bunCmd: string = bunRunCommand();
 
 console.log("🚀 正在启动 Electron...", common);
 

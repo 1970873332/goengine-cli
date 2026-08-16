@@ -1,13 +1,13 @@
-import { defaultAgreement, isHTTPS } from "@/config/module";
+import { defaultProtocol, isHTTPS } from "@/config/module";
 import { createConfig } from "@/config/vite";
-import { obtainProjectConfig } from "@/lib/utils/obtain/File";
-import { selectTarget } from "@/lib/utils/Select";
-import { SSLUtils } from "@/lib/utils/SSL";
+import { obtainProjectConfig } from "@/lib/utils/obtain/file";
+import { selectEntryFile } from "@/lib/utils/select";
+import { SSLUtils } from "@/lib/utils/ssl";
 import HTTPSServerManager from "@goengine/service/src/manager/server/common/HTTPS";
 import EngineConfig from "@/engine.config.json";
 import { readFileSync } from "fs";
 import { createServer, UserConfig, ViteDevServer } from "vite";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
@@ -15,13 +15,13 @@ const {
         app: { web },
         ssl: { name },
     } = EngineConfig,
-    [filePath, path]: string[] = await selectTarget(web, "Main"),
-    projectConfig: Project = await obtainProjectConfig(path),
+    { filePath, projectPath } = await selectEntryFile(web, "Main"),
+    projectConfig: Project = await obtainProjectConfig(projectPath),
     mod: ModConfig = projectConfig.mod ?? {},
-    { remarks, host, port, agreement = defaultAgreement } = mod,
-    iss: boolean = isHTTPS(agreement),
+    { remarks, host, port, protocol = defaultProtocol } = mod,
+    iss: boolean = isHTTPS(protocol),
     { keyPath, certPath } = SSLUtils.obtainFilePath(
-        iss ? await SSLUtils.obtain(name) : void 0,
+        iss ? await SSLUtils.ensure(name) : void 0,
     ),
     config: UserConfig = {
         ...createConfig(filePath, mod),

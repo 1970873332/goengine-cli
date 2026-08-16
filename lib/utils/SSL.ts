@@ -2,7 +2,7 @@ import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";
-import { normalPath } from "./obtain/Dir";
+import { resolvePath } from "./obtain/dir";
 
 /**
  * SSL 证书工具
@@ -11,11 +11,11 @@ export class SSLUtils {
     /**
      * 证书存放目录
      */
-    protected static readonly dir: string = EngineConfig.ssl.static;
+    protected static readonly dir: string = EngineConfig.ssl.output;
     /**
      * 证书存放路径
      */
-    protected static readonly url: string = normalPath(this.dir);
+    protected static readonly url: string = resolvePath(this.dir);
 
     /**
      * 获取证书文件路径
@@ -35,26 +35,12 @@ export class SSLUtils {
      * 获取证书文件路径
      * @param name
      */
-    public static obtainFilePathTransKey<T extends Record<string, any>>(
-        name: string,
-        key: keyof T,
-        cert: keyof T,
-    ): {
-        [key]: string;
-        [cert]: string;
-    } {
-        const { keyPath, certPath } = this.obtainFilePath(name);
-        return {
-            [key]: keyPath,
-            [cert]: certPath,
-        };
-    }
     /**
      * 获取证书
      * @param name
      * @returns
      */
-    public static async obtain(name: string): Promise<string> {
+    public static async ensure(name: string): Promise<string> {
         const { keyPath, certPath } = this.obtainFilePath(name);
 
         /* 检查证书 */

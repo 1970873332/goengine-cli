@@ -1,10 +1,10 @@
 {
     "title": "Welcome to GoEngine",
     "tsconfig": {
-        "index": "tsconfig.json",
+        "root": "tsconfig.json",
         "angular": ".angular/tsconfig.json"
     },
-    "lication": {
+    "application": {
         "name": "GoEngine",
         "version": "0.1.0",
         "id": "com.goengine.app"
@@ -15,22 +15,24 @@
     },
     "ssl": {
         "name": "local",
-        "static": ".cache/ssl"
+        "output": ".cache/ssl"
     },
     "release": {
-        "project": "dist/project",
-        "compose": "dist/compose"
+        "source": "releases/source",
+        "bundle": "releases/bundle"
     },
     "html": {
         "webpack": "preset/entry/webpack.html",
         "angular": "preset/entry/angular.html"
     },
     "web": {
-        "build": "build/web"
+        "out": "dist/web"
     },
     "service": {
-        "build": "build/service",
-        "out": "index.js"
+        "out": {
+            "dir": "dist/service",
+            "main": "index.js"
+        }
     },
     "tsup": {
         "out": "dist/tsup"
@@ -47,8 +49,8 @@
             "preload": "preload.cjs"
         },
         "dev": {
-            "index": {
-                "agreement": "http",
+            "server": {
+                "protocol": "http",
                 "host": "localhost",
                 "port": 8080
             }

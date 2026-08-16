@@ -2,16 +2,16 @@ import { input, select } from "@inquirer/prompts";
 import EngineConfig from "@/engine.config.json";
 import { access, readdir } from "fs/promises";
 import { join } from "path";
-import { copy } from "../utils/FS";
-import { normalPath } from "../utils/obtain/Dir";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { copy } from "../utils/fs";
+import { resolvePath } from "../utils/obtain/dir";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
 const {
         app: { web },
     } = EngineConfig,
-    targetDir: string = normalPath(web);
+    targetDir: string = resolvePath(web);
 let name: string = "";
 
 do {
@@ -58,9 +58,9 @@ const project: string = await select({
     ],
 });
 
-const source: string = normalPath(`preset/${project}`),
+const source: string = resolvePath(`preset/${project}`),
     paths: string[] = await readdir(source),
-    target: string = normalPath(join(web, name));
+    target: string = resolvePath(join(web, name));
 
 for await (const path of paths) {
     copy(join(source, path), target);

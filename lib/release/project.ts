@@ -1,17 +1,17 @@
 import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import { version } from "@/package.json";
-import { copy } from "../utils/FS";
-import { normalPath } from "../utils/obtain/Dir";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { copy } from "../utils/fs";
+import { resolvePath } from "../utils/obtain/dir";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
-const {
+    const {
         app: { web, service },
-        release: { project },
+        release: { source },
     } = EngineConfig,
-    outPath: string = `${project}_v${version}`,
+    outPath: string = `${source}_v${version}`,
     // 白名单：指定要拷贝的文件夹
     whitelist = new Set<string>(["package", web, service]),
     // 获取当前目录下的所有文件和文件夹
@@ -28,8 +28,8 @@ for (const dir of dirs) {
     // 白名单检查：只拷贝在白名单中的目录
     if (!whitelist.has(dir)) continue;
 
-    const sourcePath: string = normalPath(dir);
-    const targetPath: string = normalPath(outPath);
+    const sourcePath: string = resolvePath(dir);
+    const targetPath: string = resolvePath(outPath);
 
     await copy(sourcePath, targetPath, async (path: string) => {
         if (path.includes("node_modules") || path.includes(".git"))

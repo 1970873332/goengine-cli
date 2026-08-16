@@ -8,7 +8,7 @@ global {
         /**
          * 包
          */
-        package?: Partial<Record<Packages, PackageConfig>>;
+        packages?: Partial<Record<PackageName, PackageConfig>>;
         /**
          * 模块
          */
@@ -40,7 +40,7 @@ global {
         /**
          * 协议
          */
-        agreement?: "http" | "https";
+        protocol?: "http" | "https";
         /**
          * 主机
          */
@@ -61,7 +61,7 @@ global {
         /**
          * 是否在构建时启用依赖分析
          */
-        inspector?: boolean;
+        analyzer?: boolean;
         /**
          * 是否合并包
          * @description true  : 动态导入模块单独打包，其余模块/样式表分别合并打包
@@ -69,13 +69,13 @@ global {
          * @description 对于依赖较大的推荐不合并，每次更新只需要上传入口文件即可。
          *              反之则合并，以减少文件请求次数。
          */
-        mergePackage?: boolean;
+        bundle?: boolean;
         /**
          * 是否为模块模式
          * @description 模块模式下输出的文件会被打包成模块以供导入
          * @description 非模块模式下输出的文件会被打包成自执行函数
          */
-        module?: boolean;
+        esm?: boolean;
         /**
          * 本地代理
          */
@@ -85,7 +85,7 @@ global {
     /**
      * 包
      */
-    type Packages = "electron";
+    type PackageName = "electron";
 }
 
 export {};

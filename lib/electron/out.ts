@@ -3,9 +3,9 @@ import EngineConfig from "@/engine.config.json";
 import { devDependencies } from "@goengine/electron/package.json";
 import { Configuration, build as electronBuild } from "electron-builder";
 import { join } from "path";
-import { selectTarget } from "../utils/Select";
-import { obtainProjectConfig } from "../utils/obtain/File";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { selectEntryFile } from "../utils/select";
+import { obtainProjectConfig } from "../utils/obtain/file";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
@@ -16,12 +16,12 @@ const {
             out: { main },
         },
     } = EngineConfig,
-    [_, path] = await selectTarget(web, "Main"),
-    projectConfig: Project = await obtainProjectConfig(path),
+    { projectPath } = await selectEntryFile(web, "Main"),
+    projectConfig: Project = await obtainProjectConfig(projectPath),
     { electron: electronVersion } = devDependencies,
     version: string = electronVersion.replace("^", ""),
     config: Configuration = {
-        ...createConfig(projectConfig.package?.electron ?? {}),
+        ...createConfig(projectConfig.packages?.electron ?? {}),
         electronVersion: version,
         extraMetadata: {
             main: join(build, main),

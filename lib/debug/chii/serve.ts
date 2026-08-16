@@ -1,18 +1,18 @@
 import { isHTTPS } from "@/config/module";
-import { SSLUtils } from "@/lib/utils/SSL";
+import { SSLUtils } from "@/lib/utils/ssl";
 import { select } from "@inquirer/prompts";
 import { execSync } from "child_process";
 import { Command } from "commander";
 import EngineConfig from "@/engine.config.json";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
-const agreement: ModConfig["agreement"] = await select({
+const protocol: ModConfig["protocol"] = await select({
         message: "选择服务协议",
         choices: ["http", "https"],
     }),
-    iss: boolean = isHTTPS(agreement),
+    iss: boolean = isHTTPS(protocol),
     {
         ssl: { name },
     } = EngineConfig,
@@ -21,7 +21,7 @@ const agreement: ModConfig["agreement"] = await select({
         .parse(process.argv)
         .opts(),
     { keyPath, certPath } = SSLUtils.obtainFilePath(
-        iss ? await SSLUtils.obtain(name) : void 0,
+        iss ? await SSLUtils.ensure(name) : void 0,
     ),
     httpsComment: string = iss
         ? `--https --ssl-key "${keyPath}" --ssl-cert "${certPath}"`

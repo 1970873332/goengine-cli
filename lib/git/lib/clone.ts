@@ -9,10 +9,10 @@ import {
 } from "../util/util";
 
 export async function cloneRepo(repo: Repository): Promise<void> {
-    const { goal, targetDir } = config;
+    const { baseUrl, targetDir } = config;
     const { url, branch } = repo;
 
-    const fullUrl = buildGitUrl(url, goal);
+    const fullUrl = buildGitUrl(url, baseUrl);
     ensureTargetDir();
 
     const args = ["clone", "--progress"];

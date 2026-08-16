@@ -1,14 +1,14 @@
-import { IPUtils } from "@/lib/utils/IP";
-import { normalPath } from "@/lib/utils/obtain/Dir";
+import { IPUtils } from "@/lib/utils/ip";
+import { resolvePath } from "@/lib/utils/obtain/dir";
 import { scripts } from "@/package.json";
 
-const { "chii:serve": serveChii, ":run": run } = scripts;
+const { "chii:serve": serveChii, ":run": bunRun } = scripts;
 
-export const defaultAgreement: ModConfig["agreement"] = "http";
+export const defaultProtocol: ModConfig["protocol"] = "http";
 
 export function alias(): Record<string, string> {
     return {
-        "@": normalPath(process.cwd()),
+        "@": resolvePath(process.cwd()),
     };
 }
 
@@ -24,34 +24,34 @@ export function extensions(): string[] {
 }
 
 export function chii(
-    agreement: ModConfig["agreement"],
+    protocol: ModConfig["protocol"],
 ): Record<string, unknown> {
     return {
         enable: true,
-        server: `${agreement}://${IPUtils.host()}:${serveChii.match(/-p\s+(\d+)/)?.[1]}`,
+        server: `${protocol}://${IPUtils.ip()}:${serveChii.match(/-p\s+(\d+)/)?.[1]}`,
     };
 }
 
-export function isHTTPS(agreement: ModConfig["agreement"]): boolean {
-    return agreement === "https";
+export function isHTTPS(protocol: ModConfig["protocol"]): boolean {
+    return protocol === "https";
 }
 
-export function useNODE_ENV(value: string): string {
+export function envNODE_ENV(value: string): string {
     return `NODE_ENV=${value}`;
 }
 
-export function useAGREEMENT(value: ModConfig["agreement"]): string {
-    return `USE_AGREEMENT=${value}`;
+export function envPROTOCOL(value: ModConfig["protocol"]): string {
+    return `ENV_PROTOCOL=${value}`;
 }
 
-export function useHOST(value: ModConfig["host"]): string {
-    return `USE_HOST=${value}`;
+export function envHOST(value: ModConfig["host"]): string {
+    return `ENV_HOST=${value}`;
 }
 
-export function usePORT(value: ModConfig["port"]): string {
-    return `USE_PORT=${value}`;
+export function envPORT(value: ModConfig["port"]): string {
+    return `ENV_PORT=${value}`;
 }
 
-export function useBun(): string {
-    return process.execPath.toLowerCase().includes("bun") ? run : "";
+export function bunRunCommand(): string {
+    return process.execPath.toLowerCase().includes("bun") ? bunRun : "";
 }

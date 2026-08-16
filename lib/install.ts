@@ -1,6 +1,6 @@
 import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 import EngineConfig from "@/engine.config.json";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 

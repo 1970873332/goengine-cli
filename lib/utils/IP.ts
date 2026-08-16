@@ -7,7 +7,7 @@ export class IPUtils {
     /**
      * 主机
      */
-    public static host(): string | void {
+    public static ip(): string | void {
         const interfaces: NodeJS.Dict<NetworkInterfaceInfo[]> =
             networkInterfaces();
         for (const name of Object.keys(interfaces)) {

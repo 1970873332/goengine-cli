@@ -1,4 +1,4 @@
-import { normalPath } from "@/lib/utils/obtain/Dir";
+import { resolvePath } from "@/lib/utils/obtain/dir";
 import EngineConfig from "@/engine.config.json";
 import { resolve } from "path";
 import { Configuration } from "webpack";
@@ -6,7 +6,7 @@ import { alias, extensions } from "./module";
 import { useBabelLoader, useTSLoader } from "./webpack";
 
 const {
-    web: { build },
+    web: { out },
 } = EngineConfig;
 
 export const Config: Configuration = {
@@ -14,7 +14,7 @@ export const Config: Configuration = {
     /* 输出 */
     output: {
         filename: "[name]-[hash].js",
-        path: normalPath(`${build} ${Date.now()}`),
+        path: resolvePath(`${out} ${Date.now()}`),
     },
     /* 解析 */
     resolve: {

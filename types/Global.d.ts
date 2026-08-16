@@ -163,15 +163,15 @@ declare global {
             /**
              * 协议
              */
-            USE_AGREEMENT?: ModConfig["agreement"];
+            ENV_PROTOCOL?: ModConfig["protocol"];
             /**
              * 主机
              */
-            USE_HOST?: ModConfig["host"];
+            ENV_HOST?: ModConfig["host"];
             /**
              * 端口
              */
-            USE_PORT?: ModConfig["port"];
+            ENV_PORT?: ModConfig["port"];
         }
     }
 }

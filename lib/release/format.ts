@@ -4,7 +4,7 @@ import { spawn } from "child_process";
 import { Command } from "commander";
 import { existsSync, readdirSync, statSync } from "fs";
 import { basename, join } from "path";
-import { registerErrorHandlers } from "@/lib/utils/Error";
+import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
@@ -130,12 +130,12 @@ program
     .description(
         "格式化指定目录下所有子目录的源代码（自动排除 node_modules、public、build、dist 等）",
     )
-    .argument("<directory>", "要扫描的目录路径")
+    .argument("[directory]", "要扫描的目录路径（默认当前目录）", ".")
     .option("--dry-run", "仅显示将要格式化的目录，不实际执行")
     .parse(process.argv);
 
 const options = program.opts();
-const directory = program.args[0];
+const directory = program.args[0] || ".";
 
 console.log(`📂 扫描目录: ${directory}`);
 

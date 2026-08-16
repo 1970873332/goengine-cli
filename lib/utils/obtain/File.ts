@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
-import { normalPath } from "./Dir";
+import { resolvePath } from "./dir";
 
 /**
  * 获取项目配置
@@ -13,7 +13,7 @@ export async function obtainProjectConfig(
     path: string,
     entryFile: string = "Project.ts",
 ): Promise<Project> {
-    const resultPath: string = normalPath(path),
+    const resultPath: string = resolvePath(path),
         filePath: string = join(resultPath, entryFile);
 
     if (!existsSync(filePath)) {

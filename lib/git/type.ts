@@ -1,6 +1,6 @@
 export interface Config {
     targetDir: string;
-    goal?: string;
+    baseUrl?: string;
     repositories: Repository[];
     parallel?: number;
 }

@@ -1,4 +1,4 @@
-import { DocumentUtils } from "@goengine/core/temporary/util/Document";
+import { DocumentUtils } from "@goengine/core/experimental/util/Document";
 import { router } from "@goengine/vue/src/router/Router";
 import "@goengine/web/src/css/index.css";
 import { App as AppComponent, createApp } from "vue";
