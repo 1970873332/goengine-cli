@@ -3,11 +3,9 @@ import { selectTarget } from "@/lib/utils/Select";
 import EngineConfig from "@/engine.config.json";
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname, join, relative } from "path";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const json: string = "angular.json",
     dev: boolean = process.env.NODE_ENV === "development",

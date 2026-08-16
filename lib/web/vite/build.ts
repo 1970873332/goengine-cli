@@ -3,11 +3,9 @@ import { obtainProjectConfig } from "@/lib/utils/obtain/File";
 import { selectTarget } from "@/lib/utils/Select";
 import EngineConfig from "@/engine.config.json";
 import { build, UserConfig } from "vite";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         app: { web },
@@ -19,4 +17,4 @@ const {
         mode: "production",
     };
 
-build(config);
+await build(config);

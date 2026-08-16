@@ -7,11 +7,9 @@ import HTTPSServerManager from "@goengine/service/src/manager/server/common/HTTP
 import EngineConfig from "@/engine.config.json";
 import { readFileSync } from "fs";
 import { createServer, UserConfig, ViteDevServer } from "vite";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         app: { web },
@@ -48,4 +46,8 @@ viteServer
         console.log(
             `🌐 网络地址: \x1b[32m${viteServer.resolvedUrls?.local[0]}\x1b[0m`,
         ),
-    );
+    )
+    .catch((error: unknown) => {
+        console.error(error);
+        process.exit(1);
+    });

@@ -4,11 +4,9 @@ import webpack, { Configuration } from "webpack";
 import { webpackBuildCallback } from "../utils/Callback";
 import { selectTarget } from "../utils/Select";
 import { obtainProjectConfig } from "../utils/obtain/File";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         app: { web },

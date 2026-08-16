@@ -1,10 +1,8 @@
 import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 import EngineConfig from "@/engine.config.json";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const execConfig: ExecSyncOptionsWithStringEncoding = {
     stdio: "inherit",
@@ -23,7 +21,8 @@ try {
         console.log("⬇️ 安装 pnpm...");
         execSync("npm install -g pnpm", execConfig);
     } catch (event: unknown) {
-        throw console.error("❌ 安装 pnpm 失败:", event);
+        console.error("❌ 安装 pnpm 失败:", event);
+        process.exit(1);
     }
 }
 

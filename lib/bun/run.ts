@@ -1,10 +1,8 @@
 import { scripts } from "@/package.json";
 import { execSync } from "child_process";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const commit: string | void = process.argv.slice(2).pop();
 

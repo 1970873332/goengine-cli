@@ -3,11 +3,9 @@ import EngineConfig from "@/engine.config.json";
 import { BuildOptions, buildSync } from "esbuild";
 import { join } from "path";
 import { normalPath } from "../utils/obtain/Dir";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         electron: {

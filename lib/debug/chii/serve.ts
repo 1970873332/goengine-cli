@@ -4,11 +4,9 @@ import { select } from "@inquirer/prompts";
 import { execSync } from "child_process";
 import { Command } from "commander";
 import EngineConfig from "@/engine.config.json";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const agreement: ModConfig["agreement"] = await select({
         message: "选择服务协议",
@@ -26,10 +24,10 @@ const agreement: ModConfig["agreement"] = await select({
         iss ? await SSLUtils.obtain(name) : void 0,
     ),
     httpsComment: string = iss
-        ? `--https --ssl-key ${keyPath} --ssl-cert ${certPath}`
+        ? `--https --ssl-key "${keyPath}" --ssl-cert "${certPath}"`
         : "";
 
-if (!port) throw console.error("❌ 未指定端口号");
+if (!port) throw new Error("❌ 未指定端口号");
 
 console.log(`⏳ 等待Chii服务器启动中...`);
 execSync(`chii start --port ${port} ${httpsComment}`, {

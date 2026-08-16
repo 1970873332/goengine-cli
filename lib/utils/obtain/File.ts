@@ -13,22 +13,22 @@ export async function obtainProjectConfig(
     path: string,
     entryFile: string = "Project.ts",
 ): Promise<Project> {
+    const resultPath: string = normalPath(path),
+        filePath: string = join(resultPath, entryFile);
+
+    if (!existsSync(filePath)) {
+        console.warn(`⚠️ 配置文件不存在: ${filePath}`);
+        return {};
+    }
+
     try {
-        const resultPath: string = normalPath(path),
-            filePath: string = join(resultPath, entryFile);
-
-        if (!existsSync(filePath))
-            throw console.warn(`⚠️ 配置文件不存在: ${filePath}`);
-
         const imported = await import(pathToFileURL(filePath).href),
             project: Project = imported.default || imported;
 
-        switch (typeof project) {
-            case "object":
-                return project;
-            default:
-                throw console.warn(`❌ 项目配置文件格式错误: ${filePath}`);
-        }
+        if (typeof project === "object") return project;
+
+        console.warn(`❌ 项目配置文件格式错误: ${filePath}`);
+        return {};
     } catch {
         return {};
     }

@@ -5,11 +5,9 @@ import { config } from "./repositories";
 import { statusAll } from "./lib/status";
 import type { Repository } from "./type";
 import { checkGit } from "./util/util";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 function parseArgs(args: string[]): {
     command: string;
@@ -20,8 +18,8 @@ function parseArgs(args: string[]): {
     const command = args[0]?.toLowerCase() || "";
     const options = args.slice(1);
 
-    const forcePush = options.includes("--force");
-    const help = options.includes("--help");
+    const forcePush = args.includes("--force");
+    const help = args.includes("--help") || args.includes("-h");
     const specificRepos = options.filter((opt) => !opt.startsWith("-"));
 
     return { command, forcePush, specificRepos, help };
@@ -79,7 +77,7 @@ const { command, forcePush, specificRepos, help } = parseArgs(args);
 
 if (help || !command) {
     showHelp();
-    throw void 0;
+    process.exit(0);
 }
 
 if (!checkGit()) {

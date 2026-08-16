@@ -3,12 +3,10 @@
 import { spawn } from "child_process";
 import { Command } from "commander";
 import { existsSync, readdirSync, statSync } from "fs";
-import { join } from "path";
+import { basename, join } from "path";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 /**
  * 获取指定目录下的所有子目录（排除指定目录）
@@ -42,7 +40,7 @@ function formatDirectory(
     total: number,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
-        const dirName = dirPath.split("/").pop() || dirPath;
+        const dirName = basename(dirPath) || dirPath;
         console.log(`\n📦 [${index + 1}/${total}] 格式化: ${dirName}`);
 
         // 排除 node_modules、public、build、dist 等目录，以及 _packed.tsx 文件
@@ -108,7 +106,7 @@ async function runPrettier(paths: string[]): Promise<void> {
     }
     console.log(`${"=".repeat(50)}`);
 
-    if (failCount > 0) throw void 0;
+    if (failCount > 0) process.exit(1);
 }
 
 /**
@@ -149,14 +147,15 @@ if (subDirs.length === 0) {
 
 console.log(`📦 发现 ${subDirs.length} 个子目录:`);
 for (const dirPath of subDirs) {
-    const dirName = dirPath.split("/").pop() || dirPath;
+    const dirName = basename(dirPath) || dirPath;
     console.log(`  - ${dirName}`);
 }
 
 if (options.dryRun) {
-    throw new Error(
+    console.log(
         `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`,
     );
+    process.exit(0);
 }
 
 await runPrettier(subDirs);

@@ -1,14 +1,11 @@
-import { useBun } from "@/config/module";
 import { workspaces } from "@/package.json";
-import { spawnSync } from "child_process";
 import fg from "fast-glob";
 import { existsSync } from "fs";
 import { join } from "path";
+import { rimraf } from "rimraf";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const modules: string = "node_modules";
 
@@ -29,11 +26,4 @@ if (directories.length === 0)
 console.log(`🗑️ 准备删除 ${directories.length} 个 node_modules 目录`);
 directories.forEach((dir) => console.log(`  ${dir}`));
 
-const bunCmd: string = useBun();
-
-spawnSync(bunCmd || "npx", ["rimraf", ...directories], {
-    stdio: "inherit",
-    encoding: "utf-8",
-    cwd: process.cwd(),
-    shell: true,
-});
+await rimraf(directories);

@@ -10,13 +10,15 @@ export function webpackBuildCallback(
     stats?: Stats,
     callback?: () => void,
 ): void {
-    if (error) throw console.error("❌ 构建失败:", error);
+    if (error) {
+        console.error("❌ 构建失败:", error);
+        process.exit(1);
+    }
 
-    if (stats?.hasErrors())
-        throw console.error(
-            "❌ 构建包含错误:\n",
-            stats.toString("errors-only"),
-        );
+    if (stats?.hasErrors()) {
+        console.error("❌ 构建包含错误:\n", stats.toString("errors-only"));
+        process.exit(1);
+    }
 
     console.log(
         "✅ 构建成功!\n",
@@ -34,6 +36,7 @@ export function webpackBuildCallback(
     try {
         callback?.();
     } catch (error: unknown) {
-        throw console.error(`❌ 执行回调失败:`, error);
+        console.error(`❌ 执行回调失败:`, error);
+        process.exit(1);
     }
 }

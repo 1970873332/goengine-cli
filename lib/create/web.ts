@@ -4,11 +4,9 @@ import { access, readdir } from "fs/promises";
 import { join } from "path";
 import { copy } from "../utils/FS";
 import { normalPath } from "../utils/obtain/Dir";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         app: { web },

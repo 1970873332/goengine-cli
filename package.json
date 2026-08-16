@@ -30,7 +30,7 @@
         "clean:out": "npx rimraf build dist",
         "clean:cache": "npx rimraf angular.json .angular",
         "clean:lock": "npx rimraf package-lock.json pnpm-lock.yaml bun.lock",
-        "clean:depend": "npm run clean:out & npm run clean:cache & npm run clean:lock",
+        "clean:depend": "npm run clean:out && npm run clean:cache && npm run clean:lock",
         "clean:modules": "tsx lib/clean/modules.ts",
         "preng:build": "tsx lib/create/angular/config.ts",
         "preng:serve": "tsx lib/create/angular/config.ts",

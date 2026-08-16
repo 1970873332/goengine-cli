@@ -40,6 +40,6 @@ export async function copy(
             return;
         }
 
-        copyFile(path, targetPath);
+        await copyFile(path, targetPath);
     }
 }

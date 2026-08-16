@@ -3,11 +3,9 @@ import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import { version } from "@/package.json";
 import { copy } from "../utils/FS";
 import { normalPath } from "../utils/obtain/Dir";
+import { registerErrorHandlers } from "@/lib/utils/Error";
 
-process.on(
-    "uncaughtException",
-    (event: unknown) => (console.log(event), process.exit(1)),
-);
+registerErrorHandlers();
 
 const {
         app: { web, service },

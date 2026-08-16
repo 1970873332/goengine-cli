@@ -53,11 +53,5 @@ export function usePORT(value: ModConfig["port"]): string {
 }
 
 export function useBun(): string {
-    return process.argv.some(
-        (arg) =>
-            arg.toLowerCase().includes("bun.exe") ||
-            arg.toLowerCase().includes("bun"),
-    )
-        ? run
-        : "";
+    return process.execPath.toLowerCase().includes("bun") ? run : "";
 }
