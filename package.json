@@ -34,7 +34,9 @@
         "clean:modules": "npx --yes tsx lib/clean/modules.ts"
     },
     "dependencies": {
+        "@angular-devkit/build-angular": "^21.2.7",
         "@angular/cli": "^21.2.7",
+        "@angular/compiler-cli": "^21.2.8",
         "@babel/core": "^7.28.5",
         "@babel/plugin-transform-optional-chaining": "^7.28.5",
         "@babel/plugin-transform-runtime": "^7.28.5",
