@@ -6,7 +6,6 @@
         "allowImportingTsExtensions": true,
         "noEmit": true,
         "strict": true,
-        "incremental": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -16,23 +15,19 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "preserve",
-        "outDir": "dist",
-        "composite": true,
-        "declaration": true,
-        "declarationDir": "dist/types",
+        "baseUrl": ".",
         "paths": {
-            "static/*": [
-                "./public/static/*"
-            ],
             "@/*": [
                 "./*"
+            ],
+            /**
+             * three@0.181 的 exports 对 addons 子路径只映射到 JS（无相邻类型），
+             * TS bundler 模式下报 TS2307，这里指向 @types/three 的声明文件。
+             */
+            "three/addons/*": [
+                "node_modules/@types/three/examples/jsm/*"
             ]
         },
-        "plugins": [
-            {
-                "name": "typescript-plugin-css-modules"
-            }
-        ],
         "types": [
             "node"
         ],
@@ -51,7 +46,8 @@
     "exclude": [
         "dist",
         "build",
-        "public",
+        "assets",
+        "preset",
         "node_modules"
     ]
 }

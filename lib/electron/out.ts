@@ -1,10 +1,11 @@
-import { createConfig } from "@/config/out.electron";
+import { createConfig } from "@/lib/config/out.electron";
 import EngineConfig from "@/engine.config.json";
 import { devDependencies } from "@goengine/electron/package.json";
 import { Configuration, build as electronBuild } from "electron-builder";
 import { join } from "path";
+import { rimraf } from "rimraf";
 import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/obtain/file";
+import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
@@ -13,7 +14,7 @@ const {
         app: { web },
         electron: {
             build,
-            out: { main },
+            out: { dir, main },
         },
     } = EngineConfig,
     { projectPath } = await selectEntryFile(web, "Main"),
@@ -30,6 +31,7 @@ const {
 
 console.log("📦 开始打包Electron程序...");
 /* 构建 */
+await rimraf(dir);
 await electronBuild({
     config,
 });

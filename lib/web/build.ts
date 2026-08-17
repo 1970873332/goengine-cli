@@ -1,9 +1,9 @@
-import { createConfig } from "@/config/webpack";
+import { createConfig } from "@/lib/config/webpack";
 import EngineConfig from "@/engine.config.json";
 import webpack, { Configuration } from "webpack";
 import { webpackBuildCallback } from "../utils/callback";
 import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/obtain/file";
+import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();

@@ -1,8 +1,9 @@
+import "zone.js";
 import { bootstrapApplication } from "@angular/platform-browser";
-import { router } from "@goengine/angular/src/router/Router";
+import { provideRouter } from "@angular/router";
 import AppComponent from "./app.component";
-import Route from "./router/Index";
+import { routes } from "./router/Index";
 
 bootstrapApplication(AppComponent, {
-    providers: [router(Route)],
+    providers: [provideRouter(routes)],
 }).catch((err) => console.error(err));

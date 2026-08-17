@@ -2,7 +2,7 @@ import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";
-import { resolvePath } from "./obtain/dir";
+import { resolvePath } from "./dir";
 
 /**
  * SSL 证书工具

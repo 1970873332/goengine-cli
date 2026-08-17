@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawn } from "child_process";
+import { spawnBin } from "@/lib/utils/run";
 import { Command } from "commander";
 import { existsSync, readdirSync, statSync } from "fs";
 import { basename, join } from "path";
@@ -44,14 +44,13 @@ function formatDirectory(
         console.log(`\n📦 [${index + 1}/${total}] 格式化: ${dirName}`);
 
         // 排除 node_modules、public、build、dist 等目录，以及 _packed.tsx 文件
-        const excludePatterns = EXCLUDED_DIRS.map(
-            (dir) => `"!**/${dir}/**"`,
-        ).join(" ");
-        const pattern = `"**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}" ${excludePatterns} "!**/*_packed.tsx"`;
+        const patterns: string[] = [
+            "**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}",
+            ...EXCLUDED_DIRS.map((dir) => `!**/${dir}/**`),
+            "!**/*_packed.tsx",
+        ];
 
-        const prettier = spawn("npx", ["prettier", "--write", pattern], {
-            stdio: "inherit",
-            shell: true,
+        const prettier = spawnBin("prettier", ["--write", ...patterns], {
             cwd: dirPath,
         });
 

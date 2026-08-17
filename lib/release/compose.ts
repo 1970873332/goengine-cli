@@ -2,12 +2,12 @@ import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "fs";
 import { version } from "@/package.json";
 import { copy } from "../utils/fs";
-import { resolvePath } from "../utils/obtain/dir";
+import { resolvePath } from "../utils/dir";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
 
-    const {
+const {
         app: { web, service },
         release: { bundle },
     } = EngineConfig,

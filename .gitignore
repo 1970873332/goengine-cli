@@ -1,13 +1,11 @@
+# 依赖
 **/node_modules
+.pnpm-store
 
+# 构建产物
 dist
 build
+assets
 
+# 工作区
 package
-public/*/
-
-webs
-services
-
-.angular
-angular.json

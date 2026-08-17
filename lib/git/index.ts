@@ -1,10 +1,10 @@
-import { cloneAll } from "./lib/clone";
-import { pullAll } from "./lib/pull";
-import { pushAll } from "./lib/push";
+import { cloneAll } from "./clone";
+import { pullAll } from "./pull";
+import { pushAll } from "./push";
 import { config } from "./repositories";
-import { statusAll } from "./lib/status";
+import { statusAll } from "./status";
 import type { Repository } from "./type";
-import { checkGit } from "./util/util";
+import { checkGit } from "./util";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();

@@ -1,69 +1,51 @@
-import { input, select } from "@inquirer/prompts";
-import EngineConfig from "@/engine.config.json";
-import { access, readdir } from "fs/promises";
-import { join } from "path";
-import { copy } from "../utils/fs";
-import { resolvePath } from "../utils/obtain/dir";
-import { registerErrorHandlers } from "@/lib/utils/error";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+    promptProjectName,
+    promptProjectType,
+    scaffoldWebProject,
+} from "@/lib/create/scaffold";
 
-registerErrorHandlers();
+const here: string = dirname(fileURLToPath(import.meta.url));
 
-const {
-        app: { web },
-    } = EngineConfig,
-    targetDir: string = resolvePath(web);
-let name: string = "";
-
-do {
-    const resultName: string = await input({
-        message: "项目名：",
-        required: true,
-        validate: (value: string) => {
-            if (!value.trim()) {
-                return "项目名称不能为空";
-            }
-
-            if (/[<>:"/\\|?*]/.test(value)) {
-                return "项目名不能包含非法字符";
-            }
-
-            return true;
-        },
-    });
-
-    try {
-        await access(join(targetDir, resultName));
-
-        console.log("项目已存在");
-    } catch {
-        name = resultName;
-    }
-} while (!name);
-
-const project: string = await select({
-    message: "项目类型：",
-    choices: [
-        {
-            name: "React",
-            value: "HelloReact",
-        },
-        {
-            name: "Vue",
-            value: "HelloVue",
-        },
-        {
-            name: "Angular",
-            value: "HelloAngular",
-        },
-    ],
-});
-
-const source: string = resolvePath(`preset/${project}`),
-    paths: string[] = await readdir(source),
-    target: string = resolvePath(join(web, name));
-
-for await (const path of paths) {
-    copy(join(source, path), target);
+/**
+ * 模板根目录：dist/assets/preset（由构建脚本从仓库 preset 拷贝）。
+ * 发布包通过 files:["dist","link-goengine.cjs"] 自带该目录，不再回退到仓库路径。
+ */
+function presetRoot(): string {
+    return resolve(here, "assets/preset");
 }
 
-console.log(`已创建项目：${name}`);
+/** engine.config.json 内容（构建时生成到 assets，写入项目便于用户自定义布局） */
+function engineConfigContent(): string {
+    return readFileSync(resolve(here, "assets/engine.config.json"), "utf8");
+}
+
+export async function runCreateWeb(args: string[]): Promise<void> {
+    const option = (key: string): string | undefined => {
+        const index: number = args.indexOf(key);
+        return index >= 0 ? args[index + 1] : undefined;
+    };
+
+    const dirIndex: number = args.indexOf("--dir"),
+        targetBase: string =
+            dirIndex >= 0
+                ? resolve(process.cwd(), args[dirIndex + 1] ?? ".")
+                : process.cwd(),
+        name: string = option("--name") ?? (await promptProjectName()),
+        type: string = option("--type") ?? (await promptProjectType());
+
+    const target: string = await scaffoldWebProject({
+        name,
+        type,
+        targetBase,
+        presetRoot: presetRoot(),
+        engineConfig: engineConfigContent(),
+    });
+
+    console.log(`✅ 已创建项目：${name} → ${target}`);
+}
+
+/* 入口即执行：与其它命令一致，参数来自 runModule 重置后的 process.argv */
+await runCreateWeb(process.argv.slice(2));

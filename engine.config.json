@@ -1,8 +1,7 @@
 {
     "title": "Welcome to GoEngine",
     "tsconfig": {
-        "root": "tsconfig.json",
-        "angular": ".angular/tsconfig.json"
+        "root": "tsconfig.json"
     },
     "application": {
         "name": "GoEngine",
@@ -34,9 +33,6 @@
             "main": "index.js"
         }
     },
-    "tsup": {
-        "out": "dist/tsup"
-    },
     "electron": {
         "build": "build/electron",
         "input": {
@@ -56,8 +52,5 @@
             }
         },
         "mirror": "https://npmmirror.com/mirrors/electron/"
-    },
-    "electrobun": {
-        "input": "preset/entry/electrobun/Index.ts"
     }
 }

@@ -2,7 +2,7 @@ import { select } from "@inquirer/prompts";
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { join } from "path";
-import { resolvePath, obtainValidFolderNames } from "./obtain/dir";
+import { resolvePath, obtainValidFolderNames } from "./dir";
 
 /**
  * 选择入口文件
@@ -15,10 +15,28 @@ export async function selectEntryFile(
     pattern: string,
 ): Promise<{ filePath: string; projectPath: string; fileName: string }> {
     const resultPath: string = resolvePath(path),
-        validFolders: string[] = await obtainValidFolderNames(
-            resultPath,
-            pattern,
+        entryRegex: RegExp = new RegExp(pattern, "i");
+
+    /* 目录本身就是一个项目：直接使用入口，无需扫描子目录 */
+    const entries: Dirent[] = await readdir(resultPath, {
+            withFileTypes: true,
+        }),
+        directEntry: Dirent | undefined = entries.find(
+            (item) => item.isFile() && item.name.match(entryRegex),
         );
+
+    if (directEntry) {
+        return {
+            filePath: join(resultPath, directEntry.name),
+            projectPath: resultPath,
+            fileName: directEntry.name,
+        };
+    }
+
+    const validFolders: string[] = await obtainValidFolderNames(
+        resultPath,
+        pattern,
+    );
 
     if (validFolders.length === 0) {
         throw new Error(
@@ -37,8 +55,7 @@ export async function selectEntryFile(
         }),
         entryFile: Dirent | undefined = projectDir.find(
             (item) =>
-                item.isFile() &&
-                item.name.match(new RegExp(pattern, "i")),
+                item.isFile() && item.name.match(new RegExp(pattern, "i")),
         );
 
     if (!entryFile) {

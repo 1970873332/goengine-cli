@@ -1,8 +1,9 @@
-import { createConfig } from "@/config/esbuild";
+import { createConfig } from "@/lib/config/esbuild";
 import EngineConfig from "@/engine.config.json";
-import { BuildOptions, buildSync } from "esbuild";
+import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
-import { resolvePath } from "../utils/obtain/dir";
+import { rimraf } from "rimraf";
+import { resolvePath } from "../utils/dir";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
@@ -19,14 +20,20 @@ const {
         output: string,
         externalNode?: boolean,
     ): BuildOptions => ({
-        ...createConfig([entry], resolvePath(join(build, output)), externalNode),
+        ...createConfig(
+            [entry],
+            resolvePath(join(build, output)),
+            externalNode,
+        ),
         external: ["electron"],
     });
 
+await rimraf(build);
+
 console.log("🚀 开始构建 Electron 主进程...");
 /* 构建主进程 */
-buildSync(buildOptions(resolvePath(main_input), main_out));
+await esBuild(buildOptions(resolvePath(main_input), main_out));
 
 console.log("🚀 开始构建 Electron 预加载脚本...");
 /* 构建预加载脚本 */
-buildSync(buildOptions(resolvePath(preload_input), preload_out, true));
+await esBuild(buildOptions(resolvePath(preload_input), preload_out, true));

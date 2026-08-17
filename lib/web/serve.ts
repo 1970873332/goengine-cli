@@ -1,10 +1,10 @@
-import { defaultProtocol } from "@/config/module";
-import { createConfig } from "@/config/webpack";
+import { defaultProtocol } from "@/lib/config/module";
+import { createConfig } from "@/lib/config/webpack";
 import EngineConfig from "@/engine.config.json";
 import webpack, { Configuration as WebPackConfiguration } from "webpack";
 import WebpackDevServer, { Configuration } from "webpack-dev-server";
 import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/obtain/file";
+import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
 registerErrorHandlers();
