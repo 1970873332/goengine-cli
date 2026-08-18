@@ -11,13 +11,13 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { web },
+        app: { entry },
         electron: {
             build,
             out: { dir, main },
         },
     } = EngineConfig,
-    { projectPath } = await selectEntryFile(web, "Main"),
+    { projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     { electron: electronVersion } = devDependencies,
     version: string = electronVersion.replace("^", ""),

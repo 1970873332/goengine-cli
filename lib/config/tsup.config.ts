@@ -31,16 +31,14 @@ const external: string[] = [
 ];
 
 /**
- * 从 engine.config.json 生成 CLI 默认布局配置：
- * app.web / app.service 改为 "."（用户项目根目录），其余保持不变。
+ * 从 engine.config.json 生成 CLI 默认配置：
+ * 打包时写入 dist/assets（create:web 运行时读取），其余保持不变。
  */
 function cliEngineConfig(): string {
     const source = JSON.parse(
         readFileSync(join(root, "engine.config.json"), "utf8"),
-    ) as Record<string, unknown>,
-        app = (source.app ?? {}) as Record<string, unknown>;
+    ) as Record<string, unknown>;
 
-    source.app = { ...app, web: ".", service: "." };
     return JSON.stringify(source, null, 4);
 }
 
@@ -55,7 +53,7 @@ function copyAssets(): void {
     cpSync(join(root, "preset"), join(distAssets, "preset"), {
         recursive: true,
     });
-    /* CLI 默认布局：从 engine 配置派生（app.web / app.service 为 "."） */
+    /* CLI 默认配置：拷贝一份到 dist/assets 供 create:web 读取 */
     writeFileSync(join(distAssets, "engine.config.json"), cliEngineConfig());
 }
 

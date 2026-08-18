@@ -1,5 +1,5 @@
 import { defaultProtocol, isHTTPS } from "@/lib/config/module";
-import { createConfig } from "@/lib/config/vite";
+import { createConfig, fsAllow } from "@/lib/config/vite";
 import { obtainProjectConfig } from "@/lib/utils/file";
 import { selectEntryFile } from "@/lib/utils/select";
 import { SSLUtils } from "@/lib/utils/ssl";
@@ -12,10 +12,10 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { web },
+        app: { entry },
         ssl: { name },
     } = EngineConfig,
-    { filePath, projectPath } = await selectEntryFile(web, "Main"),
+    { filePath, projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     mod: ModConfig = projectConfig.mod ?? {},
     { remarks, host, port, protocol = defaultProtocol } = mod,
@@ -34,6 +34,9 @@ const {
                       cert: readFileSync(certPath),
                   })
                 : void 0,
+            fs: {
+                allow: fsAllow,
+            },
         },
         mode: "development",
     },

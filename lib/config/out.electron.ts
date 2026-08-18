@@ -4,6 +4,7 @@ import { join } from "path";
 
 const {
     application: { name: appName, version: appVersion, id: appID },
+    static: { favicon },
     web: { out: webOut },
     electron: {
         out: { dir },
@@ -43,7 +44,7 @@ export function createConfig({
                     arch: "x64",
                 },
             ],
-            icon: join(webOut, "favicon.ico"),
+            icon: join(webOut, favicon),
         },
         nsis: {
             // 一键安装

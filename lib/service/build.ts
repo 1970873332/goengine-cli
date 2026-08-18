@@ -10,12 +10,12 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { service },
+        app: { entry },
         service: {
             out: { dir, main },
         },
     } = EngineConfig,
-    { filePath } = await selectEntryFile(service, "Main"),
+    { filePath } = await selectEntryFile(".", entry),
     config: BuildOptions = {
         ...createConfig([filePath], resolvePath(join(dir, main))),
         packages: "external",

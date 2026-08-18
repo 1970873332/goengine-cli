@@ -1,7 +1,12 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
+import EngineConfig from "@/engine.config.json";
 import { resolvePath } from "./dir";
+
+const {
+    app: { config: project_config },
+} = EngineConfig;
 
 /**
  * 获取项目配置
@@ -11,7 +16,7 @@ import { resolvePath } from "./dir";
  */
 export async function obtainProjectConfig(
     path: string,
-    entryFile: string = "Project.ts",
+    entryFile: string = project_config,
 ): Promise<Project> {
     const resultPath: string = resolvePath(path),
         filePath: string = join(resultPath, entryFile);

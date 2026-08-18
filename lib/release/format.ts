@@ -33,22 +33,30 @@ function getSubDirectories(dir: string): string[] {
 
 /**
  * 格式化单个目录
+ * @param rootOnly - 仅格式化目录根部的文件（不递归子目录）
  */
 function formatDirectory(
     dirPath: string,
     index: number,
     total: number,
+    rootOnly: boolean = false,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         const dirName = basename(dirPath) || dirPath;
-        console.log(`\n📦 [${index + 1}/${total}] 格式化: ${dirName}`);
+        console.log(
+            `\n📦 [${index + 1}/${total}] 格式化: ${dirName}${
+                rootOnly ? "（仅根目录文件）" : ""
+            }`,
+        );
 
         // 排除 node_modules、public、build、dist 等目录，以及 _packed.tsx 文件
-        const patterns: string[] = [
-            "**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}",
-            ...EXCLUDED_DIRS.map((dir) => `!**/${dir}/**`),
-            "!**/*_packed.tsx",
-        ];
+        const patterns: string[] = rootOnly
+            ? ["*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}"]
+            : [
+                  "**/*.{js,jsx,ts,tsx,vue,css,scss,html,json,md}",
+                  ...EXCLUDED_DIRS.map((dir) => `!**/${dir}/**`),
+                  "!**/*_packed.tsx",
+              ];
 
         const prettier = spawnBin("prettier", ["--write", ...patterns], {
             cwd: dirPath,
@@ -76,22 +84,25 @@ function formatDirectory(
 }
 
 /**
- * 执行 prettier 格式化
+ * 执行 prettier 格式化：先格式化扫描根目录下的文件，再逐个格式化子目录
  */
-async function runPrettier(paths: string[]): Promise<void> {
-    if (paths.length === 0) {
-        console.log("⚠️  没有找到需要格式化的目录");
-        return;
-    }
-
-    console.log(`🎨 开始格式化 ${paths.length} 个目录...\n`);
+async function runPrettier(rootDir: string, paths: string[]): Promise<void> {
+    const total: number = paths.length + 1;
+    console.log(`🎨 开始格式化 ${total} 个目录...\n`);
 
     let successCount = 0;
     let failCount = 0;
 
+    try {
+        await formatDirectory(rootDir, 0, total, true);
+        successCount++;
+    } catch {
+        failCount++;
+    }
+
     for (let i = 0; i < paths.length; i++) {
         try {
-            await formatDirectory(paths[i], i, paths.length);
+            await formatDirectory(paths[i], i + 1, total);
             successCount++;
         } catch {
             failCount++;
@@ -127,7 +138,7 @@ const program = new Command();
 program
     .name("format:dir")
     .description(
-        "格式化指定目录下所有子目录的源代码（自动排除 node_modules、public、build、dist 等）",
+        "格式化指定目录及其子目录的源代码（自动排除 node_modules、public、build、dist 等）",
     )
     .argument("[directory]", "要扫描的目录路径（默认当前目录）", ".")
     .option("--dry-run", "仅显示将要格式化的目录，不实际执行")
@@ -140,10 +151,6 @@ console.log(`📂 扫描目录: ${directory}`);
 
 const subDirs = getSubDirectories(directory);
 
-if (subDirs.length === 0) {
-    throw new Error("⚠️  没有找到任何子目录");
-}
-
 console.log(`📦 发现 ${subDirs.length} 个子目录:`);
 for (const dirPath of subDirs) {
     const dirName = basename(dirPath) || dirPath;
@@ -152,10 +159,10 @@ for (const dirPath of subDirs) {
 
 if (options.dryRun) {
     console.log(
-        `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录，未执行格式化`,
+        `\n✅ Dry-run 模式：共发现 ${subDirs.length} 个子目录（含根目录文件），未执行格式化`,
     );
     process.exit(0);
 }
 
-await runPrettier(subDirs);
+await runPrettier(directory, subDirs);
 console.log(`\n🎉 格式化完成！`);

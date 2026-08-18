@@ -1,15 +1,31 @@
 import { input, select } from "@inquirer/prompts";
+import EngineConfig from "@/engine.config.json";
 import { existsSync } from "fs";
 import { cp, mkdir, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
+const {
+    title,
+    tsconfig: { root: tsconfig_root },
+    app: { entry: app_entry, config: project_config },
+    static: { favicon, public: public_dir },
+    html: { webpack: html_webpack, angular: html_angular },
+    web: { out: web_out, index: web_index },
+    electron: {
+        input: { main: main_input, preload: preload_input },
+        dev: {
+            server: { protocol, host, port },
+        },
+    },
+} = EngineConfig;
+
 /**
  * 统一的 Web 项目布局：
  * - 项目 = 一个包含入口文件（Main.ts / Main.tsx）的目录
  * - create:web 生成自包含项目（工具链配置 + preset/entry 模板 + 项目配置）
- * - serve / build / electron 等命令通过 selectEntryFile 发现项目：
- *   目录本身是项目则直接使用，否则扫描其子目录
+ * - serve / build / electron 等命令通过 selectEntryFile 检查当前目录
+ *   是否包含入口文件（Main），不存在则报错
  */
 
 export type WebProjectType = "react" | "vue" | "angular";
@@ -109,17 +125,19 @@ ${paths}
 `;
 }
 
-const PROJECT_TS: string = `/**
+function projectTs(): string {
+    return `/**
  * 项目配置（可选）
  */
 export default {
     mod: {
-        protocol: "http",
-        host: "localhost",
-        port: 8080,
+        protocol: "${protocol}",
+        host: "${host}",
+        port: ${port},
     },
 };
 `;
+}
 
 function indexHtml(): string {
     return `<!doctype html>
@@ -130,7 +148,7 @@ function indexHtml(): string {
             name="viewport"
             content="width=device-width, initial-scale=1.0"
         />
-        <title>GoEngine</title>
+        <title>${title}</title>
     </head>
     <body>
     </body>
@@ -138,7 +156,13 @@ function indexHtml(): string {
 `;
 }
 
-function angularJson(name: string): string {
+function angularJson(
+    name: string,
+    index: string,
+    outputPath: string,
+    tsConfig: string,
+    entry: string,
+): string {
     return `{
     "version": 1,
     "cli": {
@@ -155,17 +179,17 @@ function angularJson(name: string): string {
                 "build": {
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
-                        "outputPath": "dist/web",
-                        "index": "preset/entry/angular.html",
-                        "browser": "Main.ts",
-                        "tsConfig": "tsconfig.json",
+                        "outputPath": "${outputPath}",
+                        "index": "${index}",
+                        "browser": "${entry}.ts",
+                        "tsConfig": "${tsConfig}",
                         "styles": [
                             "styles.css"
                         ],
                         "assets": [
                             {
                                 "glob": "**/*",
-                                "input": "public",
+                                "input": "${public_dir}",
                                 "output": "/"
                             }
                         ]
@@ -312,30 +336,24 @@ export async function scaffoldWebProject(
     /* 模板源码 */
     await cp(join(preset, template), target, { recursive: true });
 
-    /* 工具链入口模板：webpack/vite 通道需要 webpack.html；Angular 使用 angular.html；
+    /* 工具链入口模板：路径来自 engine.config.json（html.webpack / html.angular），
+     * 源侧相对 engine.config.json 所在目录（CLI 为 assets/）解析，目标侧相对项目根解析；
      * electron 主进程/预加载模板（electron:dev / electron:build 按项目目录解析） */
-    await mkdir(join(target, "preset", "entry"), { recursive: true });
-    if (type === "angular") {
-        await cp(
-            join(preset, "entry", "angular.html"),
-            join(target, "preset", "entry", "angular.html"),
-        );
-    } else {
-        await cp(
-            join(preset, "entry", "webpack.html"),
-            join(target, "preset", "entry", "webpack.html"),
-        );
-    }
-    await mkdir(join(target, "preset", "entry", "electron"), {
-        recursive: true,
-    });
+    const entryTemplate: string = type === "angular" ? html_angular : html_webpack;
+
+    await mkdir(join(target, dirname(entryTemplate)), { recursive: true });
     await cp(
-        join(preset, "entry", "electron", "Index.ts"),
-        join(target, "preset", "entry", "electron", "Index.ts"),
+        join(dirname(preset), entryTemplate),
+        join(target, entryTemplate),
+    );
+    await mkdir(join(target, dirname(main_input)), { recursive: true });
+    await cp(
+        join(dirname(preset), main_input),
+        join(target, main_input),
     );
     await cp(
-        join(preset, "entry", "electron", "Preload.ts"),
-        join(target, "preset", "entry", "electron", "Preload.ts"),
+        join(dirname(preset), preload_input),
+        join(target, preload_input),
     );
 
     /* 自包含项目配置 */
@@ -343,23 +361,29 @@ export async function scaffoldWebProject(
         join(target, "package.json"),
         projectPackageJson(options.name, type),
     );
-    await writeFile(join(target, "tsconfig.json"), tsconfigJson(type));
-    await writeFile(join(target, "Project.ts"), PROJECT_TS);
+    await writeFile(join(target, tsconfig_root), tsconfigJson(type));
+    await writeFile(join(target, project_config), projectTs());
     if (type === "angular") {
         await writeFile(
             join(target, "angular.json"),
-            angularJson(options.name),
+            angularJson(
+                options.name,
+                html_angular,
+                web_out,
+                tsconfig_root,
+                app_entry,
+            ),
         );
     } else {
         /* Vite 开发/构建所需的入口页面（脚本由 vite-plugin-html 按 entry 注入） */
-        await writeFile(join(target, "index.html"), indexHtml());
+        await writeFile(join(target, web_index), indexHtml());
     }
 
-    /* 静态资源：favicon.ico（模板引用 /favicon.ico，vite 需要 public/ 目录） */
-    const favicon: string = join(preset, "favicon.ico");
-    if (existsSync(favicon)) {
-        await mkdir(join(target, "public"), { recursive: true });
-        await cp(favicon, join(target, "public", "favicon.ico"));
+    /* 静态资源：favicon（模板引用 /favicon，vite 需要 public/ 目录） */
+    const faviconPath: string = join(preset, favicon);
+    if (existsSync(faviconPath)) {
+        await mkdir(join(target, public_dir), { recursive: true });
+        await cp(faviconPath, join(target, public_dir, favicon));
     }
 
     return target;

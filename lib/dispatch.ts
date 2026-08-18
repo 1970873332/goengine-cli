@@ -82,16 +82,6 @@ export const COMMANDS: CommandSpec[] = [
         load: () => import("@/lib/release/format"),
     },
     {
-        name: "release:project",
-        description: "汇总项目发布源码",
-        load: () => import("@/lib/release/project"),
-    },
-    {
-        name: "release:compose",
-        description: "汇总项目发布产物",
-        load: () => import("@/lib/release/compose"),
-    },
-    {
         name: "chii:serve",
         description: "启动 Chii 远程调试服务器",
         load: () => import("@/lib/debug/chii"),

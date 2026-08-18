@@ -8,9 +8,9 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { web },
+        app: { entry },
     } = EngineConfig,
-    { filePath, projectPath } = await selectEntryFile(web, "Main"),
+    { filePath, projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     config: UserConfig = {
         ...createConfig(filePath, projectConfig.mod ?? {}),

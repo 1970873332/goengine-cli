@@ -8,9 +8,9 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { service },
+        app: { entry },
     } = EngineConfig,
-    { filePath, projectPath } = await selectEntryFile(service, "Main"),
+    { filePath, projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     { protocol = defaultProtocol } = projectConfig.mod ?? {};
 

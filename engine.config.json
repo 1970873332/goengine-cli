@@ -9,23 +9,27 @@
         "id": "com.goengine.app"
     },
     "app": {
-        "web": "webs",
-        "service": "services"
+        "entry": "Main",
+        "config": "Project.ts"
+    },
+    "static": {
+        "favicon": "favicon.ico",
+        "public": "public"
     },
     "ssl": {
         "name": "local",
         "output": ".cache/ssl"
     },
-    "release": {
-        "source": "releases/source",
-        "bundle": "releases/bundle"
+    "chii": {
+        "port": 3000
     },
     "html": {
         "webpack": "preset/entry/webpack.html",
         "angular": "preset/entry/angular.html"
     },
     "web": {
-        "out": "dist/web"
+        "out": "dist/web",
+        "index": "index.html"
     },
     "service": {
         "out": {

@@ -1,8 +1,9 @@
+import EngineConfig from "@/engine.config.json";
 import { IPUtils } from "@/lib/utils/ip";
 import { resolvePath } from "@/lib/utils/dir";
 
 /** Chii 远程调试服务器默认端口（chii:serve 命令与调试地址共用） */
-export const CHII_PORT = 3000;
+export const CHII_PORT: number = EngineConfig.chii.port;
 
 export const defaultProtocol: ModConfig["protocol"] = "http";
 

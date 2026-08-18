@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
 import EngineConfig from "@/engine.config.json";
+import { existsSync } from "fs";
 import { relative } from "path";
 import { defineConfig, UserConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
@@ -25,6 +26,35 @@ const {
         "node_modules",
     );
 
+/*
+ * Vite 开发服务器允许读取的目录：
+ * - 项目根目录（Vite 默认仅允许它，显式声明后需保留）
+ * - CLI 自身 node_modules（第三方依赖符号链接解析后的真实路径）
+ * - CLI 工作区包（@goengine/* 符号链接解析后位于 package/ 下）
+ * 否则访问 @goengine/* 源码会报 "outside of Vite serving allow list"。
+ */
+export const fsAllow: string[] = [
+    process.cwd(),
+    cliNodeModules,
+    join(cliNodeModules, "..", "package"),
+];
+
+/**
+ * 解析 @goengine/* 工作区包源码目录
+ *
+ * 开发态下 node_modules 中的 @goengine/* 是指向 package/ 的 junction：
+ * 若别名指向 junction（node_modules 内），Vite 会给模块 URL 追加 ?v= 版本号，
+ * 而包内相对导入解析到 package/ 真实路径不带版本号，导致同一模块在浏览器中被
+ * 加载两份，instanceof 判断失效（Batch / Snapshot 无法渲染）。
+ * 因此开发态优先解析到 package/ 真实目录；发布态回退到 node_modules 安装包。
+ */
+function resolveGoEnginePackage(name: string): string {
+    const installed = join(cliNodeModules, "@goengine", name),
+        workspace = join(cliNodeModules, "..", "package", `goengine-${name}`);
+
+    return existsSync(workspace) ? workspace : installed;
+}
+
 export function createConfig(
     entry: string,
     { debug, protocol = defaultProtocol }: ModConfig,
@@ -32,6 +62,11 @@ export function createConfig(
     return defineConfig({
         logLevel: "error",
         base: "",
+        server: {
+            fs: {
+                allow: fsAllow,
+            },
+        },
         build: {
             outDir,
             emptyOutDir: true,
@@ -59,44 +94,16 @@ export function createConfig(
                     ),
                     vue: join(cliNodeModules, "vue"),
                     "vue-router": join(cliNodeModules, "vue-router"),
-                    "@goengine/angular": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "angular",
-                    ),
-                    "@goengine/canvas": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "canvas",
-                    ),
-                    "@goengine/core": join(cliNodeModules, "@goengine", "core"),
-                    "@goengine/electrobun": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "electrobun",
-                    ),
-                    "@goengine/electron": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "electron",
-                    ),
-                    "@goengine/react": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "react",
-                    ),
-                    "@goengine/service": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "service",
-                    ),
-                    "@goengine/vue": join(cliNodeModules, "@goengine", "vue"),
-                    "@goengine/web": join(cliNodeModules, "@goengine", "web"),
-                    "@goengine/webgl": join(
-                        cliNodeModules,
-                        "@goengine",
-                        "webgl",
-                    ),
+                    "@goengine/angular": resolveGoEnginePackage("angular"),
+                    "@goengine/canvas": resolveGoEnginePackage("canvas"),
+                    "@goengine/core": resolveGoEnginePackage("core"),
+                    "@goengine/electrobun": resolveGoEnginePackage("electrobun"),
+                    "@goengine/electron": resolveGoEnginePackage("electron"),
+                    "@goengine/react": resolveGoEnginePackage("react"),
+                    "@goengine/service": resolveGoEnginePackage("service"),
+                    "@goengine/vue": resolveGoEnginePackage("vue"),
+                    "@goengine/web": resolveGoEnginePackage("web"),
+                    "@goengine/webgl": resolveGoEnginePackage("webgl"),
                 }).map(([find, replacement]) => ({ find, replacement })),
             ],
         },
