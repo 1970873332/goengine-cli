@@ -20,9 +20,10 @@ import { fileURLToPath } from "url";
 
 const {
         title,
-        web: { out },
+        html: { vite: html_vite },
+        web: { out: web_out },
     } = EngineConfig,
-    outDir: string = resolvePath(out),
+    outDir: string = resolvePath(web_out),
     /*
      * CLI（或 engine 开发环境）自身的 node_modules：
      * react 与 @goengine/* 从这里解析，项目无需安装即可运行。
@@ -79,6 +80,13 @@ export function createConfig(
             emptyOutDir: true,
             copyPublicDir: false,
             rollupOptions: {
+                /*
+                 * vite 原生模式：入口为 html.vite（脚手架按该名写入的页面），
+                 * 产物按 html.vite 的文件名输出到 web.out.dir 下（不改名）。
+                 */
+                input: {
+                    [html_vite.replace(/\.html$/i, "")]: resolvePath(html_vite),
+                },
                 output: {
                     format: "iife",
                     entryFileNames: `js/[name]-[hash].js`,
@@ -133,6 +141,8 @@ export function createConfig(
             createHtmlPlugin({
                 minify: true,
                 entry: relative(process.cwd(), entry),
+                /* HTML 入口文件：脚手架按 html.vite 命名写入项目根目录 */
+                template: html_vite,
                 inject: {
                     data: {
                         title,

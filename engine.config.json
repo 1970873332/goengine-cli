@@ -24,12 +24,15 @@
         "port": 3000
     },
     "html": {
-        "webpack": "preset/entry/webpack.html",
-        "angular": "preset/entry/angular.html"
+        "webpack": {
+            "input": "preset/entry/webpack.html",
+            "out": "index.html"
+        },
+        "angular": "index.html",
+        "vite": "index.html"
     },
     "web": {
-        "out": "dist/web",
-        "index": "index.html"
+        "out": "dist/web"
     },
     "service": {
         "out": {

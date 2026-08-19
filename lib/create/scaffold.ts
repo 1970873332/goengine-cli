@@ -6,13 +6,20 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { NODE_MODULES, PACKAGE_JSON } from "@/lib/config/module";
 
+/** Angular 入口模板（相对 CLI 资源根），内容含 <app-root>，作为 html.angular 的源 */
+const ANGULAR_ENTRY_TEMPLATE: string = "preset/entry/angular.html";
+
 const {
     title,
     tsconfig: { root: tsconfig_root },
     app: { entry: app_entry, config: project_config },
     static: { favicon, public: public_dir },
-    html: { webpack: html_webpack, angular: html_angular },
-    web: { out: web_out, index: web_index },
+    html: {
+        webpack: { input: html_webpack },
+        angular: html_angular,
+        vite: html_vite,
+    },
+    web: { out: web_out },
     electron: {
         input: { main: main_input, preload: preload_input },
         dev: {
@@ -94,6 +101,9 @@ function tsconfigJson(type: WebProjectType): string {
      * "File not found in TypeScript compilation"；React/Vue 仅做类型检查，保留 noEmit。 */
     const noEmit: string =
         type === "angular" ? "" : '        "noEmit": true,\n';
+    /* Angular 由 ng CLI 编译，node_modules 里没有 @goengine/electron；
+     * preset/entry/electron 是 CLI 工具链模板，需排除以免 ng 解析报错 */
+    const excludePreset: string = type === "angular" ? ',\n        "preset"' : "";
 
     return `{
     "compilerOptions": {
@@ -120,7 +130,7 @@ ${paths}
     "exclude": [
         "${NODE_MODULES}",
         "dist",
-        "build"
+        "build"${excludePreset}
     ]
 }
 `;
@@ -184,6 +194,7 @@ function angularJson(
                         "index": "${index}",
                         "browser": "${entry}.ts",
                         "tsConfig": "${tsConfig}",
+                        "extractLicenses": false,
                         "styles": [
                             "styles.css"
                         ],
@@ -337,16 +348,16 @@ export async function scaffoldWebProject(
     /* 模板源码 */
     await cp(join(preset, template), target, { recursive: true });
 
-    /* 工具链入口模板：路径来自 engine.config.json（html.webpack / html.angular），
+    /* 工具链入口模板：路径来自 engine.config.json（html.webpack.input），
      * 源侧相对 engine.config.json 所在目录（CLI 为 assets/）解析，目标侧相对项目根解析；
      * electron 主进程/预加载模板（electron:dev / electron:build 按项目目录解析） */
-    const entryTemplate: string = type === "angular" ? html_angular : html_webpack;
-
-    await mkdir(join(target, dirname(entryTemplate)), { recursive: true });
-    await cp(
-        join(dirname(preset), entryTemplate),
-        join(target, entryTemplate),
-    );
+    if (type !== "angular") {
+        await mkdir(join(target, dirname(html_webpack)), { recursive: true });
+        await cp(
+            join(dirname(preset), html_webpack),
+            join(target, html_webpack),
+        );
+    }
     await mkdir(join(target, dirname(main_input)), { recursive: true });
     await cp(
         join(dirname(preset), main_input),
@@ -375,9 +386,14 @@ export async function scaffoldWebProject(
                 app_entry,
             ),
         );
+        /* Angular 入口：index.html（html.angular），内容取 CLI 预设的 Angular 模板 */
+        await cp(
+            join(dirname(preset), ANGULAR_ENTRY_TEMPLATE),
+            join(target, html_angular),
+        );
     } else {
         /* Vite 开发/构建所需的入口页面（脚本由 vite-plugin-html 按 entry 注入） */
-        await writeFile(join(target, web_index), indexHtml());
+        await writeFile(join(target, html_vite), indexHtml());
     }
 
     /* 静态资源：favicon（模板引用 /favicon，vite 需要 public/ 目录） */

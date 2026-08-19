@@ -24,8 +24,10 @@ const dev: boolean = process.env.NODE_ENV === "development",
     {
         title,
         tsconfig: { root },
-        html: { webpack: html_webpack },
-        web: { out },
+        html: {
+            webpack: { input: html_webpack, out: html_webpack_out },
+        },
+        web: { out: web_out },
     } = EngineConfig;
 
 /**
@@ -61,7 +63,7 @@ export function createConfig({
             ? void 0
             : {
                   libraryTarget: esm ? "module" : void 0,
-                  path: resolvePath(out),
+                  path: resolvePath(web_out),
                   clean: true,
                   filename: bundle
                       ? "js/[fullhash].js"
@@ -208,6 +210,8 @@ export function createConfig({
             new webpack.DefinePlugin(define(!!debug)),
             new HtmlWebpackPlugin({
                 title,
+                /* Web 构建入口文件名（html.webpack.out） */
+                filename: html_webpack_out,
                 template: resolvePath(html_webpack),
                 templateParameters: {
                     /* devtool远程调试 */
