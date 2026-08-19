@@ -4,6 +4,7 @@ import { existsSync } from "fs";
 import { cp, mkdir, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import { NODE_MODULES, PACKAGE_JSON } from "@/lib/config/module";
 
 const {
     title,
@@ -70,13 +71,13 @@ export function templateOf(type: string): string | undefined {
 function findNodeModules(start: string): string {
     let dir: string = start;
     for (;;) {
-        const candidate: string = join(dir, "node_modules");
+        const candidate: string = join(dir, NODE_MODULES);
         if (existsSync(candidate)) return candidate;
         const parent: string = dirname(dir);
         if (parent === dir) break;
         dir = parent;
     }
-    return join(start, "node_modules");
+    return join(start, NODE_MODULES);
 }
 
 const cliNodeModules: string = findNodeModules(
@@ -117,7 +118,7 @@ ${paths}
         "**/*.json"
     ],
     "exclude": [
-        "node_modules",
+        "${NODE_MODULES}",
         "dist",
         "build"
     ]
@@ -358,7 +359,7 @@ export async function scaffoldWebProject(
 
     /* 自包含项目配置 */
     await writeFile(
-        join(target, "package.json"),
+        join(target, PACKAGE_JSON),
         projectPackageJson(options.name, type),
     );
     await writeFile(join(target, tsconfig_root), tsconfigJson(type));

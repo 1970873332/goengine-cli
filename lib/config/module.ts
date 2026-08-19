@@ -2,6 +2,11 @@ import EngineConfig from "@/engine.config.json";
 import { IPUtils } from "@/lib/utils/ip";
 import { resolvePath } from "@/lib/utils/dir";
 
+/** 常用文件名常量（集中定义，避免各处硬编码） */
+export const NODE_MODULES: string = "node_modules";
+export const PACKAGE_JSON: string = "package.json";
+export const ENGINE_CONFIG_JSON: string = "engine.config.json";
+
 /** Chii 远程调试服务器默认端口（chii:serve 命令与调试地址共用） */
 export const CHII_PORT: number = EngineConfig.chii.port;
 

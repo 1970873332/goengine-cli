@@ -7,7 +7,14 @@ import { existsSync } from "fs";
 import { relative } from "path";
 import { defineConfig, UserConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
-import { alias, chii, defaultProtocol, define, extensions } from "./module";
+import {
+    alias,
+    chii,
+    defaultProtocol,
+    define,
+    extensions,
+    NODE_MODULES,
+} from "./module";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
@@ -23,7 +30,7 @@ const {
     cliNodeModules: string = join(
         dirname(fileURLToPath(import.meta.url)),
         "..",
-        "node_modules",
+        NODE_MODULES,
     );
 
 /*

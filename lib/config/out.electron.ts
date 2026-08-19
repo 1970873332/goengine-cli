@@ -1,6 +1,7 @@
 import { Configuration } from "electron-builder";
 import EngineConfig from "@/engine.config.json";
 import { join } from "path";
+import { NODE_MODULES, PACKAGE_JSON } from "./module";
 
 const {
     application: { name: appName, version: appVersion, id: appID },
@@ -32,8 +33,8 @@ export function createConfig({
             output: dir,
         },
         files: [
-            "!node_modules",
-            "!package.json",
+            `!${NODE_MODULES}`,
+            `!${PACKAGE_JSON}`,
             `${webOut}/**/*`,
             `${electronBuild}/**/*`,
         ],

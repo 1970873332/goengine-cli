@@ -8,18 +8,19 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "tsup";
+import { ENGINE_CONFIG_JSON, PACKAGE_JSON } from "./module";
 
 const here: string = dirname(fileURLToPath(import.meta.url)),
     /* 仓库根（本文件位于 lib/config/） */
     root: string = resolve(here, "..", ".."),
     distAssets: string = join(root, "dist", "assets"),
     /* 构建期临时配置：@/engine.config.json 在 tsup clean 之前被读取 */
-    buildConfigPath: string = join(root, "assets", "engine.config.json");
+    buildConfigPath: string = join(root, "assets", ENGINE_CONFIG_JSON);
 
 const manifest: {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
-} = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+} = JSON.parse(readFileSync(join(root, PACKAGE_JSON), "utf8"));
 
 /**
  * 第三方依赖保持 external（发布包在 dependencies 中声明，由安装方提供），
@@ -36,7 +37,7 @@ const external: string[] = [
  */
 function cliEngineConfig(): string {
     const source = JSON.parse(
-        readFileSync(join(root, "engine.config.json"), "utf8"),
+        readFileSync(join(root, ENGINE_CONFIG_JSON), "utf8"),
     ) as Record<string, unknown>;
 
     return JSON.stringify(source, null, 4);
@@ -54,7 +55,7 @@ function copyAssets(): void {
         recursive: true,
     });
     /* CLI 默认配置：拷贝一份到 dist/assets 供 create:web 读取 */
-    writeFileSync(join(distAssets, "engine.config.json"), cliEngineConfig());
+    writeFileSync(join(distAssets, ENGINE_CONFIG_JSON), cliEngineConfig());
 }
 
 /* 构建期：先把派生配置写入仓库级临时位置供 alias 读取（tsup clean 会清空 dist） */
@@ -86,7 +87,7 @@ export default defineConfig({
         options.alias = {
             "@": root,
             /* CLI 构建时把 engine.config.json 替换为 CLI 默认布局 */
-            "@/engine.config.json": buildConfigPath,
+            [`@/${ENGINE_CONFIG_JSON}`]: buildConfigPath,
         };
     },
 });

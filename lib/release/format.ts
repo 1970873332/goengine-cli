@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { existsSync, readdirSync, statSync } from "fs";
 import { basename, join } from "path";
 import { registerErrorHandlers } from "@/lib/utils/error";
+import { NODE_MODULES } from "@/lib/config/module";
 
 registerErrorHandlers();
 
@@ -123,7 +124,7 @@ async function runPrettier(rootDir: string, paths: string[]): Promise<void> {
  * 需要排除的目录列表
  */
 const EXCLUDED_DIRS = [
-    "node_modules",
+    NODE_MODULES,
     ".angular",
     ".git",
     "public",
@@ -138,7 +139,7 @@ const program = new Command();
 program
     .name("format:dir")
     .description(
-        "格式化指定目录及其子目录的源代码（自动排除 node_modules、public、build、dist 等）",
+        `格式化指定目录及其子目录的源代码（自动排除 ${NODE_MODULES}、public、build、dist 等）`,
     )
     .argument("[directory]", "要扫描的目录路径（默认当前目录）", ".")
     .option("--dry-run", "仅显示将要格式化的目录，不实际执行")

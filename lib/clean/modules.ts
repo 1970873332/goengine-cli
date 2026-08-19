@@ -4,10 +4,11 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { rimraf } from "rimraf";
 import { registerErrorHandlers } from "@/lib/utils/error";
+import { NODE_MODULES } from "@/lib/config/module";
 
 registerErrorHandlers();
 
-const modules: string = "node_modules";
+const modules: string = NODE_MODULES;
 
 // 获取所有需要删除的目录
 const directories = workspaces
@@ -21,9 +22,9 @@ if (existsSync(modules)) {
 }
 
 if (directories.length === 0)
-    throw new Error("✅ 没有找到需要删除的 node_modules 目录");
+    throw new Error(`✅ 没有找到需要删除的 ${NODE_MODULES} 目录`);
 
-console.log(`🗑️ 准备删除 ${directories.length} 个 node_modules 目录`);
+console.log(`🗑️ 准备删除 ${directories.length} 个 ${NODE_MODULES} 目录`);
 directories.forEach((dir) => console.log(`  ${dir}`));
 
 await rimraf(directories);

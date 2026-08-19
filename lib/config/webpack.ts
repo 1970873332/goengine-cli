@@ -11,7 +11,14 @@ import { fileURLToPath } from "url";
 import { VueLoaderPlugin } from "vue-loader";
 import webpack, { Configuration, RuleSetUse, RuleSetUseItem } from "webpack";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
-import { alias, chii, defaultProtocol, define, extensions } from "./module";
+import {
+    alias,
+    chii,
+    defaultProtocol,
+    define,
+    extensions,
+    NODE_MODULES,
+} from "./module";
 
 const dev: boolean = process.env.NODE_ENV === "development",
     {
@@ -27,8 +34,9 @@ const dev: boolean = process.env.NODE_ENV === "development",
  * （本地开发是 junction，发布安装是真实目录），必须放行交给 loader 处理。
  * 注意排除 @goengine/* 内部的嵌套 node_modules（第三方依赖仍不处理）。
  */
-const excludeNodeModules: RegExp =
-    /(^|[\\/])node_modules[\\/](?!@goengine[\\/])/;
+const excludeNodeModules: RegExp = new RegExp(
+    `(^|[\\/])${NODE_MODULES}[\\/](?!@goengine[\\/])`,
+);
 
 export function createConfig({
     debug,
@@ -66,13 +74,13 @@ export function createConfig({
              */
             modules: [
                 /* 项目自身的 node_modules 放最前，保证 react 等框架包只有一份（用户项目提供） */
-                join(process.cwd(), "node_modules"),
+                join(process.cwd(), NODE_MODULES),
                 join(
                     dirname(fileURLToPath(import.meta.url)),
                     "..",
-                    "node_modules",
+                    NODE_MODULES,
                 ),
-                "node_modules",
+                NODE_MODULES,
             ],
             extensions: extensions(),
             alias: alias(),
@@ -90,9 +98,9 @@ export function createConfig({
                 join(
                     dirname(fileURLToPath(import.meta.url)),
                     "..",
-                    "node_modules",
+                    NODE_MODULES,
                 ),
-                "node_modules",
+                NODE_MODULES,
             ],
         },
         /* 模块 */
@@ -249,7 +257,9 @@ export function createConfig({
                             cacheGroups: {
                                 libs: {
                                     name: "libs",
-                                    test: /[\\/]node_modules[\\/]/,
+                                    test: new RegExp(
+                                        `[\\/]${NODE_MODULES}[\\/]`,
+                                    ),
                                     priority: 20,
                                     reuseExistingChunk: true,
                                 },

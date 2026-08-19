@@ -93,7 +93,7 @@ export const COMMANDS: CommandSpec[] = [
     },
     {
         name: "clean:modules",
-        description: "清理 node_modules",
+        description: `清理modules`,
         load: () => import("@/lib/clean/modules"),
     },
 ];

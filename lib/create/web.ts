@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ENGINE_CONFIG_JSON } from "@/lib/config/module";
 import {
     promptProjectName,
     promptProjectType,
@@ -19,7 +20,7 @@ function presetRoot(): string {
 
 /** engine.config.json 内容（构建时生成到 assets，写入项目便于用户自定义布局） */
 function engineConfigContent(): string {
-    return readFileSync(resolve(here, "assets/engine.config.json"), "utf8");
+    return readFileSync(resolve(here, "assets", ENGINE_CONFIG_JSON), "utf8");
 }
 
 export async function runCreateWeb(args: string[]): Promise<void> {

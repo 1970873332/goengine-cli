@@ -2,7 +2,7 @@ import { BuildOptions, Plugin } from "esbuild";
 import { existsSync } from "fs";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
-import { alias } from "./module";
+import { alias, ENGINE_CONFIG_JSON, NODE_MODULES } from "./module";
 
 /**
  * 向上查找最近的 node_modules：
@@ -11,13 +11,13 @@ import { alias } from "./module";
 function findNodeModules(start: string): string {
     let dir: string = start;
     for (;;) {
-        const candidate: string = join(dir, "node_modules");
+        const candidate: string = join(dir, NODE_MODULES);
         if (existsSync(candidate)) return candidate;
         const parent: string = dirname(dir);
         if (parent === dir) break;
         dir = parent;
     }
-    return join(start, "node_modules");
+    return join(start, NODE_MODULES);
 }
 
 const cliNodeModules: string = findNodeModules(
@@ -55,14 +55,14 @@ const goengineResolvePlugin: Plugin = {
         build.onResolve({ filter: /^@\/engine\.config\.json$/ }, () => {
             const projectConfig: string = join(
                 process.cwd(),
-                "engine.config.json",
+                ENGINE_CONFIG_JSON,
             );
             if (existsSync(projectConfig)) return { path: projectConfig };
             return {
                 path: join(
                     dirname(fileURLToPath(import.meta.url)),
                     "assets",
-                    "engine.config.json",
+                    ENGINE_CONFIG_JSON,
                 ),
             };
         });

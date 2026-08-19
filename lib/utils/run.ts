@@ -8,6 +8,7 @@ import type {
 import { existsSync, readFileSync } from "fs";
 import { basename, dirname, join } from "path";
 import { fileURLToPath } from "url";
+import { NODE_MODULES, PACKAGE_JSON } from "@/lib/config/module";
 
 /**
  * 解析可执行包（bin 名与包名一致）的 JS 入口文件。
@@ -26,9 +27,9 @@ export function resolveBin(bin: string, packageName: string = bin): string {
         /* 嵌套安装：<pkg>/node_modules/<packageName>/package.json */
         const nested: string = join(
             dir,
-            "node_modules",
+            NODE_MODULES,
             packageName,
-            "package.json",
+            PACKAGE_JSON,
         );
         if (existsSync(nested)) {
             const entry: string | null = binEntry(nested, bin);
@@ -36,8 +37,8 @@ export function resolveBin(bin: string, packageName: string = bin): string {
         }
 
         /* 平铺/虚拟存储：<node_modules>/<packageName>/package.json */
-        if (basename(dir) === "node_modules") {
-            const hoisted: string = join(dir, packageName, "package.json");
+        if (basename(dir) === NODE_MODULES) {
+            const hoisted: string = join(dir, packageName, PACKAGE_JSON);
             if (existsSync(hoisted)) {
                 const entry: string | null = binEntry(hoisted, bin);
                 if (entry) return entry;
