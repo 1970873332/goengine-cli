@@ -18,6 +18,7 @@ import {
     define,
     extensions,
     NODE_MODULES,
+    REGEXP_PATH_SEPARATOR,
 } from "./module";
 
 const dev: boolean = process.env.NODE_ENV === "development",
@@ -36,9 +37,14 @@ const dev: boolean = process.env.NODE_ENV === "development",
  * （本地开发是 junction，发布安装是真实目录），必须放行交给 loader 处理。
  * 注意排除 @goengine/* 内部的嵌套 node_modules（第三方依赖仍不处理）。
  */
-/* 模板字符串需双写反斜杠：`[\\\\/]` 生成正则 `[\\/]`，同时匹配 Windows 反斜杠与正斜杠 */
 const excludeNodeModules: RegExp = new RegExp(
-    `(^|[\\\\/])${NODE_MODULES}[\\\\/](?!@goengine[\\\\/])`,
+    `(^|${REGEXP_PATH_SEPARATOR})${NODE_MODULES}${REGEXP_PATH_SEPARATOR}(?!@goengine${REGEXP_PATH_SEPARATOR})`,
+);
+
+/* Angular templateUrl 规则只处理应用内 html；
+ * 工具链入口模板目录（html.webpack.input 所在目录，如 preset/entries/）除外 */
+const excludeEntryTemplates: RegExp = new RegExp(
+    `${dirname(html_webpack).replaceAll("/", REGEXP_PATH_SEPARATOR)}${REGEXP_PATH_SEPARATOR}`,
 );
 
 export function createConfig({
@@ -146,7 +152,7 @@ export function createConfig({
                 {
                     test: /\.html$/i,
                     type: "asset/source",
-                    exclude: [excludeNodeModules, /preset[\\/]entry/],
+                    exclude: [excludeNodeModules, excludeEntryTemplates],
                 },
                 /* 图标 */
                 {
@@ -263,7 +269,7 @@ export function createConfig({
                                 libs: {
                                     name: "libs",
                                     test: new RegExp(
-                                        `[\\\\/]${NODE_MODULES}[\\\\/]`,
+                                        `${REGEXP_PATH_SEPARATOR}${NODE_MODULES}${REGEXP_PATH_SEPARATOR}`,
                                     ),
                                     priority: 20,
                                     reuseExistingChunk: true,

@@ -6,6 +6,8 @@ import { resolvePath } from "@/lib/utils/dir";
 export const NODE_MODULES: string = "node_modules";
 export const PACKAGE_JSON: string = "package.json";
 export const ENGINE_CONFIG_JSON: string = "engine.config.json";
+/** 正则字符类：匹配 Windows 反斜杠与正斜杠（模板插值时统一用它，避免转义回归） */
+export const REGEXP_PATH_SEPARATOR: string = "[\\\\/]";
 
 /** Chii 远程调试服务器默认端口（chii:serve 命令与调试地址共用） */
 export const CHII_PORT: number = EngineConfig.chii.port;

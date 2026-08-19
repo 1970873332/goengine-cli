@@ -10,7 +10,7 @@
     },
     "app": {
         "entry": "Main",
-        "config": "Project.ts"
+        "config": "preset/Project.ts"
     },
     "static": {
         "favicon": "favicon.ico",
@@ -25,7 +25,7 @@
     },
     "html": {
         "webpack": {
-            "input": "preset/entry/webpack.html",
+            "input": "preset/entries/webpack.html",
             "out": "index.html"
         },
         "angular": "index.html",
@@ -43,8 +43,8 @@
     "electron": {
         "build": "build/electron",
         "input": {
-            "main": "preset/entry/electron/Index.ts",
-            "preload": "preset/entry/electron/Preload.ts"
+            "main": "preset/entries/electron/Index.ts",
+            "preload": "preset/entries/electron/Preload.ts"
         },
         "out": {
             "dir": "dist/electron",
