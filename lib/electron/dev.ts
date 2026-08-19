@@ -8,6 +8,7 @@ registerErrorHandlers();
 const {
     electron: {
         build,
+        mirror,
         out: { main },
         dev: {
             server: { protocol, host, port },
@@ -23,6 +24,8 @@ const electronPath: string = resolve(build, main),
         ENV_PROTOCOL: protocol as ModConfig["protocol"],
         ENV_HOST: host,
         ENV_PORT: String(port),
+        /* npx 现场安装 electron 时，二进制下载走 engine.config.json 配置的镜像源 */
+        ELECTRON_MIRROR: mirror,
     },
     common: string = `electron "${electronPath}"`;
 

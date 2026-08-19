@@ -25,7 +25,10 @@ export function createConfig({
         buildVersion: version,
         artifactName: name + ".${ext}",
         asar: true,
-        npmRebuild: false,
+        /* 依赖已由 esbuild / webpack 打入产物，node_modules 不随包分发；
+         * beforeBuild 返回 false 让 electron-builder 跳过依赖树收集与重建，
+         * 避免对未安装到项目内的框架依赖（react/vue 等）报 production dependency not found */
+        beforeBuild: () => false,
         electronDownload: {
             mirror,
         },
