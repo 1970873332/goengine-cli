@@ -1,24 +1,29 @@
 import { Configuration } from "electron-builder";
-import EngineConfig from "@/engine.config.json";
 import { join } from "path";
-import { NODE_MODULES, PACKAGE_JSON } from "./module";
+import { NODE_MODULES, PACKAGE_JSON, projectConfig } from "./module";
 
 const {
-    application: { name: appName, version: appVersion, id: appID },
     static: { favicon },
-    web: { out: webOut },
+    web: {
+        out: { dir: webOut },
+    },
     electron: {
         out: { dir },
         mirror,
         build: electronBuild,
     },
-} = EngineConfig;
+} = projectConfig();
 
+/** 打包身份（name / version / id）由调用方从项目 package.json 组装传入 */
 export function createConfig({
-    name = appName,
-    version = appVersion,
-    id = appID,
-}: Partial<PackageConfig>): Configuration {
+    name,
+    version,
+    id,
+}: {
+    name: string;
+    version: string;
+    id: string;
+}): Configuration {
     return {
         appId: id,
         productName: name,
@@ -30,7 +35,8 @@ export function createConfig({
          * 避免对未安装到项目内的框架依赖（react/vue 等）报 production dependency not found */
         beforeBuild: () => false,
         electronDownload: {
-            mirror,
+            /* ELECTRON_MIRROR 环境变量优先，其次 engine.config.json，缺省走官方源 */
+            mirror: process.env.ELECTRON_MIRROR ?? mirror,
         },
         directories: {
             output: dir,

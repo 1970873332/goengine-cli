@@ -1,7 +1,6 @@
 import { resolvePath } from "@/lib/utils/dir";
 import TailwindPostCSS from "@tailwindcss/postcss";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import EngineConfig from "@/engine.config.json";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { createRequire } from "module";
@@ -18,18 +17,19 @@ import {
     define,
     extensions,
     NODE_MODULES,
+    projectConfig,
     REGEXP_PATH_SEPARATOR,
+    TSCONFIG_JSON,
 } from "./module";
 
 const dev: boolean = process.env.NODE_ENV === "development",
     {
         title,
-        tsconfig: { root },
-        html: {
-            webpack: { input: html_webpack, out: html_webpack_out },
+        webpack: { input: html_webpack, out: html_webpack_out },
+        web: {
+            out: { dir: web_out },
         },
-        web: { out: web_out },
-    } = EngineConfig;
+    } = projectConfig();
 
 /**
  * node_modules 排除规则：
@@ -338,7 +338,7 @@ export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
             options: {
                 transpileOnly: true,
                 happyPackMode: false,
-                configFile: root,
+                configFile: TSCONFIG_JSON,
                 appendTsSuffixTo: [/\.vue$/],
             },
         },

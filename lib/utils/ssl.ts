@@ -1,8 +1,8 @@
-import EngineConfig from "@/engine.config.json";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { generate, GenerateResult } from "selfsigned";
 import { resolvePath } from "./dir";
+import { projectConfig } from "@/lib/config/module";
 
 /**
  * SSL 证书工具
@@ -11,7 +11,7 @@ export class SSLUtils {
     /**
      * 证书存放目录
      */
-    protected static readonly dir: string = EngineConfig.ssl.output;
+    protected static readonly dir: string = projectConfig().ssl.output;
     /**
      * 证书存放路径
      */

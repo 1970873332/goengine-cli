@@ -1,4 +1,3 @@
-import EngineConfig from "@/engine.config.json";
 import { NODE_MODULES } from "@/lib/config/module";
 
 /** 支持的 Web 项目类型 */
@@ -53,20 +52,10 @@ const FRAMEWORK_VERSIONS: Record<string, string> = {
     "zone.js": "^0.16.1",
 };
 
-const {
-    html: {
-        webpack: { input: html_webpack },
-    },
-} = EngineConfig;
-
 /** 按类型的项目布局（驱动脚手架组装，避免散落 if） */
 export interface ProjectLayout {
     /** 应用模板目录（相对 preset 根） */
     template: string;
-    /** webpack 入口模板（相对 CLI 资源根；angular 不使用 webpack，为 null） */
-    entryTemplate: string | null;
-    /** index.html 源模板（相对 CLI 资源根，含 HTML_TITLE_TOKEN 占位符） */
-    indexTemplate: string;
     /** 是否为 Angular 项目（决定是否生成 angular.json 与 Angular 入口） */
     angular: boolean;
     /** package.json scripts（对象，序列化时直接 JSON 输出） */
@@ -78,8 +67,6 @@ export interface ProjectLayout {
 export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
     react: {
         template: TEMPLATES.react,
-        entryTemplate: html_webpack,
-        indexTemplate: "preset/entries/index.html",
         angular: false,
         scripts: {
             serve: "goengine web:serve",
@@ -91,8 +78,6 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
     },
     vue: {
         template: TEMPLATES.vue,
-        entryTemplate: html_webpack,
-        indexTemplate: "preset/entries/index.html",
         angular: false,
         scripts: {
             serve: "goengine web:serve",
@@ -104,8 +89,6 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
     },
     angular: {
         template: TEMPLATES.angular,
-        entryTemplate: null,
-        indexTemplate: "preset/entries/angular.html",
         angular: true,
         scripts: {
             serve: "goengine ng:serve",
@@ -160,6 +143,10 @@ export function projectPackageJson(
         description: `GoEngine ${type} 项目`,
         private: true,
         type: "module",
+        /* Electron 打包应用 ID（electron:out 读取） */
+        appId: "com.goengine.app",
+        /* Electron 打包显示名（electron:out 优先读取，缺省回退 name） */
+        appName: name,
         scripts: layout.scripts,
         dependencies,
         ...(Object.keys(layout.devDependencies).length > 0
@@ -234,7 +221,8 @@ export function angularJson(
                             browser: `${entry}.ts`,
                             tsConfig,
                             extractLicenses: false,
-                            styles: ["styles.css"],
+                            /* 样式随应用模板位于 views/ 下 */
+                            styles: ["views/styles.css"],
                             assets: [
                                 {
                                     glob: "**/*",

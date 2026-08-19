@@ -2,7 +2,6 @@ import { resolvePath } from "@/lib/utils/dir";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
-import EngineConfig from "@/engine.config.json";
 import { existsSync } from "fs";
 import { relative } from "path";
 import { defineConfig, UserConfig } from "vite";
@@ -13,16 +12,19 @@ import {
     defaultProtocol,
     define,
     extensions,
+    INDEX_HTML,
     NODE_MODULES,
+    projectConfig,
 } from "./module";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const {
         title,
-        html: { vite: html_vite },
-        web: { out: web_out },
-    } = EngineConfig,
+        web: {
+            out: { dir: web_out },
+        },
+    } = projectConfig(),
     outDir: string = resolvePath(web_out),
     /*
      * CLI（或 engine 开发环境）自身的 node_modules：
@@ -85,7 +87,7 @@ export function createConfig(
                  * 产物按 html.vite 的文件名输出到 web.out.dir 下（不改名）。
                  */
                 input: {
-                    [html_vite.replace(/\.html$/i, "")]: resolvePath(html_vite),
+                    [INDEX_HTML.replace(/\.html$/i, "")]: resolvePath(INDEX_HTML),
                 },
                 output: {
                     format: "iife",
@@ -141,8 +143,8 @@ export function createConfig(
             createHtmlPlugin({
                 minify: true,
                 entry: relative(process.cwd(), entry),
-                /* HTML 入口文件：脚手架按 html.vite 命名写入项目根目录 */
-                template: html_vite,
+                /* HTML 入口文件：固定约定 index.html（脚手架写入项目根目录） */
+                template: "index.html",
                 inject: {
                     data: {
                         title,

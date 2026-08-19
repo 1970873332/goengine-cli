@@ -1,5 +1,7 @@
-import { defaultProtocol } from "@/lib/config/module";
-import EngineConfig from "@/engine.config.json";
+import {
+    defaultProtocol,
+    projectConfig as loadProjectConfig,
+} from "@/lib/config/module";
 import { selectEntryFile } from "../utils/select";
 import { obtainProjectConfig } from "../utils/file";
 import { runBin } from "../utils/run";
@@ -8,8 +10,8 @@ import { registerErrorHandlers } from "@/lib/utils/error";
 registerErrorHandlers();
 
 const {
-        app: { entry },
-    } = EngineConfig,
+        application: { entry },
+    } = loadProjectConfig(),
     { filePath, projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     { protocol = defaultProtocol } = projectConfig.mod ?? {};

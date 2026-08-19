@@ -4,17 +4,18 @@ import { obtainProjectConfig } from "@/lib/utils/file";
 import { selectEntryFile } from "@/lib/utils/select";
 import { SSLUtils } from "@/lib/utils/ssl";
 import HTTPSServerManager from "@goengine/service/src/manager/server/common/HTTPS";
-import EngineConfig from "@/engine.config.json";
 import { readFileSync } from "fs";
 import { createServer, UserConfig, ViteDevServer } from "vite";
 import { registerErrorHandlers } from "@/lib/utils/error";
+import { projectConfig as loadProjectConfig } from "@/lib/config/module";
+import { ensureIndexHtml } from "@/lib/utils/preset";
 
 registerErrorHandlers();
 
 const {
-        app: { entry },
+        application: { entry },
         ssl: { name },
-    } = EngineConfig,
+    } = loadProjectConfig(),
     { filePath, projectPath } = await selectEntryFile(".", entry),
     projectConfig: Project = await obtainProjectConfig(projectPath),
     mod: ModConfig = projectConfig.mod ?? {},
@@ -39,8 +40,12 @@ const {
             },
         },
         mode: "development",
-    },
-    viteServer: ViteDevServer = await createServer(config);
+    };
+
+/* vite 入口页面不存在时按需写入 */
+await ensureIndexHtml(projectPath, "generic");
+
+const viteServer: ViteDevServer = await createServer(config);
 
 console.log(`🚀 启动 Vite 开发服务器... ${remarks ?? ""}`);
 viteServer

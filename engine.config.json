@@ -1,16 +1,12 @@
 {
     "title": "Welcome to GoEngine",
-    "tsconfig": {
-        "root": "tsconfig.json"
-    },
     "application": {
-        "name": "GoEngine",
-        "version": "0.1.0",
-        "id": "com.goengine.app"
-    },
-    "app": {
         "entry": "Main",
         "config": "preset/Project.ts"
+    },
+    "webpack": {
+        "input": "preset/entries/webpack.html",
+        "out": "index.html"
     },
     "static": {
         "favicon": "favicon.ico",
@@ -23,16 +19,10 @@
     "chii": {
         "port": 3000
     },
-    "html": {
-        "webpack": {
-            "input": "preset/entries/webpack.html",
-            "out": "index.html"
-        },
-        "angular": "index.html",
-        "vite": "index.html"
-    },
     "web": {
-        "out": "dist/web"
+        "out": {
+            "dir": "dist/web"
+        }
     },
     "service": {
         "out": {
@@ -50,13 +40,6 @@
             "dir": "dist/electron",
             "main": "index.js",
             "preload": "preload.cjs"
-        },
-        "dev": {
-            "server": {
-                "protocol": "http",
-                "host": "localhost",
-                "port": 8080
-            }
         },
         "mirror": "https://npmmirror.com/mirrors/electron/"
     }

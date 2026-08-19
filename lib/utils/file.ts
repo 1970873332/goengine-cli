@@ -1,12 +1,12 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
-import EngineConfig from "@/engine.config.json";
 import { resolvePath } from "./dir";
+import { projectConfig } from "@/lib/config/module";
 
 const {
-    app: { config: project_config },
-} = EngineConfig;
+    application: { config: project_config },
+} = projectConfig();
 
 /**
  * 获取项目配置

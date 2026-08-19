@@ -1,10 +1,11 @@
 import { createConfig } from "@/lib/config/esbuild";
-import EngineConfig from "@/engine.config.json";
 import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
 import { rimraf } from "rimraf";
 import { resolvePath } from "../utils/dir";
 import { registerErrorHandlers } from "@/lib/utils/error";
+import { projectConfig as loadProjectConfig } from "@/lib/config/module";
+import { ensurePresetEntry } from "../utils/preset";
 
 registerErrorHandlers();
 
@@ -14,7 +15,7 @@ const {
             input: { main: main_input, preload: preload_input },
             out: { main: main_out, preload: preload_out },
         },
-    } = EngineConfig,
+    } = loadProjectConfig(),
     buildOptions = (
         entry: string,
         output: string,
@@ -27,6 +28,10 @@ const {
         ),
         external: ["electron"],
     });
+
+/* electron 主进程/预加载入口模板不存在时按需写入 */
+await ensurePresetEntry(process.cwd(), main_input);
+await ensurePresetEntry(process.cwd(), preload_input);
 
 await rimraf(build);
 

@@ -1,15 +1,21 @@
 import { runBin } from "../utils/run";
-import EngineConfig from "@/engine.config.json";
 import { existsSync, readdirSync, cpSync, rmSync } from "fs";
 import { join } from "path";
 import { resolvePath } from "../utils/dir";
 import { registerErrorHandlers } from "@/lib/utils/error";
+import { projectConfig } from "@/lib/config/module";
+import { ensureIndexHtml } from "../utils/preset";
 
 registerErrorHandlers();
 
 const {
-    web: { out: webOut },
-} = EngineConfig;
+    web: {
+        out: { dir: webOut },
+    },
+} = projectConfig();
+
+/* ng 构建需要项目根 index.html，不存在时按 Angular 模板写入 */
+await ensureIndexHtml(process.cwd(), "angular");
 
 const result = runBin(
     "ng",

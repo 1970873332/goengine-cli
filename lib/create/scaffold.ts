@@ -1,37 +1,28 @@
 import { input, select } from "@inquirer/prompts";
-import EngineConfig from "@/engine.config.json";
 import { existsSync } from "fs";
-import { cp, mkdir, readFile, writeFile } from "fs/promises";
-import { dirname, join } from "path";
-import { PACKAGE_JSON } from "@/lib/config/module";
+import { cp, mkdir, writeFile } from "fs/promises";
+import { join } from "path";
+import {
+    INDEX_HTML,
+    PACKAGE_JSON,
+    projectConfig,
+    TSCONFIG_JSON,
+} from "@/lib/config/module";
 import {
     angularJson,
-    injectHtml,
-    injectProjectTs,
     PROJECT_LAYOUT,
-    PROJECT_TEMPLATE,
     projectPackageJson,
     tsconfigJson,
     WebProjectType,
 } from "./template";
 
 const {
-    title,
-    tsconfig: { root: tsconfig_root },
-    app: { entry: app_entry, config: project_config },
+    application: { entry: app_entry },
     static: { favicon, public: public_dir },
-    html: {
-        angular: html_angular,
-        vite: html_vite,
+    web: {
+        out: { dir: web_out },
     },
-    web: { out: web_out },
-    electron: {
-        input: { main: main_input, preload: preload_input },
-        dev: {
-            server: { protocol, host, port },
-        },
-    },
-} = EngineConfig;
+} = projectConfig();
 
 /**
  * 统一的 Web 项目布局：
@@ -111,63 +102,25 @@ export async function scaffoldWebProject(
     /* 模板源码（layout.template 相对 preset 根） */
     await cp(join(preset, layout.template), target, { recursive: true });
 
-    /* 工具链入口模板：路径来自 engine.config.json（html.webpack.input），
-     * 源侧相对 engine.config.json 所在目录（CLI 为 assets/）解析，目标侧相对项目根解析；
-     * electron 主进程/预加载模板（electron:dev / electron:build 按项目目录解析） */
-    if (layout.entryTemplate) {
-        await mkdir(join(target, dirname(layout.entryTemplate)), {
-            recursive: true,
-        });
-        await cp(
-            join(dirname(preset), layout.entryTemplate),
-            join(target, layout.entryTemplate),
-        );
-    }
-    await mkdir(join(target, dirname(main_input)), { recursive: true });
-    await cp(join(dirname(preset), main_input), join(target, main_input));
-    await cp(
-        join(dirname(preset), preload_input),
-        join(target, preload_input),
-    );
-
-    /* 自包含项目配置 */
+    /* 项目配置；预设入口（webpack.html / electron / index.html）由消费命令按需写入 */
     await writeFile(
         join(target, PACKAGE_JSON),
         projectPackageJson(options.name, type),
     );
-    await writeFile(join(target, tsconfig_root), tsconfigJson(type));
-    await mkdir(join(target, dirname(project_config)), { recursive: true });
-    await writeFile(
-        join(target, project_config),
-        injectProjectTs(
-            await readFile(join(dirname(preset), PROJECT_TEMPLATE), "utf8"),
-            protocol,
-            host,
-            port,
-        ),
-    );
-
-    /* index.html：从 preset 源模板复制并注入动态值（如标题） */
-    const htmlContent: string = injectHtml(
-        await readFile(join(dirname(preset), layout.indexTemplate), "utf8"),
-        title,
-    );
+    await writeFile(join(target, TSCONFIG_JSON), tsconfigJson(type));
 
     if (layout.angular) {
         await writeFile(
             join(target, "angular.json"),
             angularJson(
                 options.name,
-                html_angular,
+                INDEX_HTML,
                 web_out,
-                tsconfig_root,
+                TSCONFIG_JSON,
                 app_entry,
                 public_dir,
             ),
         );
-        await writeFile(join(target, html_angular), htmlContent);
-    } else {
-        await writeFile(join(target, html_vite), htmlContent);
     }
 
     /* 静态资源：favicon（模板引用 /favicon，vite 需要 public/ 目录） */
