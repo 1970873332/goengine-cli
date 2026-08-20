@@ -87,11 +87,6 @@ export const COMMANDS: CommandSpec[] = [
         load: () => import("@/lib/debug/chii"),
     },
     {
-        name: "install:all",
-        description: "安装全部依赖（检测/安装 pnpm 并设置镜像）",
-        load: () => import("@/lib/install"),
-    },
-    {
         name: "clean:modules",
         description: `清理modules`,
         load: () => import("@/lib/clean/modules"),

@@ -61,10 +61,12 @@
   - vite 配置中框架别名改指向项目自身 `node_modules`（`process.cwd()`），`@goengine/*` 仍指向 CLI 工作区；
   - 脚手架为 React 项目补充 `@types/react` / `@types/react-dom` devDependencies。
 
-## E5. git 命令收归内部（扩展）✅
+## E5. 内部命令收归（扩展）✅
 
-- `goengine git` 从 CLI 全局命令清单（`lib/dispatch.ts`）移除，不再对用户项目暴露；
-- `lib/git/*`（clone / pull / push / status 批量管理 package 子仓库）保留给 goengine-cli 自己消费，通过 `npm run git -- <command>` 调用。
+- `goengine git` 与 `goengine install:all` 从 CLI 全局命令清单（`lib/dispatch.ts`）移除，不再对用户项目暴露；
+- `lib/git/*`（clone / pull / push / status 批量管理 package 子仓库）与 `lib/install.ts`（检测/安装 pnpm 并装依赖）保留给 goengine-cli 自己消费：
+  - git 批量操作：`npm run git -- <command>`；
+  - 依赖安装：`npm run install:all`。
 
 ## 验证
 
