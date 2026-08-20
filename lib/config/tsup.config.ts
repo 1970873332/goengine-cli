@@ -31,10 +31,7 @@ const external: string[] = [
     ...Object.keys(manifest.devDependencies ?? {}),
 ];
 
-/**
- * 从 engine.config.json 生成 CLI 默认配置：
- * 打包时写入 dist/assets（create:web 运行时读取），其余保持不变。
- */
+/** 生成 CLI 默认 engine.config.json 写入 dist/assets（create:web 运行时读取） */
 function cliEngineConfig(): string {
     const source = JSON.parse(
         readFileSync(join(root, ENGINE_CONFIG_JSON), "utf8"),

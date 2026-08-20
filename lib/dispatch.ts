@@ -17,6 +17,11 @@ export const COMMANDS: CommandSpec[] = [
         load: () => import("@/lib/create/web"),
     },
     {
+        name: "init:web",
+        description: "同步项目配置：tsconfig.json + 框架依赖（编辑器代码提示）",
+        load: () => import("@/lib/create/init"),
+    },
+    {
         name: "electron:dev",
         description: "启动 Electron 开发环境",
         load: () => import("@/lib/electron/dev"),
@@ -70,11 +75,6 @@ export const COMMANDS: CommandSpec[] = [
         name: "service:build",
         description: "构建服务端应用",
         load: () => import("@/lib/service/build"),
-    },
-    {
-        name: "git",
-        description: "批量 Git 操作（clone / pull / push / status）",
-        load: () => import("@/lib/git/index"),
     },
     {
         name: "format",

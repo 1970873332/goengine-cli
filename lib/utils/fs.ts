@@ -2,12 +2,7 @@ import { Stats } from "fs";
 import { copyFile, mkdir, readdir, stat } from "fs/promises";
 import { basename, join } from "path";
 
-/**
- * 拷贝
- * @param path
- * @param targetDir
- * @returns
- */
+/** 递归拷贝文件或目录，intercept 抛错时跳过该目标 */
 export async function copy(
     path: string,
     targetDir: string,

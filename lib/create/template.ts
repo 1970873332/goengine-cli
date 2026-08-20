@@ -1,4 +1,7 @@
 import { NODE_MODULES } from "@/lib/config/module";
+import { existsSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 /** 支持的 Web 项目类型 */
 export type WebProjectType = "react" | "vue" | "angular";
@@ -74,7 +77,11 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
             "vite:serve": "goengine vite:serve",
             "vite:build": "goengine vite:build",
         },
-        devDependencies: {},
+        devDependencies: {
+            /* React 自身无类型声明，类型由 @types 提供（用户侧安装） */
+            "@types/react": "^19.2.6",
+            "@types/react-dom": "^19.2.3",
+        },
     },
     vue: {
         template: TEMPLATES.vue,
@@ -101,6 +108,33 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
     },
 };
 
+/**
+ * CLI 仓库根目录（开发态 / dist 构建态均可识别）：
+ * 同时包含 package/（@goengine/* 本地包源码）与 lib/types/（包依赖的全局类型声明）。
+ * 生成项目 tsconfig 时用它的绝对路径，让编辑器在任意位置的项目中都能解析到包源码。
+ */
+export function cliRoot(): string {
+    const here: string = dirname(fileURLToPath(import.meta.url));
+    let dir: string = here;
+    for (let i = 0; i < 4; i++) {
+        if (
+            existsSync(join(dir, "package", "goengine-core")) &&
+            existsSync(join(dir, "lib", "types"))
+        ) {
+            return dir;
+        }
+        dir = dirname(dir);
+    }
+    throw new Error(
+        "❌ 未找到 GoEngine CLI 本地包目录（package/ 与 lib/types/）",
+    );
+}
+
+/** Windows 路径转正斜杠（tsconfig paths 可识别） */
+function posix(p: string): string {
+    return p.replaceAll("\\", "/");
+}
+
 /** 用占位符向 HTML 模板注入动态值 */
 export function injectHtml(html: string, title: string): string {
     return html.replaceAll(HTML_TITLE_TOKEN, title);
@@ -113,29 +147,38 @@ export function injectProjectTs(
     host: string,
     port: number,
 ): string {
-    return template
-        .replaceAll(PROJECT_PROTOCOL_TOKEN, protocol)
-        .replaceAll(PROJECT_HOST_TOKEN, host)
-        /* 端口占位符包在 Number("...") 中，保证预设文件是合法 TS，注入后还原为数字 */
-        .replaceAll(`Number("${PROJECT_PORT_TOKEN}")`, String(port));
+    return (
+        template
+            .replaceAll(PROJECT_PROTOCOL_TOKEN, protocol)
+            .replaceAll(PROJECT_HOST_TOKEN, host)
+            /* 端口占位符包在 Number("...") 中，保证预设文件是合法 TS，注入后还原为数字 */
+            .replaceAll(`Number("${PROJECT_PORT_TOKEN}")`, String(port))
+    );
 }
 
-/** 生成 package.json（对象序列化） */
-export function projectPackageJson(
-    name: string,
-    type: WebProjectType,
-): string {
+/**
+ * 项目框架依赖（用户侧安装）：
+ * dependencies 为框架本体（vue / react 等），devDependencies 为配套类型包（如 React 的 @types）。
+ * @goengine/* 由 CLI 构建时提供（webpack/vite 从 CLI 工作区 package/ 解析），项目无需安装。
+ */
+export function projectDependencies(type: WebProjectType): {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+} {
     const layout = PROJECT_LAYOUT[type],
-        dependencies: Record<string, string> = {
-            /*
-             * @goengine/* 由 CLI 构建时提供（webpack/vite 从 CLI 自身 node_modules 解析），
-             * 项目无需安装；发布后如需独立类型检查再按需添加。
-             */
-        };
+        dependencies: Record<string, string> = {};
 
     for (const dep of FRAMEWORK_DEPS[type]) {
         dependencies[dep] = FRAMEWORK_VERSIONS[dep] ?? "latest";
     }
+
+    return { dependencies, devDependencies: { ...layout.devDependencies } };
+}
+
+/** 生成 package.json（对象序列化） */
+export function projectPackageJson(name: string, type: WebProjectType): string {
+    const layout = PROJECT_LAYOUT[type],
+        { dependencies, devDependencies } = projectDependencies(type);
 
     const pkg = {
         name,
@@ -149,21 +192,29 @@ export function projectPackageJson(
         appName: name,
         scripts: layout.scripts,
         dependencies,
-        ...(Object.keys(layout.devDependencies).length > 0
-            ? { devDependencies: layout.devDependencies }
-            : {}),
+        ...(Object.keys(devDependencies).length > 0 ? { devDependencies } : {}),
     };
 
     return `${JSON.stringify(pkg, null, 4)}\n`;
 }
 
-/** 生成 tsconfig.json（对象序列化） */
-export function tsconfigJson(type: WebProjectType): string {
+/**
+ * 生成 tsconfig.json（对象序列化）。
+ * @param type - 项目类型（决定 noEmit 与 exclude）
+ * @param root - CLI 仓库根目录；@goengine/* 与全局类型以绝对路径指向它，
+ *               框架依赖（vue / react 等）由项目自行安装，从项目 node_modules 解析。
+ */
+export function tsconfigJson(type: WebProjectType, root: string): string {
     const exclude: string[] = [NODE_MODULES, "dist", "build"];
 
     /* Angular 由 ng CLI 编译，node_modules 里没有 @goengine/electron；
      * preset/ 下是 CLI 工具链模板，需排除以免 ng 解析报错 */
     if (type === "angular") exclude.push("preset");
+
+    const modules: string = posix(join(root, NODE_MODULES)),
+        packages: string = posix(join(root, "package")),
+        types: string = posix(join(root, "lib", "types")),
+        typeRoots: string[] = [posix(join(modules, "@types"))];
 
     const tsconfig = {
         compilerOptions: {
@@ -182,11 +233,28 @@ export function tsconfigJson(type: WebProjectType): string {
             forceConsistentCasingInFileNames: true,
             resolveJsonModule: true,
             jsx: "preserve",
+            /*
+             * @goengine/* 由 CLI 的 Vite/Webpack 配置别名到 CLI 自身
+             * package/ 源码目录（本地包），这里为编辑器补上同样的映射，
+             * 写入 CLI 仓库绝对路径。
+             * 框架依赖（vue / react / vue-router 等）由用户项目与各包
+             * 自行安装消费，走标准 node_modules 解析，无需 paths 映射。
+             * 包源码依赖的全局类型（VectorObject / Variant / Context2D 等）
+             * 声明在 CLI lib/types/*.d.ts，因此 include 一并纳入。
+             */
+            typeRoots,
             paths: {
                 "@/*": ["./*"],
+                "@goengine/*": [posix(join(packages, "goengine-*"))],
             },
         },
-        include: ["**/*.ts", "**/*.tsx", "**/*.vue", "**/*.json"],
+        include: [
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.vue",
+            "**/*.json",
+            posix(join(types, "**", "*.d.ts")),
+        ],
         exclude,
     };
 

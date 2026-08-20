@@ -8,12 +8,7 @@ const {
     application: { config: project_config },
 } = projectConfig();
 
-/**
- * 获取项目配置
- * @param path - 路径
- * @param entryFile - 入口文件名
- * @returns
- */
+/** 读取项目配置，缺失或格式错误时回退空对象 */
 export async function obtainProjectConfig(
     path: string,
     entryFile: string = project_config,

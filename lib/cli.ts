@@ -32,7 +32,7 @@ function showHelp(): void {
         "示例:",
         "  goengine create:web --name demo --type React",
         "  goengine web:serve",
-        "  goengine git pull",
+        "  goengine init:web",
         "",
         "提示: 发布包内不包含仓库源码，命令在用户当前项目目录下运行。",
     );

@@ -1,12 +1,7 @@
 import { NetworkInterfaceInfo, networkInterfaces } from "os";
 
-/**
- * IP 工具
- */
 export class IPUtils {
-    /**
-     * 主机
-     */
+    /** 获取本机局域网 IPv4（192.168.x） */
     public static ip(): string | void {
         const interfaces: NodeJS.Dict<NetworkInterfaceInfo[]> =
             networkInterfaces();

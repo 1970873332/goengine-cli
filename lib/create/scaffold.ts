@@ -24,13 +24,7 @@ const {
     },
 } = projectConfig();
 
-/**
- * 统一的 Web 项目布局：
- * - 项目 = 一个包含入口文件（Main.ts / Main.tsx）的目录
- * - create:web 生成自包含项目（工具链配置 + preset/entries 模板 + 项目配置）
- * - serve / build / electron 等命令通过 selectEntryFile 检查当前目录
- *   是否包含入口文件（Main），不存在则报错
- */
+/** 项目 = 含入口文件（Main.ts / Main.tsx）的目录，由 create:web 生成 */
 
 /** 校验项目名（"." 表示当前目录） */
 export function validateProjectName(value: string): string | true {
@@ -58,8 +52,10 @@ export async function promptProjectType(): Promise<WebProjectType> {
 export interface ScaffoldOptions {
     name: string;
     type: string;
-    /** 项目创建在哪个目录下（绝对路径）；name 为 "." 时直接创建在该目录 */
+    /** 项目创建目录（绝对路径）；name 为 "." 时直接使用该目录 */
     targetBase: string;
+    /** CLI 仓库根目录（生成指向本地包的 tsconfig 绝对路径） */
+    cliRoot: string;
     /** 模板根目录（包含 templates/ 与 entries/） */
     presetRoot: string;
     /** engine.config.json 内容（可选，写入项目后便于用户自定义） */
@@ -99,15 +95,18 @@ export async function scaffoldWebProject(
 
     await mkdir(target, { recursive: true });
 
-    /* 模板源码（layout.template 相对 preset 根） */
+    /* 复制应用模板 */
     await cp(join(preset, layout.template), target, { recursive: true });
 
-    /* 项目配置；预设入口（webpack.html / electron / index.html）由消费命令按需写入 */
+    /* 项目配置；预设入口由消费命令按需写入 */
     await writeFile(
         join(target, PACKAGE_JSON),
         projectPackageJson(options.name, type),
     );
-    await writeFile(join(target, TSCONFIG_JSON), tsconfigJson(type));
+    await writeFile(
+        join(target, TSCONFIG_JSON),
+        tsconfigJson(type, options.cliRoot),
+    );
 
     if (layout.angular) {
         await writeFile(
@@ -123,7 +122,7 @@ export async function scaffoldWebProject(
         );
     }
 
-    /* 静态资源：favicon（模板引用 /favicon，vite 需要 public/ 目录） */
+    /* 静态资源：favicon（vite 需要 public/ 目录） */
     const faviconPath: string = join(preset, favicon);
     if (existsSync(faviconPath)) {
         await mkdir(join(target, public_dir), { recursive: true });

@@ -4,24 +4,12 @@ import { generate, GenerateResult } from "selfsigned";
 import { resolvePath } from "./dir";
 import { projectConfig } from "@/lib/config/module";
 
-/**
- * SSL 证书工具
- */
 export class SSLUtils {
-    /**
-     * 证书存放目录
-     */
+    /** 证书存放目录 */
     protected static readonly dir: string = projectConfig().ssl.output;
-    /**
-     * 证书存放路径
-     */
+    /** 证书存放路径 */
     protected static readonly url: string = resolvePath(this.dir);
 
-    /**
-     * 获取证书文件路径
-     * @param name
-     * @returns
-     */
     public static obtainFilePath(name?: string): {
         keyPath: string;
         certPath: string;
@@ -31,19 +19,11 @@ export class SSLUtils {
             certPath: resolve(this.url, `${name}.crt`),
         };
     }
-    /**
-     * 获取证书文件路径
-     * @param name
-     */
-    /**
-     * 获取证书
-     * @param name
-     * @returns
-     */
+
+    /** 确保证书存在，缺失时生成 */
     public static async ensure(name: string): Promise<string> {
         const { keyPath, certPath } = this.obtainFilePath(name);
 
-        /* 检查证书 */
         console.log(`🔍 检查SSL证书: ${name}`);
         if (existsSync(certPath) && existsSync(keyPath)) return name;
 
@@ -51,10 +31,8 @@ export class SSLUtils {
 
         return name;
     }
-    /**
-     * 创建自签名证书
-     * @param name
-     */
+
+    /** 生成自签名证书 */
     public static async create(name: string): Promise<void> {
         const { keyPath, certPath } = this.obtainFilePath(name);
 

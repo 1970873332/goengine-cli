@@ -7,13 +7,11 @@ import {
     promptProjectType,
     scaffoldWebProject,
 } from "@/lib/create/scaffold";
+import { cliRoot } from "@/lib/create/template";
 
 const here: string = dirname(fileURLToPath(import.meta.url));
 
-/**
- * 模板根目录：dist/assets/preset（由构建脚本从仓库 preset 拷贝）。
- * 发布包通过 files:["dist","link-goengine.cjs"] 自带该目录，不再回退到仓库路径。
- */
+/** 模板根目录：dist/assets/preset（构建脚本从仓库 preset 拷贝） */
 function presetRoot(): string {
     return resolve(here, "assets/preset");
 }
@@ -41,6 +39,7 @@ export async function runCreateWeb(args: string[]): Promise<void> {
         name,
         type,
         targetBase,
+        cliRoot: cliRoot(),
         presetRoot: presetRoot(),
         engineConfig: engineConfigContent(),
     });

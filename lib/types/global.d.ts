@@ -132,19 +132,13 @@ declare global {
         /**
          * 上下文
          */
-        type Context = CanvasContext2D | WebGLContext | GPUCanvasContext;
+        type Context = Context2D | WebGLContext | ImageBitmapRenderingContext;
         /**
          * 上下文类型
          */
         type ContextType = "2d" | "webgl" | "webgl2" | "webgpu";
 
-        /**
-         * 模板
-         */
         interface TemplateMap {}
-        /**
-         * 路径
-         */
         interface PathMap {}
     }
 

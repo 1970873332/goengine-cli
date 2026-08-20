@@ -31,7 +31,8 @@
         "pack:dry": "npm pack --dry-run",
         "clear": "npx --yes rimraf dist assets",
         "install:all": "npx --yes tsx lib/install.ts",
-        "clean:modules": "npx --yes tsx lib/clean/modules.ts"
+        "clean:modules": "npx --yes tsx lib/clean/modules.ts",
+        "git": "tsx lib/git/index.ts"
     },
     "dependencies": {
         "@angular-devkit/build-angular": "^21.2.7",
@@ -73,9 +74,6 @@
         "postcss": "^8.5.6",
         "postcss-loader": "^8.2.0",
         "prettier": "^3.7.4",
-        "react": "^19.2.8",
-        "react-dom": "^19.2.8",
-        "react-router-dom": "^7.9.6",
         "rimraf": "^6.1.2",
         "sass": "^1.97.3",
         "sass-loader": "^16.0.6",
@@ -89,9 +87,7 @@
         "typescript": "^5.9.3",
         "vite": "^7.2.4",
         "vite-plugin-html": "^3.2.2",
-        "vue": "^3.5.25",
         "vue-loader": "^17.4.2",
-        "vue-router": "^4.6.3",
         "webpack": "^5.103.0",
         "webpack-bundle-analyzer": "^5.0.1",
         "webpack-dev-server": "^5.2.2",
@@ -99,7 +95,6 @@
     },
     "devDependencies": {
         "@types/node": "^24.10.1",
-        "@types/three": "^0.181.0",
         "@types/webpack-bundle-analyzer": "^4.7.0",
         "tsup": "^8.5.1",
         "vue-tsc": "^3.1.8"

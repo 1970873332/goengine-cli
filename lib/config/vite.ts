@@ -27,8 +27,7 @@ const {
     } = projectConfig(),
     outDir: string = resolvePath(web_out),
     /*
-     * CLI（或 engine 开发环境）自身的 node_modules：
-     * react 与 @goengine/* 从这里解析，项目无需安装即可运行。
+     * CLI 自身 node_modules：@goengine/* 发布安装后的回退解析与 fs 白名单。
      */
     cliNodeModules: string = join(
         dirname(fileURLToPath(import.meta.url)),
@@ -82,12 +81,10 @@ export function createConfig(
             emptyOutDir: true,
             copyPublicDir: false,
             rollupOptions: {
-                /*
-                 * vite 原生模式：入口为 html.vite（脚手架按该名写入的页面），
-                 * 产物按 html.vite 的文件名输出到 web.out.dir 下（不改名）。
-                 */
+                /* 入口固定 index.html，产物按入口名输出 */
                 input: {
-                    [INDEX_HTML.replace(/\.html$/i, "")]: resolvePath(INDEX_HTML),
+                    [INDEX_HTML.replace(/\.html$/i, "")]:
+                        resolvePath(INDEX_HTML),
                 },
                 output: {
                     format: "iife",
@@ -100,21 +97,31 @@ export function createConfig(
         resolve: {
             extensions: extensions(),
             alias: [
-                /* react/vue/@goengine/* 前缀替换（子路径有实体文件，可直接替换） */
+                /*
+                 * 框架依赖（vue / react / vue-router 等）由用户项目安装并提供，
+                 * 这里指向项目自身 node_modules；@goengine/* 仍由 CLI 工作区
+                 * package/ 源码提供（本地开发 junction，发布安装回退 node_modules）。
+                 */
                 ...Object.entries({
                     ...alias(),
-                    react: join(cliNodeModules, "react"),
-                    "react-dom": join(cliNodeModules, "react-dom"),
+                    react: join(process.cwd(), NODE_MODULES, "react"),
+                    "react-dom": join(process.cwd(), NODE_MODULES, "react-dom"),
                     "react-router-dom": join(
-                        cliNodeModules,
+                        process.cwd(),
+                        NODE_MODULES,
                         "react-router-dom",
                     ),
-                    vue: join(cliNodeModules, "vue"),
-                    "vue-router": join(cliNodeModules, "vue-router"),
+                    vue: join(process.cwd(), NODE_MODULES, "vue"),
+                    "vue-router": join(
+                        process.cwd(),
+                        NODE_MODULES,
+                        "vue-router",
+                    ),
                     "@goengine/angular": resolveGoEnginePackage("angular"),
                     "@goengine/canvas": resolveGoEnginePackage("canvas"),
                     "@goengine/core": resolveGoEnginePackage("core"),
-                    "@goengine/electrobun": resolveGoEnginePackage("electrobun"),
+                    "@goengine/electrobun":
+                        resolveGoEnginePackage("electrobun"),
                     "@goengine/electron": resolveGoEnginePackage("electron"),
                     "@goengine/react": resolveGoEnginePackage("react"),
                     "@goengine/service": resolveGoEnginePackage("service"),

@@ -120,9 +120,6 @@ async function runPrettier(rootDir: string, paths: string[]): Promise<void> {
     if (failCount > 0) process.exit(1);
 }
 
-/**
- * 需要排除的目录列表
- */
 const EXCLUDED_DIRS = [
     NODE_MODULES,
     ".angular",
@@ -133,7 +130,6 @@ const EXCLUDED_DIRS = [
     "out",
 ];
 
-// 命令行配置
 const program = new Command();
 
 program

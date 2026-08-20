@@ -60,11 +60,9 @@ export function createConfig({
     bundle && console.log("合并包✔️");
     return {
         stats: "errors-only",
-        /* 实验功能 */
         experiments: {
             outputModule: !dev && esm,
         },
-        /* 输出 */
         output: dev
             ? void 0
             : {
@@ -75,14 +73,12 @@ export function createConfig({
                       ? "js/[fullhash].js"
                       : "js/[name]/[fullhash].js",
               },
-        /* 解析 */
         resolve: {
             /*
-             * 优先从 CLI（或 engine 开发环境）自身的 node_modules 查找，
-             * 让 transform-runtime 注入的 @babel/runtime/helpers/* 等工具链依赖可解析。
+             * 项目 node_modules 优先（框架依赖由用户项目安装），
+             * 其次 CLI 自身 node_modules（工具链依赖，如 @babel/runtime/helpers/*）。
              */
             modules: [
-                /* 项目自身的 node_modules 放最前，保证 react 等框架包只有一份（用户项目提供） */
                 join(process.cwd(), NODE_MODULES),
                 join(
                     dirname(fileURLToPath(import.meta.url)),
@@ -99,8 +95,7 @@ export function createConfig({
             },
         },
         /*
-         * loader 解析：优先从 CLI（或 engine 开发环境）自身的 node_modules 查找，
-         * 这样脚手架项目无需安装 webpack / babel-loader 等工具链，CLI 自带即可。
+         * loader 从 CLI 自身 node_modules 解析（项目无需安装构建工具链）
          */
         resolveLoader: {
             modules: [
@@ -112,28 +107,25 @@ export function createConfig({
                 NODE_MODULES,
             ],
         },
-        /* 模块 */
         module: {
             rules: [
-                /* 脚本 */
                 {
                     test: /\.(j|t)sx?$/i,
                     use: useTSLoader(useBabelLoader()),
                     exclude: excludeNodeModules,
                 },
-                /* Worker脚本 */
                 {
                     test: /\.wk$/i,
                     use: useTSLoader("worker-loader"),
                     exclude: excludeNodeModules,
                 },
-                /*  模块样式表 */
+                /* CSS Modules */
                 {
                     test: /\.module\.(s?)[ac]ss$/i,
                     use: useCSSLoader(true),
                     exclude: excludeNodeModules,
                 },
-                /* 样式表 */
+                /* 普通样式表 */
                 {
                     test: /\.(s?)[ac]ss$/i,
                     use: useCSSLoader(false),
@@ -142,19 +134,17 @@ export function createConfig({
                         "i",
                     ),
                 },
-                /* vue */
                 {
                     test: /\.vue$/i,
                     use: ["vue-loader"],
                     exclude: excludeNodeModules,
                 },
-                /* Angular templateUrl：把 html 作为字符串内联（webpack5 asset/source） */
+                /* Angular 模板：html 以字符串内联（webpack5 asset/source） */
                 {
                     test: /\.html$/i,
                     type: "asset/source",
                     exclude: [excludeNodeModules, excludeEntryTemplates],
                 },
-                /* 图标 */
                 {
                     test: /\.ico$/i,
                     type: "asset/resource",
@@ -210,7 +200,6 @@ export function createConfig({
                 },
             ],
         },
-        /* 插件 */
         plugins: [
             analyzer && new BundleAnalyzerPlugin(),
             new webpack.DefinePlugin(define(!!debug)),
@@ -231,7 +220,6 @@ export function createConfig({
             }),
             new VueLoaderPlugin(),
         ].filter(Boolean),
-        /* 优化 */
         optimization: dev
             ? void 0
             : {
@@ -292,11 +280,7 @@ export function createConfig({
     };
 }
 
-/**
- * 使用CSS加载器
- * @param module
- * @returns
- */
+/** CSS 加载器（module 为 true 时启用 CSS Modules） */
 export function useCSSLoader(module: boolean): RuleSetUse {
     const use: RuleSetUse = module
         ? [
@@ -326,10 +310,7 @@ export function useCSSLoader(module: boolean): RuleSetUse {
         "sass-loader",
     ];
 }
-/**
- * 使用TS加载器
- * @param worker
- */
+/** TS 加载器（可选前置 loader，如 worker-loader） */
 export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
     return [
         loader,
@@ -351,10 +332,7 @@ export function useTSLoader(loader?: RuleSetUseItem): RuleSetUse {
  */
 const babelRequire = createRequire(import.meta.url);
 
-/**
- * 使用babel加载器
- * @returns
- */
+/** Babel 加载器（内联配置，忽略项目 .babelrc） */
 export function useBabelLoader(): RuleSetUseItem {
     return {
         loader: "babel-loader",

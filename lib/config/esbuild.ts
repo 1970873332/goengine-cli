@@ -26,10 +26,7 @@ const cliNodeModules: string = findNodeModules(
 
 const EXTENSIONS: string[] = [".ts", ".tsx", ".js", ".mjs", ".cjs", ".json"];
 
-/**
- * @goengine/* 深路径解析到 CLI 自身 node_modules（与 webpack / vite 一致，
- * 项目无需安装框架包）。esbuild 插件返回的必须是完整文件路径。
- */
+/** @goengine/* 深路径解析到 CLI 自身 node_modules（与 webpack / vite 一致） */
 function resolveGoengineFile(importPath: string): string | undefined {
     const base: string = join(cliNodeModules, importPath);
 

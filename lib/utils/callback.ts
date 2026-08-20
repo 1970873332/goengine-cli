@@ -1,10 +1,6 @@
 import { Stats } from "webpack";
 
-/**
- * webpack 构建回调
- * @param error
- * @param stats
- */
+/** webpack 构建回调：失败退出，成功时执行可选回调 */
 export function webpackBuildCallback(
     error: Error | null,
     stats?: Stats,

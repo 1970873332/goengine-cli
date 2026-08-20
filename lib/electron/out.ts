@@ -47,7 +47,6 @@ const {
     };
 
 console.log("📦 开始打包Electron程序...");
-/* 构建 */
 await rimraf(dir);
 await electronBuild({
     config,

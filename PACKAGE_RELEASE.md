@@ -5,8 +5,10 @@
 - `package/` 下共 10 个 workspace 包：`@goengine/{angular,canvas,core,electrobun,electron,react,service,vue,web,webgl}`，版本均为 `0.1.0`，各自是独立 git 仓库。
 - `goengine-cli` 主仓库的 `.gitignore` 忽略 `package/`（`# 工作区`），`package/*` 的改动不进入主仓库 git；各包在其自身仓库提交（如 `goengine-electron` 推送到 GitHub）。
 - CLI 构建（tsup `noExternal: [/^@goengine\//]`）把 workspace 包源码直接内联进 `dist/`。
-- 运行期 webpack / vite / esbuild 从 CLI 自身 `node_modules` 解析 `@goengine/*`：本地开发是 junction 指向 `package/`，发布安装后是真实目录。
-- 用户项目无需安装 `@goengine/*`；框架依赖（react / vue / `@angular/*`）也由 CLI `node_modules` 提供，项目 `package.json` 仅声明不安装。
+- 运行期 webpack / vite / esbuild 从 CLI 自身解析 `@goengine/*`：本地开发是 junction 指向 `package/`，发布安装后回退 `node_modules` 真实目录。
+- 用户项目无需安装 `@goengine/*`；**框架依赖（vue / vue-router / react / react-dom / react-router-dom）由用户项目安装并自主消费**，CLI 不再内置（vite 别名指向项目 `node_modules`，生成 tsconfig 仅映射 `@goengine/*`，框架包走标准解析）。
+- three.js 相关代码与依赖已从 `goengine-core` / `goengine-webgl` / CLI 根依赖移除；需要 three 的用户项目自行安装。
+- matter-js 相关代码与依赖已移除：`goengine-core` 的 matter 场景 / Matter2D 物理节点 / Matter 工具类、`goengine-webgl` 的 Collision2D 一并删除；需要物理引擎的项目自行引入。
 - 无独立版本发布流程，版本统一停留在 `0.1.0`。
 
 ## 二、后期：全面发布（npm）模式

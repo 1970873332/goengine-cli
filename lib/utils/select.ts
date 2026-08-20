@@ -3,12 +3,7 @@ import { readdir } from "fs/promises";
 import { join } from "path";
 import { resolvePath } from "./dir";
 
-/**
- * 选择入口文件
- * @param path - 目标路径
- * @param entryPattern - 匹配模式
- * @returns 入口文件绝对路径、项目目录绝对路径与文件名
- */
+/** 按匹配模式选择入口文件，返回文件与项目目录绝对路径 */
 export async function selectEntryFile(
     path: string,
     pattern: string,

@@ -10,13 +10,11 @@ registerErrorHandlers();
 
 const modules: string = NODE_MODULES;
 
-// 获取所有需要删除的目录
 const directories = workspaces
     .flatMap((pattern: string) => fg.sync(pattern, { onlyDirectories: true }))
     .map((dir: string) => join(dir, modules))
     .filter((dir: string) => existsSync(dir));
 
-// 添加根目录的 node_modules
 if (existsSync(modules)) {
     directories.push(modules);
 }

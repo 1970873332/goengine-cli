@@ -7,17 +7,14 @@ export async function runWithConcurrency<T>(
     const executing: Promise<void>[] = [];
 
     for (const item of items) {
-        // 创建一个包装 promise，同时追踪状态
         const promise = handler(item);
 
-        // 保存原始 promise 的引用
         const wrappedPromise = promise
             .then(
                 () => ({ status: "fulfilled" as const, value: undefined }),
                 (reason) => ({ status: "rejected" as const, reason }),
             )
             .then((result) => {
-                // 当这个 promise 完成时，从 executing 数组中移除
                 const index = executing.indexOf(wrappedPromise);
                 if (index !== -1) {
                     executing.splice(index, 1);
@@ -32,7 +29,6 @@ export async function runWithConcurrency<T>(
         }
     }
 
-    // 等待所有剩余的 promise 完成
     await Promise.allSettled(executing);
 
     return { results, items };
