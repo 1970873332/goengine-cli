@@ -341,13 +341,6 @@ importers:
       '@goengine/core':
         specifier: workspace:*
         version: link:../goengine-core
-      react:
-        specifier: ^19.2.0
-        version: 19.2.8
-    devDependencies:
-      '@types/react':
-        specifier: ^19.2.6
-        version: 19.2.18
 
   package/goengine-webgl:
     dependencies:
