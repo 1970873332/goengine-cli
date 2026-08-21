@@ -82,6 +82,11 @@ export const COMMANDS: CommandSpec[] = [
         load: () => import("@/lib/release/format"),
     },
     {
+        name: "typecheck",
+        description: "对当前项目执行类型检查（React / Vue / Angular）",
+        load: () => import("@/lib/typecheck"),
+    },
+    {
         name: "chii:serve",
         description: "启动 Chii 远程调试服务器",
         load: () => import("@/lib/debug/chii"),

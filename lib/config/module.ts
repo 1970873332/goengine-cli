@@ -80,19 +80,3 @@ export function chii(protocol: ModConfig["protocol"]): Record<string, unknown> {
 export function isHTTPS(protocol: ModConfig["protocol"]): boolean {
     return protocol === "https";
 }
-
-export function envNODE_ENV(value: string): string {
-    return `NODE_ENV=${value}`;
-}
-
-export function envPROTOCOL(value: ModConfig["protocol"]): string {
-    return `ENV_PROTOCOL=${value}`;
-}
-
-export function envHOST(value: ModConfig["host"]): string {
-    return `ENV_HOST=${value}`;
-}
-
-export function envPORT(value: ModConfig["port"]): string {
-    return `ENV_PORT=${value}`;
-}

@@ -6,7 +6,7 @@ import { INDEX_HTML, projectConfig } from "@/lib/config/module";
 import { injectHtml } from "@/lib/create/template";
 
 /** CLI 预设根（dist/assets/preset） */
-function presetRoot(): string {
+export function presetRoot(): string {
     return resolve(dirname(fileURLToPath(import.meta.url)), "assets/preset");
 }
 

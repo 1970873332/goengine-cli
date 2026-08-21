@@ -2,23 +2,8 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { PACKAGE_JSON, TSCONFIG_JSON } from "@/lib/config/module";
-import {
-    cliRoot,
-    projectDependencies,
-    tsconfigJson,
-    WebProjectType,
-} from "./template";
-
-/**
- * 根据现有项目布局推断类型：
- * angular.json → Angular；Main.tsx → React；Main.ts → Vue。
- */
-function detectType(): WebProjectType {
-    if (existsSync(resolve("angular.json"))) return "angular";
-    if (existsSync(resolve("Main.tsx"))) return "react";
-    if (existsSync(resolve("Main.ts"))) return "vue";
-    throw new Error("❌ 未找到项目入口（Main.ts / Main.tsx）或 angular.json");
-}
+import { detectProjectType, WebProjectType } from "@/lib/utils/project";
+import { cliRoot, projectDependencies, tsconfigJson } from "./template";
 
 /** 按键名排序（保持 package.json 可读性） */
 function sortKeys(record: Record<string, string>): Record<string, string> {
@@ -75,7 +60,7 @@ async function syncProjectDependencies(type: WebProjectType): Promise<boolean> {
  * 适合已创建的项目迁移到新依赖模型。
  */
 export async function runInitWeb(): Promise<void> {
-    const type: WebProjectType = detectType();
+    const type: WebProjectType = detectProjectType();
     await writeFile(resolve(TSCONFIG_JSON), tsconfigJson(type, cliRoot()));
     const synced: boolean = await syncProjectDependencies(type);
     console.log(

@@ -5,18 +5,16 @@ import {
 import { createConfig } from "@/lib/config/webpack";
 import webpack, { Configuration as WebPackConfiguration } from "webpack";
 import WebpackDevServer, { Configuration } from "webpack-dev-server";
-import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import { ensurePresetEntry } from "../utils/preset";
+import { resolveProject } from "../utils/project";
 
 registerErrorHandlers();
 
 const {
         application: { entry },
     } = loadProjectConfig(),
-    { filePath, projectPath } = await selectEntryFile(".", entry),
-    projectConfig: Project = await obtainProjectConfig(projectPath),
+    { filePath, projectPath, projectConfig } = await resolveProject(entry),
     mod: ModConfig = projectConfig.mod ?? {},
     { remarks, proxy, host, port, protocol = defaultProtocol } = mod,
     devServerOptions: Configuration = {

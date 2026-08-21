@@ -1,8 +1,7 @@
-import { CHII_PORT, isHTTPS } from "@/lib/config/module";
+import { CHII_PORT, isHTTPS, projectConfig } from "@/lib/config/module";
 import { SSLUtils } from "@/lib/utils/ssl";
 import { select } from "@inquirer/prompts";
 import { Command } from "commander";
-import EngineConfig from "@/engine.config.json";
 import { runBin } from "../utils/run";
 import { registerErrorHandlers } from "@/lib/utils/error";
 
@@ -15,7 +14,7 @@ const protocol: ModConfig["protocol"] = await select({
     iss: boolean = isHTTPS(protocol),
     {
         ssl: { name },
-    } = EngineConfig,
+    } = projectConfig(),
     { port } = new Command()
         .option("-p, --port <number>", "端口", String(CHII_PORT))
         .parse(process.argv)

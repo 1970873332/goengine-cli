@@ -1,19 +1,17 @@
 import { createConfig } from "@/lib/config/webpack";
 import webpack, { Configuration } from "webpack";
 import { webpackBuildCallback } from "../utils/callback";
-import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import { projectConfig as loadProjectConfig } from "@/lib/config/module";
 import { ensurePresetEntry } from "../utils/preset";
+import { resolveProject } from "../utils/project";
 
 registerErrorHandlers();
 
 const {
         application: { entry },
     } = loadProjectConfig(),
-    { filePath, projectPath } = await selectEntryFile(".", entry),
-    projectConfig = await obtainProjectConfig(projectPath),
+    { filePath, projectPath, projectConfig } = await resolveProject(entry),
     config: Configuration = {
         ...createConfig(projectConfig.mod ?? {}),
         entry: filePath,

@@ -2,6 +2,7 @@ import { input, select } from "@inquirer/prompts";
 import { existsSync } from "fs";
 import { cp, mkdir, writeFile } from "fs/promises";
 import { join } from "path";
+import type { WebProjectType } from "@/lib/utils/project";
 import {
     INDEX_HTML,
     PACKAGE_JSON,
@@ -13,7 +14,6 @@ import {
     PROJECT_LAYOUT,
     projectPackageJson,
     tsconfigJson,
-    WebProjectType,
 } from "./template";
 
 const {

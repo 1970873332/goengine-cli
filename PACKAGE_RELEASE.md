@@ -7,6 +7,7 @@
 - CLI 构建（tsup `noExternal: [/^@goengine\//]`）把 workspace 包源码直接内联进 `dist/`。
 - 运行期 webpack / vite / esbuild 从 CLI 自身解析 `@goengine/*`：本地开发是 junction 指向 `package/`，发布安装后回退 `node_modules` 真实目录。
 - 用户项目无需安装 `@goengine/*`；**框架依赖（vue / vue-router / react / react-dom / react-router-dom）由用户项目安装并自主消费**，CLI 不再内置（vite 别名指向项目 `node_modules`，生成 tsconfig 仅映射 `@goengine/*`，框架包走标准解析）。
+- `goengine typecheck` 为全局命令：类型检查器（`vue-tsc` / `tsc` / `ngc`）由 CLI 依赖内置并提供，用户项目仅需安装框架本体与类型包（React 的 `@types/*`、Angular 的 `@angular/compiler-cli` 等），不额外引入检查工具依赖。
 - three.js 相关代码与依赖已从 `goengine-core` / `goengine-webgl` / CLI 根依赖移除；需要 three 的用户项目自行安装。
 - matter-js 相关代码与依赖已移除：`goengine-core` 的 matter 场景 / Matter2D 物理节点 / Matter 工具类、`goengine-webgl` 的 Collision2D 一并删除；需要物理引擎的项目自行引入。
 - 无独立版本发布流程，版本统一停留在 `0.1.0`。

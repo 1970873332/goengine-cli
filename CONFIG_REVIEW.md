@@ -68,6 +68,15 @@
   - git 批量操作：`npm run git -- <command>`；
   - 依赖安装：`npm run install:all`。
 
+## E6. 全局 typecheck 命令（扩展）✅
+
+- 新增 `goengine typecheck` 全局命令（`lib/typecheck/index.ts`），对当前用户项目执行类型检查：
+  - 类型推断与脚手架一致：`angular.json` → Angular（`ngc -p tsconfig.json --noEmit`）、`Main.tsx` → React（`tsc -p tsconfig.json --noEmit`）、`Main.ts` → Vue（`vue-tsc --noEmit`）；
+  - 检查器由 CLI 自身依赖提供（`vue-tsc` / `typescript` / `@angular/compiler-cli`，经 `resolveBin` 解析），用户项目只需安装框架本体（vue / react / @angular/*），无需额外安装 typecheck 工具；
+  - 支持 `-p / --project <tsconfig>` 指定配置文件，默认 `tsconfig.json`；
+  - 失败时透出检查器错误并以非零码退出。
+- 脚手架为三种类型项目统一生成 `"typecheck": "goengine typecheck"` 脚本（`lib/create/template.ts` 的 `PROJECT_LAYOUT`）。
+
 ## 验证
 
 - `npm run typecheck`、`npm run build` 通过；

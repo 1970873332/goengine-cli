@@ -1,7 +1,5 @@
 import { defaultProtocol, isHTTPS } from "@/lib/config/module";
 import { createConfig, fsAllow } from "@/lib/config/vite";
-import { obtainProjectConfig } from "@/lib/utils/file";
-import { selectEntryFile } from "@/lib/utils/select";
 import { SSLUtils } from "@/lib/utils/ssl";
 import HTTPSServerManager from "@goengine/service/src/manager/server/common/HTTPS";
 import { readFileSync } from "fs";
@@ -9,6 +7,7 @@ import { createServer, UserConfig, ViteDevServer } from "vite";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import { projectConfig as loadProjectConfig } from "@/lib/config/module";
 import { ensureIndexHtml } from "@/lib/utils/preset";
+import { resolveProject } from "@/lib/utils/project";
 
 registerErrorHandlers();
 
@@ -16,8 +15,7 @@ const {
         application: { entry },
         ssl: { name },
     } = loadProjectConfig(),
-    { filePath, projectPath } = await selectEntryFile(".", entry),
-    projectConfig: Project = await obtainProjectConfig(projectPath),
+    { filePath, projectPath, projectConfig } = await resolveProject(entry),
     mod: ModConfig = projectConfig.mod ?? {},
     { remarks, host, port, protocol = defaultProtocol } = mod,
     iss: boolean = isHTTPS(protocol),

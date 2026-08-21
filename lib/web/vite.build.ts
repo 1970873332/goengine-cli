@@ -1,18 +1,16 @@
 import { createConfig } from "@/lib/config/vite";
-import { obtainProjectConfig } from "@/lib/utils/file";
-import { selectEntryFile } from "@/lib/utils/select";
 import { build, UserConfig } from "vite";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import { projectConfig as loadProjectConfig } from "@/lib/config/module";
 import { ensureIndexHtml } from "@/lib/utils/preset";
+import { resolveProject } from "@/lib/utils/project";
 
 registerErrorHandlers();
 
 const {
         application: { entry },
     } = loadProjectConfig(),
-    { filePath, projectPath } = await selectEntryFile(".", entry),
-    projectConfig: Project = await obtainProjectConfig(projectPath),
+    { filePath, projectPath, projectConfig } = await resolveProject(entry),
     config: UserConfig = {
         ...createConfig(filePath, projectConfig.mod ?? {}),
         mode: "production",

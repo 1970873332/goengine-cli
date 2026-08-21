@@ -4,13 +4,12 @@ import { Configuration, build as electronBuild } from "electron-builder";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { rimraf } from "rimraf";
-import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import {
     PACKAGE_JSON,
     projectConfig as loadProjectConfig,
 } from "@/lib/config/module";
+import { resolveProject } from "../utils/project";
 
 registerErrorHandlers();
 
@@ -21,8 +20,7 @@ const {
             out: { dir, main },
         },
     } = loadProjectConfig(),
-    { projectPath } = await selectEntryFile(".", entry),
-    projectConfig: Project = await obtainProjectConfig(projectPath),
+    { projectPath, projectConfig } = await resolveProject(entry),
     { electron: electronVersion } = devDependencies,
     /* 打包身份：package.json（version / appId）+ packages.electron 覆盖 */
     electronPackage = projectConfig.packages?.electron ?? {},

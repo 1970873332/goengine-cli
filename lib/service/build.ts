@@ -2,10 +2,10 @@ import { createConfig } from "@/lib/config/esbuild";
 import { BuildOptions, build as esBuild } from "esbuild";
 import { join } from "path";
 import { rimraf } from "rimraf";
-import { selectEntryFile } from "../utils/select";
 import { resolvePath } from "../utils/dir";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import { projectConfig as loadProjectConfig } from "@/lib/config/module";
+import { resolveProject } from "../utils/project";
 
 registerErrorHandlers();
 
@@ -15,7 +15,7 @@ const {
             out: { dir, main },
         },
     } = loadProjectConfig(),
-    { filePath } = await selectEntryFile(".", entry),
+    { filePath } = await resolveProject(entry),
     config: BuildOptions = {
         ...createConfig([filePath], resolvePath(join(dir, main))),
         packages: "external",

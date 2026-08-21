@@ -2,9 +2,6 @@ import { spawnSync } from "child_process";
 import { existsSync } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
-import { fileURLToPath } from "url";
-import { selectEntryFile } from "../utils/select";
-import { obtainProjectConfig } from "../utils/file";
 import { registerErrorHandlers } from "@/lib/utils/error";
 import {
     DEFAULT_HOST,
@@ -13,6 +10,8 @@ import {
     projectConfig as loadProjectConfig,
 } from "@/lib/config/module";
 import { injectProjectTs, PROJECT_TEMPLATE } from "../create/template";
+import { presetRoot } from "../utils/preset";
+import { resolveProject } from "../utils/project";
 
 registerErrorHandlers();
 
@@ -24,12 +23,9 @@ const {
             out: { main },
         },
     } = loadProjectConfig(),
-    { projectPath } = await selectEntryFile(".", entry),
+    { projectPath, projectConfig } = await resolveProject(entry),
     /* CLI 预设根（dist/assets/preset） */
-    preset: string = resolve(
-        dirname(fileURLToPath(import.meta.url)),
-        "assets/preset",
-    ),
+    preset: string = presetRoot(),
     configFile: string = join(projectPath, project_config);
 
 /* Project.ts 缺失时写入默认配置（dev server 配置仅由 Project.ts 提供） */
@@ -47,11 +43,9 @@ if (!existsSync(configFile)) {
     console.log(`📝 已生成默认配置: ${configFile}`);
 }
 
-const
-    projectConfig: Project = await obtainProjectConfig(projectPath),
-    mod: ModConfig = projectConfig.mod ?? {},
-    protocol: "http" | "https" = (mod.protocol ??
-        defaultProtocol) as "http" | "https",
+const mod: ModConfig = projectConfig.mod ?? {},
+    protocol: "http" | "https" = (mod.protocol ?? defaultProtocol) as
+        "http" | "https",
     host: string = mod.host ?? DEFAULT_HOST,
     port: number = mod.port ?? DEFAULT_PORT;
 

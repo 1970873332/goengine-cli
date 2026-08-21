@@ -1,10 +1,8 @@
 import { NODE_MODULES } from "@/lib/config/module";
+import type { WebProjectType } from "@/lib/utils/project";
 import { existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-
-/** 支持的 Web 项目类型 */
-export type WebProjectType = "react" | "vue" | "angular";
 
 /** HTML 模板中的动态值占位符（注入用） */
 export const HTML_TITLE_TOKEN: string = "{{title}}";
@@ -76,6 +74,7 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
             build: "goengine web:build",
             "vite:serve": "goengine vite:serve",
             "vite:build": "goengine vite:build",
+            typecheck: "goengine typecheck",
         },
         devDependencies: {
             /* React 自身无类型声明，类型由 @types 提供（用户侧安装） */
@@ -91,6 +90,7 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
             build: "goengine web:build",
             "vite:serve": "goengine vite:serve",
             "vite:build": "goengine vite:build",
+            typecheck: "goengine typecheck",
         },
         devDependencies: {},
     },
@@ -100,6 +100,7 @@ export const PROJECT_LAYOUT: Record<WebProjectType, ProjectLayout> = {
         scripts: {
             serve: "goengine ng:serve",
             build: "goengine ng:build",
+            typecheck: "goengine typecheck",
         },
         devDependencies: {
             "@angular-devkit/build-angular": "^21.2.7",

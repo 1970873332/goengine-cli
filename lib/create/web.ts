@@ -8,13 +8,9 @@ import {
     scaffoldWebProject,
 } from "@/lib/create/scaffold";
 import { cliRoot } from "@/lib/create/template";
+import { presetRoot } from "@/lib/utils/preset";
 
 const here: string = dirname(fileURLToPath(import.meta.url));
-
-/** 模板根目录：dist/assets/preset（构建脚本从仓库 preset 拷贝） */
-function presetRoot(): string {
-    return resolve(here, "assets/preset");
-}
 
 /** engine.config.json 内容（构建时生成到 assets，写入项目便于用户自定义布局） */
 function engineConfigContent(): string {
