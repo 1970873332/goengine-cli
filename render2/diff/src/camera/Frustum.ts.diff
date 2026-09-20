@@ -1,0 +1,93 @@
+diff --git a/src/camera/Frustum.ts b/src/camera/Frustum.ts
+new file mode 100644
+index 0000000..2dbd34f
+--- /dev/null
++++ b/src/camera/Frustum.ts
+@@ -0,0 +1,87 @@
++import Matrix4 from "@goengine/core/src/object/math/matrix/Matrix4";
++import Vector3 from "@goengine/core/src/object/math/vector/Vector3";
++
++/**
++ * 平面（ax + by + cz + d = 0，法向量已归一化）
++ */
++interface IPlane {
++    a: number;
++    b: number;
++    c: number;
++    d: number;
++}
++
++/**
++ * 视锥体：由视图投影矩阵提取 6 个平面（Gribb-Hartmann），用于包围球剔除
++ */
++export default class Frustum {
++    /**
++     * 六个平面（近 / 远 / 左 / 右 / 上 / 下）
++     */
++    protected readonly planes: IPlane[] = [];
++
++    constructor() {
++        for (let i = 0; i < 6; i++) this.planes.push({ a: 0, b: 0, c: 0, d: 0 });
++    }
++
++    /**
++     * 从列主序矩阵提取视锥平面
++     * @param matrix
++     * @returns
++     */
++    public fromMatrix(matrix: Matrix4): this {
++        const {
++            x1, x2, x3, x4,
++            y1, y2, y3, y4,
++            z1, z2, z3, z4,
++            w1, w2, w3, w4,
++        } = matrix;
++        // 行向量：第 c 列第 r 行为 m[c * 4 + r]
++        // 左：row3 + row0
++        this.setPlane(0, w1 + x1, w2 + x2, w3 + x3, w4 + x4);
++        // 右：row3 - row0
++        this.setPlane(1, w1 - x1, w2 - x2, w3 - x3, w4 - x4);
++        // 下：row3 + row1
++        this.setPlane(2, w1 + y1, w2 + y2, w3 + y3, w4 + y4);
++        // 上：row3 - row1
++        this.setPlane(3, w1 - y1, w2 - y2, w3 - y3, w4 - y4);
++        // 近：row3 + row2
++        this.setPlane(4, w1 + z1, w2 + z2, w3 + z3, w4 + z4);
++        // 远：row3 - row2
++        this.setPlane(5, w1 - z1, w2 - z2, w3 - z3, w4 - z4);
++        return this;
++    }
++
++    /**
++     * 包围球是否与视锥相交
++     * @param center
++     * @param radius
++     * @returns
++     */
++    public intersectsSphere(center: Vector3, radius: number): boolean {
++        const { x, y, z } = center;
++        for (let i = 0; i < 6; i++) {
++            const { a, b, c, d } = this.planes[i];
++            if (a * x + b * y + c * z + d < -radius) return false;
++        }
++        return true;
++    }
++
++    /**
++     * 写入归一化平面
++     */
++    protected setPlane(
++        index: number,
++        a: number,
++        b: number,
++        c: number,
++        d: number,
++    ): void {
++        const length: number = Math.sqrt(a * a + b * b + c * c) || 1;
++        const plane: IPlane = this.planes[index];
++        plane.a = a / length;
++        plane.b = b / length;
++        plane.c = c / length;
++        plane.d = d / length;
++    }
++}

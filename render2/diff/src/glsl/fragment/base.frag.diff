@@ -1,0 +1,23 @@
+diff --git a/src/glsl/fragment/base.frag b/src/glsl/fragment/base.frag
+index 55575d3..6e5c597 100644
+--- a/src/glsl/fragment/base.frag
++++ b/src/glsl/fragment/base.frag
+@@ -1,6 +1,11 @@
+-#version 300 es
+-
+-precision mediump float;
+-
+-//颜色输出
+-out vec4 outColor;
+\ No newline at end of file
++#version 300 es
++
++precision mediump float;
++
++//材质颜色
++uniform vec3 u_color;
++//材质透明度
++uniform float u_opacity;
++
++//颜色输出
++out vec4 outColor;

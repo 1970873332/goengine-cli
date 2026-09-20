@@ -1,0 +1,20 @@
+diff --git a/src/map/GL.ts b/src/map/GL.ts
+index 18b32a6..fb9d77d 100644
+--- a/src/map/GL.ts
++++ b/src/map/GL.ts
+@@ -30,6 +30,15 @@ export default abstract class GLMap extends CanvasComponent<IEvent> {
+      */
+     public scene = new Scene();
+ 
++    /**
++     * 重置尺寸：同步画布与 viewport
++     */
++    public resize(): void {
++        super.resize();
++
++        this.webglRenderer?.setSize(this.width, this.height);
++    }
++
+     /**
+      * 更新循环：先清理画布，再交由子类渲染场景
+      */

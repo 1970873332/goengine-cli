@@ -1,0 +1,17 @@
+diff --git a/src/cache/Program.ts b/src/cache/Program.ts
+index 63b7ea6..0cfa897 100644
+--- a/src/cache/Program.ts
++++ b/src/cache/Program.ts
+@@ -35,4 +35,12 @@ export default class ProgramCache extends MapCache<WebGLProgram> {
+         this.set(shader.id, program);
+         return program;
+     }
++
++    /**
++     * 释放所有程序
++     */
++    public dispose(): void {
++        this.forEach((program) => this.gl.deleteProgram(program));
++        this.clear();
++    }
+ }

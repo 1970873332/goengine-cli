@@ -1,0 +1,312 @@
+import { AttributeKey } from "../GLSL";
+import { BaseGeometryAny, BaseGeometryAttribute } from "../geometry/Base";
+import { State } from "./State";
+
+/**
+ * 缓冲绑定信息
+ */
+interface IBufferBinding {
+    /**
+     * WebGL 缓冲
+     */
+    buffer: WebGLBuffer;
+    /**
+     * 已上传的 ArrayBuffer 源（变化时重新上传）
+     */
+    source: ArrayBuffer;
+    /**
+     * 已上传的字节长度（不变时用 bufferSubData 局部更新）
+     */
+    byteLength: number;
+}
+
+/**
+ * 几何体缓冲集合（属性 + 索引，按几何体共享，供多个程序复用）
+ */
+interface IGeometryBuffers {
+    /**
+     * 属性缓冲
+     */
+    attributes: Map<string, IBufferBinding>;
+    /**
+     * 索引缓冲
+     */
+    index?: IBufferBinding;
+}
+
+/**
+ * 顶点数组对象状态（按几何体 + 程序缓存）
+ */
+interface IVAOState {
+    /**
+     * VAO
+     */
+    vao: WebGLVertexArrayObject;
+}
+
+/**
+ * 缓冲与顶点数组对象缓存
+ *
+ * 缓冲按几何体共享，VAO 按（几何体 + 程序）缓存：
+ * 首次绑定上传数据并记录 attribute 指针，之后每帧只需 bindVertexArray；
+ * 几何体数据变化（如 restructure 替换 array）时对同一缓冲做 bufferSubData /
+ * bufferData 局部更新，指针保持不变。
+ */
+export default class BufferCache {
+    /**
+     * 几何体缓冲集合
+     */
+    protected readonly geometryBuffersMap = new WeakMap<
+        BaseGeometryAny,
+        IGeometryBuffers
+    >();
+    /**
+     * 几何体 + 程序的 VAO
+     */
+    protected readonly vaoMap = new WeakMap<
+        BaseGeometryAny,
+        Map<WebGLProgram, IVAOState>
+    >();
+    /**
+     * 已创建的 VAO（dispose 用）
+     */
+    protected readonly liveVaos = new Set<WebGLVertexArrayObject>();
+    /**
+     * 已创建的缓冲（dispose 用）
+     */
+    protected readonly liveBuffers = new Set<WebGLBuffer>();
+    /**
+     * 几何体属性键缓存（避免每帧 Object.keys 分配）
+     */
+    protected readonly attributeKeys = new WeakMap<BaseGeometryAny, string[]>();
+
+    constructor(protected gl: Canvas.WebGLContext) {}
+
+    /**
+     * WebGL2 上下文（VAO 依赖，本库固定创建 webgl2 上下文）
+     */
+    protected get gl2(): WebGL2RenderingContext {
+        return this.gl as WebGL2RenderingContext;
+    }
+
+    /**
+     * 绑定几何体到程序（VAO + 数据校验）
+     * @param geometry
+     * @param program
+     * @param state
+     */
+    public bind(
+        geometry: BaseGeometryAny,
+        program: WebGLProgram,
+        state: State,
+    ): void {
+        // 确保 VAO 与缓冲存在（含首次上传）
+        const vaoState: IVAOState = this.allocate(geometry, program, state);
+
+        // 先绑定 VAO 再更新数据：元素缓冲绑定是 VAO 状态的一部分
+        this.gl2.bindVertexArray(vaoState.vao);
+        this.update(geometry);
+    }
+
+    /**
+     * 释放所有 VAO 与缓冲
+     */
+    public dispose(): void {
+        const { gl, gl2 } = this;
+        this.liveVaos.forEach((vao) => gl2.deleteVertexArray(vao));
+        this.liveBuffers.forEach((buffer) => gl.deleteBuffer(buffer));
+        this.liveVaos.clear();
+        this.liveBuffers.clear();
+        gl2.bindVertexArray(null);
+    }
+
+    /**
+     * 获取 / 创建（几何体 + 程序）的 VAO，并确保缓冲已上传
+     */
+    protected allocate(
+        geometry: BaseGeometryAny,
+        program: WebGLProgram,
+        state: State,
+    ): IVAOState {
+        let programs = this.vaoMap.get(geometry);
+        if (!programs) {
+            programs = new Map();
+            this.vaoMap.set(geometry, programs);
+        }
+        const existing = programs.get(program);
+        if (existing) return existing;
+
+        const { gl, gl2 } = this;
+        const vao: WebGLVertexArrayObject = gl2.createVertexArray()!;
+        gl2.bindVertexArray(vao);
+
+        // 记录属性指针（vertexAttribPointer 会把当前 ARRAY_BUFFER 绑定记入 VAO）
+        this.keys(geometry).forEach((key) => {
+            const attribute =
+                geometry.attribute[key as keyof BaseGeometryAttribute]!;
+            if (!attribute) return;
+            const local = this.location(key, program, state);
+            if (local === -1) return;
+            const binding = this.ensureAttributeBuffer(geometry, key);
+            gl.bindBuffer(gl.ARRAY_BUFFER, binding.buffer);
+            gl.vertexAttribPointer(
+                local,
+                attribute.size,
+                gl.FLOAT,
+                false,
+                0,
+                0,
+            );
+            gl.enableVertexAttribArray(local);
+        });
+
+        // 记录元素缓冲绑定
+        if (geometry.index) {
+            const index = this.ensureIndexBuffer(geometry);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer);
+        }
+
+        gl2.bindVertexArray(null);
+        const vaoState: IVAOState = { vao };
+        programs.set(program, vaoState);
+        this.liveVaos.add(vao);
+        return vaoState;
+    }
+
+    /**
+     * 几何体数据变化时局部更新（VAO 已绑定时调用）
+     * @param geometry
+     */
+    protected update(geometry: BaseGeometryAny): void {
+        const buffers = this.geometryBuffersMap.get(geometry);
+        if (!buffers) return;
+        const { gl } = this;
+
+        buffers.attributes.forEach((binding, key) => {
+            const attribute =
+                geometry.attribute[key as keyof BaseGeometryAttribute];
+            if (!attribute || binding.source === attribute.array.buffer) return;
+            gl.bindBuffer(gl.ARRAY_BUFFER, binding.buffer);
+            if (binding.byteLength === attribute.array.byteLength) {
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, attribute.array);
+            } else {
+                gl.bufferData(gl.ARRAY_BUFFER, attribute.array, gl.STATIC_DRAW);
+            }
+            binding.source = attribute.array.buffer;
+            binding.byteLength = attribute.array.byteLength;
+        });
+
+        const { index } = buffers;
+        if (geometry.index && index && index.source !== geometry.index.array.buffer) {
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer);
+            if (index.byteLength === geometry.index.array.byteLength) {
+                gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, geometry.index.array);
+            } else {
+                gl.bufferData(
+                    gl.ELEMENT_ARRAY_BUFFER,
+                    geometry.index.array,
+                    gl.STATIC_DRAW,
+                );
+            }
+            index.source = geometry.index.array.buffer;
+            index.byteLength = geometry.index.array.byteLength;
+        }
+    }
+
+    /**
+     * 获取几何体缓冲集合（首次创建）
+     * @param geometry
+     */
+    protected geometryBuffers(geometry: BaseGeometryAny): IGeometryBuffers {
+        let buffers = this.geometryBuffersMap.get(geometry);
+        if (!buffers) {
+            buffers = { attributes: new Map() };
+            this.geometryBuffersMap.set(geometry, buffers);
+        }
+        return buffers;
+    }
+
+    /**
+     * 获取 / 创建属性缓冲并上传
+     * @param geometry
+     * @param key
+     */
+    protected ensureAttributeBuffer(
+        geometry: BaseGeometryAny,
+        key: string,
+    ): IBufferBinding {
+        const buffers = this.geometryBuffers(geometry);
+        const existing = buffers.attributes.get(key);
+        if (existing) return existing;
+
+        const attribute =
+            geometry.attribute[key as keyof BaseGeometryAttribute]!;
+        const buffer: WebGLBuffer = this.gl.createBuffer()!;
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, attribute.array, this.gl.STATIC_DRAW);
+        const binding: IBufferBinding = {
+            buffer,
+            source: attribute.array.buffer,
+            byteLength: attribute.array.byteLength,
+        };
+        buffers.attributes.set(key, binding);
+        this.liveBuffers.add(buffer);
+        return binding;
+    }
+
+    /**
+     * 获取 / 创建索引缓冲并上传
+     * @param geometry
+     */
+    protected ensureIndexBuffer(geometry: BaseGeometryAny): IBufferBinding {
+        const buffers = this.geometryBuffers(geometry);
+        if (buffers.index) return buffers.index;
+
+        const buffer: WebGLBuffer = this.gl.createBuffer()!;
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
+        this.gl.bufferData(
+            this.gl.ELEMENT_ARRAY_BUFFER,
+            geometry.index!.array,
+            this.gl.STATIC_DRAW,
+        );
+        const binding: IBufferBinding = {
+            buffer,
+            source: geometry.index!.array.buffer,
+            byteLength: geometry.index!.array.byteLength,
+        };
+        buffers.index = binding;
+        this.liveBuffers.add(buffer);
+        return binding;
+    }
+
+    /**
+     * 获取属性位置（按程序缓存）
+     */
+    protected location(
+        key: string,
+        program: WebGLProgram,
+        state: State,
+    ): number {
+        const { location } = state.buffer;
+        const local =
+            location[key] ??
+            this.gl.getAttribLocation(
+                program,
+                AttributeKey[key as keyof typeof AttributeKey] ?? key,
+            );
+        if (!(key in location)) location[key] = local;
+        return local;
+    }
+
+    /**
+     * 获取几何体属性键（缓存，避免每帧 Object.keys）
+     */
+    protected keys(geometry: BaseGeometryAny): string[] {
+        let keys = this.attributeKeys.get(geometry);
+        if (!keys) {
+            keys = Object.keys(geometry.attribute);
+            this.attributeKeys.set(geometry, keys);
+        }
+        return keys;
+    }
+}

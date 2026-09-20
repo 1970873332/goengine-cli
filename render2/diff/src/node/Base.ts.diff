@@ -1,0 +1,43 @@
+diff --git a/src/node/Base.ts b/src/node/Base.ts
+index eb18ef1..635cb2b 100644
+--- a/src/node/Base.ts
++++ b/src/node/Base.ts
+@@ -15,19 +15,25 @@ export default abstract class BaseGLNode<
+      * 向上的向量
+      */
+     public readonly up = new Vector3(0, 1, 0);
++    /**
++     * 渲染顺序（越小越先绘制，优先于材质分组）
++     */
++    public renderOrder: number = 0;
+ 
+     public setConfig(config: C): void {
+         super.setConfig(config);
+ 
+-        const { up } = config;
++        const { up, renderOrder = this.renderOrder } = config;
+ 
+         up && this.up.set(up.x, up.y, up.z, true);
++        Object.assign(this, { renderOrder });
+     }
+ 
+     public copy(target: this, silence?: boolean): this {
+-        const { up } = target;
++        const { up, renderOrder } = target;
+ 
+         this.up.copy(up, true);
++        Object.assign(this, { renderOrder });
+ 
+         return super.copy(target, silence);
+     }
+@@ -38,6 +44,10 @@ interface IConfig extends BaseNodeConfig {
+      * 朝上的向量
+      */
+     up?: VectorObject.Vector3;
++    /**
++     * 渲染顺序
++     */
++    renderOrder?: number;
+ }
+ 
+ interface IEvent extends BaseNodeEvent {}

@@ -1,0 +1,738 @@
+diff --git a/src/render/Webgl.ts b/src/render/Webgl.ts
+index 655a24e..16dcd74 100644
+--- a/src/render/Webgl.ts
++++ b/src/render/Webgl.ts
+@@ -1,12 +1,13 @@
+ import Matrix4 from "@goengine/core/src/object/math/matrix/Matrix4";
+ import Vector3 from "@goengine/core/src/object/math/vector/Vector3";
+-import { ArrayUtils } from "@goengine/core/src/util/Array";
++import { ColorUtils } from "@goengine/core/src/util/Color";
+ import {
+     Blend,
+     CullFace,
+     UniformKey,
+     UniformType,
+ } from "@goengine/webgl/src/GLSL";
++import { BaseGLNodeAny } from "@goengine/webgl/src/node/Base";
+ import Mesh, { MeshAny } from "@goengine/webgl/src/node/common/Mesh";
+ import Scene from "@goengine/webgl/src/node/common/Scene";
+ import Texture from "@goengine/webgl/src/state/Texture";
+@@ -16,6 +17,8 @@ import ShaderCache from "../cache/Shader";
+ import StateCache, { State } from "../cache/State";
+ import TextureCache from "../cache/Texture";
+ import { CameraAny } from "../camera/Camera";
++import Frustum from "../camera/Frustum";
++import { BaseGeometryAny } from "../geometry/Base";
+ import { BaseMaterialAny } from "../material/Base";
+ import ShaderMaterial, { ShaderMaterialUniform } from "../material/node/Shader";
+ 
+@@ -81,6 +84,56 @@ export default class WebglRenderer {
+         cull: false,
+         cullFace: CullFace.None,
+     };
++    /**
++     * 帧计数：用于按程序每帧只上传一次视图/投影矩阵
++     */
++    protected frame: number = 0;
++    /**
++     * 不透明渲染条目（复用，避免每帧分配）
++     */
++    protected readonly opaqueList: RenderItem[] = [];
++    /**
++     * 透明渲染条目（复用，避免每帧分配）
++     */
++    protected readonly transparentList: RenderItem[] = [];
++    /**
++     * 临时向量：计算节点在相机视图空间的深度
++     */
++    protected readonly view = new Vector3();
++    /**
++     * 视锥体（每帧由视图投影矩阵更新，用于剔除）
++     */
++    protected readonly frustum = new Frustum();
++    /**
++     * 视图投影矩阵（复用，避免每帧分配）
++     */
++    protected readonly viewProjection = new Matrix4();
++    /**
++     * 临时向量：包围球世界中心
++     */
++    protected readonly sphereCenter = new Vector3();
++    /**
++     * 几何体包围球缓存（position 数据源变化时重算）
++     */
++    protected readonly boundingSpheres = new WeakMap<
++        BaseGeometryAny,
++        ISphere
++    >();
++    /**
++     * 材质排序序号（稳定分组，减少程序切换）
++     */
++    protected readonly materialOrder = new WeakMap<BaseMaterialAny, number>();
++    /**
++     * 材质序号计数
++     */
++    protected materialOrderCounter: number = 0;
++    /**
++     * uniform 条目缓存（按 uniforms 对象复用 Object.entries 结果）
++     */
++    protected readonly uniformEntries = new WeakMap<
++        object,
++        Array<[string, { type: UniformType; value: unknown }]>
++    >();
+ 
+     /**
+      * 应用MVP矩阵
+@@ -97,16 +150,21 @@ export default class WebglRenderer {
+     ): void {
+         const {
+             uniform: {
+-                location
++                location,
++                missing,
+             }
+         } = state;
+ 
++        // 程序不存在的 uniform：首次记录后静默跳过，避免每帧刷警告
++        if (missing.has(key)) return;
++
+         let u_matrix: WebGLUniformLocation | undefined = location[key];
+ 
+         if (!u_matrix) {
+             u_matrix = this.gl.getUniformLocation(program, key) ?? void 0;
+ 
+             if (!u_matrix) {
++                missing.add(key);
+                 console.warn(`uniform变量${key}未找到`);
+                 return;
+             }
+@@ -118,6 +176,107 @@ export default class WebglRenderer {
+         this.interimFloat32Array.set(matrix.m);
+         this.gl.uniformMatrix4fv(u_matrix, false, this.interimFloat32Array);
+     }
++    /**
++     * 应用材质内置 uniform（颜色与透明度）
++     * @param material
++     * @param program
++     * @param state
++     */
++    protected applyMaterialUniform(
++        material: BaseMaterialAny,
++        program: WebGLProgram,
++        state: State,
++    ): void {
++        const [red, green, blue] = ColorUtils.hexToRGBA(material.color);
++
++        this.applySilentUniform(
++            "u_color",
++            program,
++            state,
++            (location) =>
++                this.gl.uniform3f(
++                    location,
++                    red / 255,
++                    green / 255,
++                    blue / 255,
++                ),
++        );
++        this.applySilentUniform(
++            "u_opacity",
++            program,
++            state,
++            (location) => this.gl.uniform1f(location, material.alpha),
++        );
++    }
++    /**
++     * 静默设置 uniform：着色器未声明该变量时只记录一次，不刷警告
++     * @param name
++     * @param program
++     * @param state
++     * @param apply
++     */
++    protected applySilentUniform(
++        name: string,
++        program: WebGLProgram,
++        state: State,
++        apply: (location: WebGLUniformLocation) => void,
++    ): void {
++        const {
++            uniform: { location, missing },
++        } = state;
++
++        if (missing.has(name)) return;
++
++        let uniform_location: WebGLUniformLocation | undefined =
++            location[name];
++
++        if (!uniform_location) {
++            uniform_location =
++                this.gl.getUniformLocation(program, name) ?? void 0;
++
++            if (!uniform_location) {
++                missing.add(name);
++                return;
++            }
++
++            location[name] = uniform_location;
++        }
++
++        apply(uniform_location);
++    }
++    /**
++     * 解析 uniform 值：数字 / 数组 / 类型化数组 / 矩阵 / 向量对象
++     * @param value
++     * @returns
++     */
++    protected resolveUniformValue(
++        value: unknown,
++    ): number | number[] | Float32Array {
++        if (typeof value === "number") return value;
++        if (Array.isArray(value) || ArrayBuffer.isView(value))
++            return value as number[] | Float32Array;
++
++        const object = value as {
++            m?: number[];
++            x?: number;
++            y?: number;
++            z?: number;
++            w?: number;
++            toArray?: () => number[];
++        };
++        // 矩阵对象
++        if (object?.m) return object.m;
++        // 向量对象
++        if (typeof object?.x === "number")
++            return [
++                object.x,
++                object.y ?? 0,
++                object.z ?? 0,
++                object.w ?? 0,
++            ];
++        if (typeof object?.toArray === "function") return object.toArray();
++        return 0;
++    }
+     /**
+      * 应用渲染模式
+      * @param material
+@@ -186,50 +345,182 @@ export default class WebglRenderer {
+         state: State,
+     ): void {
+         const {
+-            texture: { list },
+-            uniform: { location },
++            uniform: { location, missing },
+         } = state;
++        let entries = this.uniformEntries.get(uniforms);
++        if (!entries) {
++            entries = Object.entries(uniforms) as Array<
++                [string, { type: UniformType; value: unknown }]
++            >;
++            this.uniformEntries.set(uniforms, entries);
++        }
++
++        entries.forEach(([name, attribute]) => {
++            // 程序不存在的 uniform：首次记录后静默跳过，避免每帧刷警告
++            if (missing.has(name)) return;
++
++            let uniform_location: WebGLUniformLocation | undefined =
++                location[name];
++
++            if (!uniform_location) {
++                uniform_location =
++                    this.gl.getUniformLocation(program, name) ?? void 0;
+ 
+-        Object.entries(uniforms).forEach(([name, attribute]) => {
+-            const uniform_location: WebGLUniformLocation | null =
+-                location[name] ??
+-                this.gl.getUniformLocation(program, name);
++                if (!uniform_location) {
++                    missing.add(name);
++                    return console.warn(`uniform变量${name}未找到`);
++                }
+ 
+-            if (!uniform_location) return console.warn(`uniform变量${name}未找到`);
++                location[name] = uniform_location;
++            }
+ 
+             // 设置uniform变量值
+             switch (attribute.type) {
+                 case UniformType.Texture:
++                case UniformType.Sampler2D:
+                     if (attribute.value instanceof Texture) {
+-                        const texture: WebGLTexture = this.textureCache.allocate(
+-                            attribute.value,
+-                            this.stateCache.nextUnit,
+-                        );
+-
+-                        let unit: number = list.indexOf(texture);
+-
+-                        if (this.stateCache.unit !== unit) {
+-                            if (unit === -1) {
+-                                list[
+-                                    (unit = this.stateCache.stepUnit())
+-                                ] = texture;
++                        const webglTexture: WebGLTexture =
++                            this.textureCache.allocate(attribute.value);
++                        const binding = state.texture.bindings.get(name);
++                        if (binding && binding.texture === webglTexture) {
++                            // 绑定未变：若该单元被其它程序覆盖则补绑
++                            if (
++                                this.stateCache.textures.get(binding.unit) !==
++                                webglTexture
++                            ) {
++                                this.bindTextureUnit(
++                                    binding.unit,
++                                    webglTexture,
++                                );
+                             }
+-
+-                            this.gl.activeTexture(this.gl.TEXTURE0 + unit);
+-                            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
++                            break;
+                         }
+-
+-                        this.gl.uniform1i(location, unit);
++                        let unit: number;
++                        if (binding) {
++                            // 纹理变化，复用该 uniform 的单元
++                            unit = binding.unit;
++                        } else {
++                            unit = this.allocateTextureUnit(state);
++                            state.texture.units.add(unit);
++                        }
++                        this.bindTextureUnit(unit, webglTexture);
++                        if (!binding || binding.unit !== unit) {
++                            this.gl.uniform1i(uniform_location, unit);
++                        }
++                        state.texture.bindings.set(name, {
++                            texture: webglTexture,
++                            unit,
++                        });
++                    }
++                    break;
++                case UniformType.Float:
++                    this.gl.uniform1f(
++                        uniform_location,
++                        attribute.value as number,
++                    );
++                    break;
++                case UniformType.Int:
++                    this.gl.uniform1i(
++                        uniform_location,
++                        attribute.value as number,
++                    );
++                    break;
++                case UniformType.Vec2:
++                    this.gl.uniform2fv(
++                        uniform_location,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Vec3:
++                    this.gl.uniform3fv(
++                        uniform_location,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Vec4:
++                    this.gl.uniform4fv(
++                        uniform_location,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Mat2:
++                    this.gl.uniformMatrix2fv(
++                        uniform_location,
++                        false,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Mat3:
++                    this.gl.uniformMatrix3fv(
++                        uniform_location,
++                        false,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Mat4:
++                    this.gl.uniformMatrix4fv(
++                        uniform_location,
++                        false,
++                        this.resolveUniformValue(attribute.value) as
++                            | number[]
++                            | Float32Array,
++                    );
++                    break;
++                case UniformType.Sampler3D:
++                case UniformType.SamplerCube:
++                    if (!missing.has(`${name}:type`)) {
++                        missing.add(`${name}:type`);
++                        console.warn(
++                            `uniform变量${name}的类型${attribute.type}暂不支持`,
++                        );
+                     }
+                     break;
+-            }
+-
+-            // 更新uniform变量位置
+-            if (!(name in location)) {
+-                location[name] = uniform_location;
+             }
+         });
+     }
++    /**
++     * 分配纹理单元（优先空闲单元，按程序记录占用）
++     * @param state
++     * @returns
++     */
++    protected allocateTextureUnit(state: State): number {
++        const { units } = state.texture;
++        const max: number =
++            this.stateCache.maxUnit ??
++            (this.stateCache.maxUnit = this.gl.getParameter(
++                this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS,
++            ));
++        let unit: number = 0;
++        while (units.has(unit) && unit < max - 1) unit++;
++        return unit;
++    }
++    /**
++     * 绑定纹理到指定单元（带全局缓存，避免重复 GL 调用）
++     * @param unit
++     * @param texture
++     */
++    protected bindTextureUnit(unit: number, texture: WebGLTexture): void {
++        const { gl } = this,
++            { stateCache } = this;
++        if (stateCache.unit !== unit) {
++            gl.activeTexture(gl.TEXTURE0 + unit);
++            stateCache.unit = unit;
++        }
++        if (stateCache.textures.get(unit) !== texture) {
++            gl.bindTexture(gl.TEXTURE_2D, texture);
++            stateCache.textures.set(unit, texture);
++        }
++    }
+ 
+     /**
+      * 渲染节点
+@@ -256,29 +547,39 @@ export default class WebglRenderer {
+         // 应用渲染模式（每个节点都应用，材质不同的网格共享同一 program 时也正确切换）
+         this.applyRenderMode(material);
+ 
+-        // 应用MVP矩阵
++        // 视图/投影矩阵整帧不变：每个程序每帧（或换相机时）只上传一次，
++        // 模型矩阵仍需每节点上传
++        const { viewFrame, viewCamera } = state.uniform;
++        if (viewFrame !== this.frame || viewCamera !== camera) {
++            state.uniform.viewFrame = this.frame;
++            state.uniform.viewCamera = camera;
++            this.applyMVPMatrix(
++                UniformKey.viewMatrix,
++                // 本库约定：相机节点的 worldMatrix 即为视图矩阵（由 Matrix4.lookAt 写入）
++                camera.worldMatrix,
++                program,
++                state,
++            );
++            this.applyMVPMatrix(
++                UniformKey.projectionMatrix,
++                camera.projectionMatrix,
++                program,
++                state,
++            );
++        }
+         this.applyMVPMatrix(
+             UniformKey.modelMatrix,
+             node.worldMatrix,
+             program,
+             state,
+         );
+-        this.applyMVPMatrix(
+-            UniformKey.viewMatrix,
+-            camera.worldMatrix,
+-            program,
+-            state,
+-        );
+-        this.applyMVPMatrix(
+-            UniformKey.projectionMatrix,
+-            camera.projectionMatrix,
+-            program,
+-            state,
+-        );
+ 
+         // 绑定缓冲
+         this.bufferCache.bind(geometry, program, state);
+ 
++        // 应用材质内置 uniform（颜色 / 透明度）
++        this.applyMaterialUniform(material, program, state);
++
+         // 更新uniform变量
+         if (material instanceof ShaderMaterial) {
+             this.setupUniform(material.uniforms, program, state);
+@@ -289,7 +590,9 @@ export default class WebglRenderer {
+             this.gl.drawElements(
+                 this.gl.TRIANGLES,
+                 geometry.index.length,
+-                this.gl.UNSIGNED_SHORT,
++                geometry.index.array.BYTES_PER_ELEMENT === 4
++                    ? this.gl.UNSIGNED_INT
++                    : this.gl.UNSIGNED_SHORT,
+                 0,
+             );
+         } else {
+@@ -306,42 +609,162 @@ export default class WebglRenderer {
+      * @param camera
+      */
+     public renderScene(scene: Scene, camera: CameraAny): void {
+-        // 透明物体收集列表（带相机视图空间深度，画家排序后统一绘制）
+-        const transparent: Array<{ node: MeshAny; depth: number }> = [];
+-        // 临时向量：计算透明物体在相机视图空间的深度
+-        const view = new Vector3();
+-
+-        ArrayUtils.traverse(
+-            scene.children,
+-            (node) => {
+-                // 注意：回调必须返回 void 而非 false，
+-                // 否则 ArrayUtils.traverse 会把 false 视为"跳过子树"，
+-                // 导致 Group 等节点内的网格永远无法渲染。
+-                if (node instanceof Mesh) {
+-                    // 先渲染不透明物体（保持场景树顺序）
+-                    if (node.material?.transparent) {
+-                        // 视图矩阵把世界坐标变换到相机空间，相机朝 -Z 方向看，
+-                        // viewZ 越小（负得越多）离相机越远，作为画家排序依据
+-                        const depth = view
+-                            .copy(node.worldPosition)
+-                            .applyMatrix4(camera.worldMatrix).z;
+-                        transparent.push({ node, depth });
++        this.frame++;
++        const { opaqueList, transparentList } = this;
++        opaqueList.length = 0;
++        transparentList.length = 0;
++
++        // 每帧重建视锥：视图投影 = 投影 × 视图（与着色器 u_projectionMatrix * u_viewMatrix 顺序一致）
++        this.viewProjection
++            .copy(camera.projectionMatrix)
++            .multiply(camera.worldMatrix);
++        this.frustum.fromMatrix(this.viewProjection);
++
++        scene.children.forEach((child) => this.collectNode(child, camera));
++
++        // 不透明：renderOrder 优先，其次按材质分组（减少程序切换），组内近到远（视图 z 降序，利于 early-z）
++        opaqueList.sort(
++            (a, b) =>
++                a.renderOrder - b.renderOrder ||
++                a.order - b.order ||
++                b.depth - a.depth,
++        );
++        // 透明：renderOrder 优先，其次画家排序远到近（视图 z 升序）
++        transparentList.sort(
++            (a, b) => a.renderOrder - b.renderOrder || a.depth - b.depth,
++        );
++
++        opaqueList.forEach(({ node }) => this.renderNode(node, camera));
++        transparentList.forEach(({ node }) => this.renderNode(node, camera));
++    }
++    /**
++     * 深度收集渲染条目（递归遍历场景树，复用列表）
++     * @param node
++     * @param camera
++     */
++    protected collectNode(node: BaseGLNodeAny, camera: CameraAny): void {
++        if (!node.visible) return;
++
++        if (node instanceof Mesh) {
++            const { material, geometry } = node;
++            if (material && geometry) {
++                // 视锥剔除（mesh.frustumCulled = false 时始终渲染）
++                if (
++                    !node.frustumCulled ||
++                    this.frustumContains(node, geometry)
++                ) {
++                    // 视图矩阵把世界坐标变换到相机空间，相机朝 -Z 方向看，
++                    // viewZ 越小（负得越多）离相机越远，作为排序依据
++                    const depth = this.view
++                        .copy(node.worldPosition)
++                        .applyMatrix4(camera.worldMatrix).z;
++                    let order = this.materialOrder.get(material);
++                    if (order === undefined) {
++                        order = this.materialOrderCounter++;
++                        this.materialOrder.set(material, order);
+                     }
+-                    else this.renderNode(node, camera);
++                    const item: RenderItem = {
++                        node,
++                        depth,
++                        order,
++                        renderOrder: node.renderOrder,
++                    };
++                    if (material.transparent) this.transparentList.push(item);
++                    else this.opaqueList.push(item);
+                 }
+-            },
++            }
++        }
++        node.children.forEach((child) => this.collectNode(child, camera));
++    }
++    /**
++     * 视锥剔除测试：几何体包围球经世界矩阵变换后与视锥求交
++     * @param node
++     * @param geometry
++     * @returns
++     */
++    protected frustumContains(
++        node: MeshAny,
++        geometry: BaseGeometryAny,
++    ): boolean {
++        const sphere = this.boundingSphere(geometry);
++        if (!sphere) return true;
++        const center = this.sphereCenter
++            .copy(sphere.center)
++            .applyMatrix4(node.worldMatrix);
++        const { worldScale } = node;
++        const maxScale: number = Math.max(
++            Math.abs(worldScale.x),
++            Math.abs(worldScale.y),
++            Math.abs(worldScale.z),
+         );
+-
+-        // 画家排序：透明物体按相机视角深度由远到近绘制（viewZ 升序），
+-        // 否则透明物体会被后绘制的近处不透明物体遮挡，特定角度下失去透明度
+-        transparent
+-            .sort((a, b) => a.depth - b.depth)
+-            .forEach(({ node }) => this.renderNode(node, camera));
++        return this.frustum.intersectsSphere(center, sphere.radius * maxScale);
++    }
++    /**
++     * 计算 / 获取几何体包围球（position 数据源变化时重算）
++     * @param geometry
++     * @returns
++     */
++    protected boundingSphere(geometry: BaseGeometryAny): ISphere | undefined {
++        const position = geometry.attribute.position;
++        if (!position) return undefined;
++        const cached = this.boundingSpheres.get(geometry);
++        if (cached && cached.source === position.array.buffer) return cached;
++
++        const { array, size } = position;
++        let minX = Infinity,
++            minY = Infinity,
++            minZ = Infinity,
++            maxX = -Infinity,
++            maxY = -Infinity,
++            maxZ = -Infinity;
++        for (let i = 0; i < array.length; i += size) {
++            const x = array[i],
++                y = array[i + 1],
++                z = array[i + 2];
++            x < minX && (minX = x);
++            x > maxX && (maxX = x);
++            y < minY && (minY = y);
++            y > maxY && (maxY = y);
++            z < minZ && (minZ = z);
++            z > maxZ && (maxZ = z);
++        }
++        if (!isFinite(minX)) return undefined;
++        const cx = (minX + maxX) / 2,
++            cy = (minY + maxY) / 2,
++            cz = (minZ + maxZ) / 2;
++        let radiusSq = 0;
++        for (let i = 0; i < array.length; i += size) {
++            const dx = array[i] - cx,
++                dy = array[i + 1] - cy,
++                dz = array[i + 2] - cz,
++                d = dx * dx + dy * dy + dz * dz;
++            d > radiusSq && (radiusSq = d);
++        }
++        const sphere: ISphere = {
++            center: new Vector3().set(cx, cy, cz),
++            radius: Math.sqrt(radiusSq),
++            source: position.array.buffer,
++        };
++        this.boundingSpheres.set(geometry, sphere);
++        return sphere;
++    }
++    /**
++     * 设置绘制尺寸（同步 viewport，画布尺寸变化后必须调用）
++     * @param width
++     * @param height
++     */
++    public setSize(width: number, height: number): void {
++        this.gl.viewport(0, 0, width, height);
+     }
+     /**
+      * 销毁
+      */
+-    public destroy(): void { }
++    public destroy(): void {
++        this.bufferCache.dispose();
++        this.textureCache.dispose();
++        this.programCache.dispose();
++        this.shaderCache.dispose();
++    }
+ }
+ 
+ /**
+@@ -374,13 +797,49 @@ interface RenderState {
+     cullFace: CullFace;
+ }
+ 
++/**
++ * 渲染条目
++ */
++interface RenderItem {
++    /**
++     * 网格节点
++     */
++    node: MeshAny;
++    /**
++     * 相机视图空间深度
++     */
++    depth: number;
++    /**
++     * 材质排序序号
++     */
++    order: number;
++    /**
++     * 渲染顺序
++     */
++    renderOrder: number;
++}
++
++/**
++ * 包围球
++ */
++interface ISphere {
++    /**
++     * 球心（几何体局部坐标）
++     */
++    center: Vector3;
++    /**
++     * 半径
++     */
++    radius: number;
++    /**
++     * 计算时的 position 数据源（变化时重算）
++     */
++    source: ArrayBuffer;
++}
++
+ interface IConfig {
+     /**
+      * webgl上下文
+      */
+     gl: Canvas.WebGLContext;
+-    /**
+-     * 是否开启深度测试
+-     */
+-    depthTest?: boolean;
+ }

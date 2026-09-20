@@ -1,0 +1,23 @@
+diff --git a/src/glsl/fragment/default.frag b/src/glsl/fragment/default.frag
+index b4445a3..ecdb090 100644
+--- a/src/glsl/fragment/default.frag
++++ b/src/glsl/fragment/default.frag
+@@ -1,3 +1,14 @@
+-void main() {
+-    outColor = vec4(0, 0, 0, 1);
+-}
+\ No newline at end of file
++#version 300 es
++
++precision mediump float;
++
++//材质颜色
++uniform vec3 u_color;
++//材质透明度
++uniform float u_opacity;
++
++//颜色输出
++out vec4 outColor;
++void main() {
++    outColor = vec4(u_color, u_opacity);
++}

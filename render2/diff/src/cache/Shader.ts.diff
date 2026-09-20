@@ -1,0 +1,56 @@
+diff --git a/src/cache/Shader.ts b/src/cache/Shader.ts
+index 2fb7808..414c5e3 100644
+--- a/src/cache/Shader.ts
++++ b/src/cache/Shader.ts
+@@ -1,6 +1,8 @@
+ import { BaseMaterialAny } from "@goengine/webgl/src/material/Base";
+ import { BASE_FRAG } from "../glsl/fragment/Index";
++import { DEFAULT_FRAG } from "../glsl/fragment/Index";
+ import { BASE_VERT } from "../glsl/vertex/Index";
++import { DEFAULT_VERT } from "../glsl/vertex/Index";
+ import ShaderMaterial from "../material/node/Shader";
+ import ShaderState, { ShaderStateAny } from "../state/Shader";
+ import MapCache from "./base/Map";
+@@ -43,7 +45,14 @@ export default class CacheShader extends MapCache<ShaderStateAny> {
+                         throw new Error(`未知的着色器类型: ${type}`);
+                 }
+             })(),
+-            shader = new ShaderState(type, `${base}\n${char}`.trim(), id)
++            // 完整着色器（以 #version 开头）直接使用；
++            // 片段源码（仅 main 函数体）由 BASE_* 前缀提供公共声明，
++            // 避免用户重复编写 #version / in / out / uniform 声明。
++            trimmed: string = char.trim(),
++            source: string = trimmed.startsWith("#version")
++                ? trimmed
++                : `${base}\n${trimmed}`,
++            shader = new ShaderState(type, source, id)
+                 .trust()
+                 .compiled(this.gl);
+         shader.complete && this.set(id, shader);
+@@ -76,8 +85,9 @@ export default class CacheShader extends MapCache<ShaderStateAny> {
+             const name: string = material.constructor.name,
+                 vertexID: string = this.vertexID(name),
+                 fragmentID: string = this.fragmentID(name),
+-                vertexChar: string = "",
+-                fragmentChar: string = "";
++                // 内置材质使用默认完整着色器
++                vertexChar: string = DEFAULT_VERT,
++                fragmentChar: string = DEFAULT_FRAG;
+             return {
+                 id: `${vertexID}|${fragmentID}`,
+                 vertex: this.storage(
+@@ -93,4 +103,14 @@ export default class CacheShader extends MapCache<ShaderStateAny> {
+             };
+         }
+     }
++
++    /**
++     * 释放所有着色器
++     */
++    public dispose(): void {
++        this.forEach((shader) => {
++            shader.webglShader && this.gl.deleteShader(shader.webglShader);
++        });
++        this.clear();
++    }
+ }

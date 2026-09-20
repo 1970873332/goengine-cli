@@ -1,0 +1,24 @@
+diff --git a/src/node/common/Mesh.ts b/src/node/common/Mesh.ts
+index 92e10f5..3ab024a 100644
+--- a/src/node/common/Mesh.ts
++++ b/src/node/common/Mesh.ts
+@@ -22,12 +22,17 @@ export default class Mesh<
+     }
+ 
+     public copy(target: this, silence?: boolean): this {
+-        const { geometry, material } = target;
++        const { geometry, material, frustumCulled } = target;
+ 
+-        Object.assign(this, { geometry, material });
++        Object.assign(this, { geometry, material, frustumCulled });
+ 
+         return super.copy(target, silence);
+     }
++
++    /**
++     * 是否参与视锥剔除（false 时始终渲染）
++     */
++    public frustumCulled: boolean = true;
+ }
+ 
+ interface IConfig extends BaseGLNodeConfig {}

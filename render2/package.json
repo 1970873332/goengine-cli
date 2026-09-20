@@ -1,0 +1,11 @@
+{
+    "name": "@goengine/render2",
+    "version": "0.1.0",
+    "description": "GoEngine WebGL Renderer v2（render2 渲染器源码）",
+    "license": "MIT",
+    "author": "Mr.Rui",
+    "type": "module",
+    "dependencies": {
+        "@goengine/core": "workspace:*"
+    }
+}

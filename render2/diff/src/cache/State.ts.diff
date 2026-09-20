@@ -1,0 +1,77 @@
+diff --git a/src/cache/State.ts b/src/cache/State.ts
+index 768f383..75b14ae 100644
+--- a/src/cache/State.ts
++++ b/src/cache/State.ts
+@@ -10,6 +10,10 @@ export default class StateCache extends WeakMapCache<WebGLProgram, IState> {
+      * 纹理单元
+      */
+     public unit: number = 0;
++    /**
++     * 当前各纹理单元绑定的纹理（全局，避免重复 bindTexture）
++     */
++    public readonly textures = new Map<number, WebGLTexture>();
+     /**
+      * 最大纹理单元
+      */
+@@ -49,9 +53,17 @@ export default class StateCache extends WeakMapCache<WebGLProgram, IState> {
+             },
+             uniform: {
+                 location: {},
++                // 当前程序不存在的 uniform（缺失时静默跳过，避免每帧刷警告）
++                missing: new Set(),
++                // 已上传视图/投影矩阵的帧号与相机（每程序每帧只上传一次）
++                viewFrame: -1,
++                viewCamera: undefined,
+             },
+             texture: {
+-                list: [],
++                // uniform 名 -> 纹理绑定（单元号复用）
++                bindings: new Map(),
++                // 该程序已占用的纹理单元
++                units: new Set(),
+             }
+         };
+         this.set(program, state);
+@@ -92,13 +104,40 @@ interface IUniform {
+      * 位置
+      */
+     location: Record<string, WebGLUniformLocation>;
++    /**
++     * 缺失的 uniform
++     */
++    missing: Set<string>;
++    /**
++     * 已上传视图/投影矩阵的帧号
++     */
++    viewFrame: number;
++    /**
++     * 已上传视图/投影矩阵的相机
++     */
++    viewCamera?: object;
+ }
+ 
+ interface ITexture {
+     /**
+-     * 列表
++     * uniform 名 -> 纹理绑定
++     */
++    bindings: Map<string, ITextureBinding>;
++    /**
++     * 已占用的纹理单元
++     */
++    units: Set<number>;
++}
++
++interface ITextureBinding {
++    /**
++     * 纹理
++     */
++    texture: WebGLTexture;
++    /**
++     * 单元
+      */
+-    list: WebGLTexture[];
++    unit: number;
+ }
+ 
+ type TLocation = {
